@@ -1,0 +1,112 @@
+@startuml class_diagram
+
+enum Color {
+    BLUE
+    RED
+    YELLOW
+    GREEN
+    RAINBOW
+}
+
+enum Shape {
+    TRIANGLE
+    SQUARE
+    CIRCLE
+    STAR
+}
+
+enum Direction {
+    UP
+    DOWN
+    LEFT
+    RIGHT
+}
+
+class Tile {
+    - color: Color
+    - shape: Shape
+    + Tile(color: Color, shape: Shape)
+    + getColor(): Color
+    + getShape(): Shape
+}
+
+class Frame {
+    - tile: *Tile
+    - walls: bool[4]
+    + Frame(tile: Tile, walls: bool[4])
+    + getTile(): Tile
+    + getWalls(): bool[4]
+    + canMove(direction: Direction): bool
+}
+
+class QuarterBoard {
+    - id: int
+    - frames: Frame[8][8]
+    + QuarterBoard(id: int, frames: Frame[8][8])
+    + getId(): int
+    + getFrames(): Frame[8][8]
+    + getFrame(int x, int y): Frame
+}
+
+class Board {
+    - quarters: QuarterBoard[2][2]
+    + Board()
+    + generate(): void
+    + getFrame(int x, int y): Frame
+    + getQuarter(int x, int y): QuarterBoard
+}
+
+class Robot {
+    - color: Color
+    - position: std::pair
+    + Robot(color: Color, position: std::pair)
+    + getColor(): Color
+    + getPosition(): std::pair
+    + getX(): int
+    + getY(): int
+    + move(int x, int y): void
+}
+
+class Player {
+    - name: std::string
+    - prediction: int
+    - score: int 
+    + Player(name: std::string)
+    + getName(): std::string
+    + getPrediction(): int
+    + setPrediction(prediction: int): void
+    + getScore(): int
+    + incrementScore(points: int = 1): void
+}
+
+class GameManager {
+    - goal_tile: Tile
+    - board: Board
+    - players: std::vector<Player>
+    + GameManager()
+    + getGoalTile(): Tile
+    + getPlayers(): std::vector<Player>
+    + addPlayer(player: Player): void
+    + removePlayer(player: Player): void
+    + getPlayer(int index): Player
+    + displayBoard(): void
+    + setupRound(): void
+    + processPredictionsInputs(): void
+    + sortPlayersByPredictions(): void
+    + playRound(): void
+    + displayResults(): void
+}
+
+Frame -- Tile
+Frame "16" -up-* "1" QuarterBoard
+Board "1" *-- "4" QuarterBoard
+GameManager "1" *-- "n" Player
+GameManager "1" *-- "4" Robot
+GameManager "1" *-- "1" Board
+Robot -- Color
+Tile -- Color
+Tile -- Shape
+Frame -- Direction
+
+
+@enduml
