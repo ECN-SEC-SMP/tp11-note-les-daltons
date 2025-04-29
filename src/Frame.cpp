@@ -1,5 +1,8 @@
 #include "Frame.h"
 
+Frame::Frame()
+ : tile(nullptr), wall({false, false, false, false}) {}
+
 Frame::Frame(Tile *t, std::array<bool,4> w)
  : tile(t), wall(w) {}
 
