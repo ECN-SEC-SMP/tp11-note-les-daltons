@@ -11,22 +11,22 @@
 class GameManager
 {
 private:
-    Tile goal_tile;
+    Tile* goal_tile;
     Board board;
-    std::vector<Player> players;
+    std::vector<Player*> players;
 
 public:
     /* Constructors */
     GameManager();
 
     /* Getters */
-    Tile getGoalTile();
-    std::vector<Player> getPlayers();
-    Player getPlayer(int index);
+    Tile* getGoalTile();
+    std::vector<Player*> getPlayers();
+    Player* getPlayer(int index);
 
     /* Methods */
-    void addPlayer(Player player);
-    void removePlayer(Player player);
+    void addPlayer(Player* player);
+    void removePlayer(Player* player);
     void displayBoard();
     void setupRound();
     void processPredictionsInputs();
