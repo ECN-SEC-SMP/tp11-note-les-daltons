@@ -56,6 +56,12 @@ Menu *Menu::setTimeout(int timeout)
     return this;
 }
 
+Menu *Menu::setTitle(const std::string &title)
+{
+    this->title = title;
+    return this;
+}
+
 Menu *Menu::resetTimeoutOnKeyPress(bool reset)
 {
     this->reset_timeout_on_key_press = reset;
@@ -101,9 +107,8 @@ Menu *Menu::setQuitKey(char key)
 
 void Menu::printMenu(int pos)
 {
-    // Print the title
-    std::cout << "\033[1;37m";                          // white
-    std::cout << this->title << "\033[0m" << std::endl; // reset color
+    // Print the title of the menu
+    std::cout << this->title << std::endl; // reset color
 
     // Print each option with its index
     for (size_t i = 0; i < options.size(); ++i)
@@ -146,10 +151,26 @@ void Menu::set_nonblocking(bool enable)
         fcntl(STDIN_FILENO, F_SETFL, flags & ~O_NONBLOCK);
 }
 
+void Menu::displayMenu()
+{
+    Menu::resetTerminal();
+
+    Menu::clear();
+    this->printMenu(this->current_option);
+    std::cout << std::endl;
+    std::cout << "Press arrow keys to move." << std::endl;
+    std::cout << "Press enter to select an option." << std::endl;
+    if (this->quitKey != 0)
+        std::cout << "Press '" << this->quitKey << "' to quit." << std::endl;
+    if (mode == 1)
+        std::cout << "Wait for \033[31m" << this->remaining_time << "\033[0m seconds." << std::endl;
+
+    Menu::setTerminal();
+}
+
 int Menu::run()
 {
     int c = 0;
-    int pos = -1; // -1 means no option selected
     bool is_running = true;
     bool timeout_cancelled = false;
 
@@ -157,21 +178,11 @@ int Menu::run()
     // std::cout << "\033[?1049h"; // switch to alternate screen buffer
 
     time_t start_time = time(nullptr);
-    int remaining_time = this->timeout;
+    this->remaining_time = this->timeout;
 
     while (is_running)
     {
-        Menu::clear();
-        this->printMenu(pos);
-        std::cout << std::endl;
-        std::cout << "Press arrow keys to move." << std::endl;
-        std::cout << "Press enter to select an option." << std::endl;
-        if (this->quitKey != 0)
-            std::cout << "Press '" << this->quitKey << "' to quit." << std::endl;
-        if (mode == 1)
-            std::cout << "Wait for \033[31m" << remaining_time << "\033[0m seconds." << std::endl;
-
-        Menu::setTerminal();
+        this->displayMenu();
 
         if (mode == 1 && !timeout_cancelled)
         {
@@ -215,14 +226,14 @@ int Menu::run()
                 switch (c)
                 {
                 case 65: // up arrow
-                    pos--;
-                    if (pos < 0)
-                        pos = 0;
+                    this->current_option--;
+                    if (this->current_option < 0)
+                        this->current_option = 0;
                     break;
                 case 66: // down arrow
-                    pos++;
-                    if (pos > (int)options.size() - 1)
-                        pos = (int)options.size() - 1;
+                    this->current_option++;
+                    if (this->current_option > (int)options.size() - 1)
+                        this->current_option = (int)options.size() - 1;
                     break;
                 }
             }
@@ -232,9 +243,10 @@ int Menu::run()
             break;
         case '\r': // enter
             // is_running = false;
-            if (pos >= 0 && pos < (int)this->options.size())
+            if (this->current_option >= 0 && this->current_option < (int)this->options.size())
             {
-                is_running = this->callbacks[pos](pos, this); // call the callback function
+                is_running = this->callbacks[this->current_option](this->current_option, this); // call the callback function
+                
             }
             break;
         case 'q': // quit
@@ -242,22 +254,22 @@ int Menu::run()
                 break; // if quit key is not set, ignore
             if (mode == 0)
             {
-                pos = -1; // set pos to -1 to indicate quit
+                this->current_option = -1; // set pos to -1 to indicate quit
                 is_running = false;
             }
             else
             {
-                if (pos >= 0 && pos < (int)this->options.size())
-                    this->options_args[pos] += c; // add character to the selected option
+                if (this->current_option >= 0 && this->current_option < (int)this->options.size())
+                    this->options_args[this->current_option] += c; // add character to the selected option
             }
             break;
         case 127: // backspace
-            if (pos >= 0 && pos < (int)this->options.size() && this->options_args[pos].length() > 0)
-                this->options_args[pos].pop_back(); // remove last character from the selected option
+            if (this->current_option >= 0 && this->current_option < (int)this->options.size() && this->options_args[this->current_option].length() > 0)
+                this->options_args[this->current_option].pop_back(); // remove last character from the selected option
             break;
         default:
-            if (pos >= 0 && pos < (int)this->options.size() && c != -1)
-                this->options_args[pos] += c; // add character to the selected option
+            if (this->current_option >= 0 && this->current_option < (int)this->options.size() && c != -1)
+                this->options_args[this->current_option] += c; // add character to the selected option
             break;
         }
 
@@ -268,5 +280,5 @@ int Menu::run()
     std::cout << "\033[?25h"; // show cursor
     Menu::clear();
 
-    return pos < 0 ? pos : pos + 1; // return the selected option index
+    return this->current_option < 0 ? this->current_option : this->current_option + 1; // return the selected option index
 }
