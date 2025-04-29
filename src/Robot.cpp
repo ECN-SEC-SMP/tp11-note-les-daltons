@@ -8,19 +8,19 @@ Robot::Robot(Color c, int x, int y)
  : color(c), position(std::make_pair(x, y)) {}
 
 Color Robot::getColor() {
-    return color;
+    return this->color;
 }
 
 std::pair<int, int> Robot::getPosition() {
-    return position;
+    return this->position;
 }
 
 int Robot::getX() {
-    return position.first;
+    return this->position.first;
 }
 
 int Robot::getY() {
-    return position.second;
+    return this->position.second;
 }
 
 void Robot::move(int x, int y) {
