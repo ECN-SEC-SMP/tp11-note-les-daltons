@@ -4,7 +4,8 @@ enum Color{
     RED,
     GREEN,
     BLUE,
-    YELLOW
+    YELLOW,
+    RAINBOW
 };
 
 enum Direction{
