@@ -36,6 +36,11 @@ private:
     typedef std::function<bool(int, Menu *)> MenuCallback_t;
     /// @brief Callback function for the selected option
     std::vector<MenuCallback_t> callbacks;
+    /// @brief Current position of the selected option
+    int current_option = -1;
+    /// @brief Remaining time in seconds
+    /// @note Used only in mode 1
+    int remaining_time = 0;
 
 private:
     /**
@@ -104,6 +109,13 @@ public:
      * @return Menu*
      */
     Menu *setTimeout(int timeout);
+    /**
+     * @brief Set the title of the menu
+     *
+     * @param title (IN) Title of the menu
+     * @return Menu*
+     */
+    Menu *setTitle(const std::string &title);
     /**
      * @brief Enable/Disable the reset of the timeout on key press
      *
@@ -174,4 +186,8 @@ public:
      * @param enable (IN) Enable or disable non-blocking mode
      */
     static void set_nonblocking(bool enable);
+    /**
+     * @brief Display the menu
+     */
+    void displayMenu();
 };
