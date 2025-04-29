@@ -23,7 +23,7 @@ file(GLOB_RECURSE HEADER_FILES ${INCLUDE_DIR}/*.h ${INCLUDE_DIR}/*.hpp)
 file(GLOB_RECURSE SOURCE_FILES ${SOURCE_DIR}/*.cpp ${SOURCE_DIR}/*.c)
 
 # Add the executable
-add_executable(${PROJECT_NAME}${EXECUTABLE_EXTENTION} ${SOURCE_FILES})
+add_executable(${PROJECT_NAME}${EXECUTABLE_EXTENTION} ${SOURCE_FILES} ${HEADER_FILES})
 
 # Add the include directories
 target_include_directories(${PROJECT_NAME}${EXECUTABLE_EXTENTION} PUBLIC ${INCLUDE_DIR})
