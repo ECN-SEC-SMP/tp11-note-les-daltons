@@ -1,29 +1,33 @@
 #include "Robot.h"
 
-
 Robot::Robot(Color c, std::pair<int, int> p)
- : color(c), position(p) {}
+    : color(c), position(p) {}
 
 Robot::Robot(Color c, int x, int y)
- : color(c), position(std::make_pair(x, y)) {}
+    : color(c), position(std::make_pair(x, y)) {}
 
-Color Robot::getColor() {
+Color Robot::getColor()
+{
     return this->color;
 }
 
-std::pair<int, int> Robot::getPosition() {
+std::pair<int, int> Robot::getPosition()
+{
     return this->position;
 }
 
-int Robot::getX() {
+int Robot::getX()
+{
     return this->position.first;
 }
 
-int Robot::getY() {
+int Robot::getY()
+{
     return this->position.second;
 }
 
-void Robot::move(int x, int y) {
+void Robot::move(int x, int y)
+{
     position.first += x;
     position.second += y;
 }

@@ -1,6 +1,7 @@
 #pragma once
 
-enum Color{
+enum Color
+{
     RED,
     GREEN,
     BLUE,
@@ -8,14 +9,16 @@ enum Color{
     RAINBOW
 };
 
-enum Direction{
+enum Direction
+{
     UP,
     DOWN,
     LEFT,
     RIGHT
 };
 
-enum Shape{
+enum Shape
+{
     CIRCLE,
     SQUARE,
     TRIANGLE,
