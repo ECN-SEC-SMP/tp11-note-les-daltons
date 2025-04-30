@@ -2,6 +2,7 @@
 #define GAME_MANAGER_H
 
 #include <vector>
+#include <string>
 
 #include "typedef.h"
 #include "Tile.h"
@@ -27,7 +28,7 @@ public:
     /* Methods */
     void addPlayer(Player* player);
     void removePlayer(Player* player);
-    void displayBoard();
+    std::string displayBoard();
     void setupRound();
     void processPredictionsInputs();
     void sortPlayersByPredictions();
