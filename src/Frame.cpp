@@ -24,21 +24,5 @@ bool *Frame::getWalls()
 
 bool Frame::canMove(Direction d)
 {
-    if (d == UP)
-    {
-        return !this->walls[0];
-    }
-    else if (d == DOWN)
-    {
-        return !this->walls[1];
-    }
-    else if (d == LEFT)
-    {
-        return !this->walls[2];
-    }
-    else if (d == RIGHT)
-    {
-        return !this->walls[3];
-    }
-    return false;
+    return this->walls[d];
 }
