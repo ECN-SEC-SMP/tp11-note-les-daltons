@@ -1,9 +1,8 @@
-#pragma once 
+#pragma once
 
 #include <string>
 
 #include "typedef.h"
-
 
 class Tile
 {
