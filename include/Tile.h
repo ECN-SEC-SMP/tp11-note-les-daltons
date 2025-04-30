@@ -9,18 +9,7 @@ class Tile
         Color color;
         Shape shape;
     public:
-        Tile(Color c, Shape s);
-        Color getColor();
-        Shape getShape();
+        Tile(Color color, Shape shape) : color(color), shape(shape) {}
+        Color getColor() const { return color; }
+        Shape getShape() const { return shape; }
 };
-
-Tile::Tile(Color c, Shape s)
- : color(c), shape(s) {}
-
-Color Tile::getColor(){
-    return this->color;
-}
-
-Shape Tile::getShape(){
-    return this->shape;
-}
