@@ -8,9 +8,11 @@ class QuarterBoard
         int id;
         Frame frames[8][8];
     public:
-        QuarterBoard();
+        QuarterBoard(int id);
         QuarterBoard(Frame f[8][8], int id);
         int getID();
-        Frame getFrame(int x, int y);
+        Frame getFrame(int x, int y) const;
         void getFrames(Frame f[8][8]);
+        QuarterBoard ApplySymmetry() const;
 };
+
