@@ -55,10 +55,10 @@ QuarterBoard QuarterBoard::ApplySymmetry() const
             int j2 = 7 - j;
             Frame frame_tmp = this->frames[i][j2];
             bool walls[4] = {false, false, false, false};
-            walls[0] = frame_tmp.getWalls()[0];
-            walls[1] = frame_tmp.getWalls()[1];
-            walls[2] = frame_tmp.getWalls()[3];
-            walls[3] = frame_tmp.getWalls()[2];
+            walls[UP] = frame_tmp.getWalls()[UP];
+            walls[DOWN] = frame_tmp.getWalls()[DOWN];
+            walls[LEFT] = frame_tmp.getWalls()[RIGHT];
+            walls[RIGHT] = frame_tmp.getWalls()[LEFT];
             tmp[i][j] = Frame(frame_tmp.getTile(), walls);
         }
     }
