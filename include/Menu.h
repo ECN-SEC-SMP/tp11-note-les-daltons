@@ -93,13 +93,13 @@ public:
      *
      * @return (std::vector<std::string>) Options of the menu
      */
-    std::vector<std::string> getOptions() const;
+    std::vector<std::string>& getOptions();
     /**
      * @brief Get the arguments of the options
      *
      * @return (std::vector<std::string>) Arguments of the options
      */
-    std::vector<std::string> getOptionsArgs() const;
+    std::vector<std::string>& getOptionsArgs();
     /**
      * @brief Set the timeout for the menu
      *

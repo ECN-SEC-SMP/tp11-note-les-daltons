@@ -40,12 +40,12 @@ Menu *Menu::setColorSelection(int color)
     return this;
 }
 
-std::vector<std::string> Menu::getOptions() const
+std::vector<std::string>& Menu::getOptions()
 {
     return this->options;
 }
 
-std::vector<std::string> Menu::getOptionsArgs() const
+std::vector<std::string>& Menu::getOptionsArgs()
 {
     return this->options_args;
 }
