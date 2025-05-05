@@ -14,22 +14,22 @@ public:
     Tile(Color color, Shape shape) : color(color), shape(shape) {}
     Color getColor() const { return color; }
     Shape getShape() const { return shape; }
-    static const std::string& getEmojiFromTile(const Tile& tile)
+    static const std::string &getEmojiFromTile(const Tile &tile)
     {
         std::string emoji;
         std::string shape_char;
         switch (tile.shape)
         {
-        case Shape::CIRCLE:
+        case CIRCLE:
             shape_char = "●";
             break;
-        case Shape::SQUARE:
+        case SQUARE:
             shape_char = "◼";
             break;
-        case Shape::TRIANGLE:
+        case TRIANGLE:
             shape_char = "▲";
             break;
-        case Shape::STAR:
+        case STAR:
             shape_char = "🟊";
             break;
         default:
@@ -38,20 +38,20 @@ public:
 
         switch (tile.color)
         {
-        case Color::RED:
+        case RED:
             emoji = "\033[31m" + shape_char + "\033[0m"; // Red
             break;
-        case Color::GREEN:
+        case GREEN:
             emoji = "\033[32m" + shape_char + "\033[0m"; // Green
             break;
-        case Color::BLUE:
+        case BLUE:
             emoji = "\033[34m" + shape_char + "\033[0m"; // Blue
             break;
-        case Color::YELLOW:
+        case YELLOW:
             emoji = "\033[33m" + shape_char + "\033[0m"; // Yellow
             break;
-        case Color::RAINBOW:
-            emoji = "🌈"; 
+        case RAINBOW:
+            emoji = "🌈";
             break;
         default:
             break;

@@ -3,11 +3,30 @@
 
 #include "Board.h"
 
+std::vector<Tile> TILES = {
+    Tile(RED, CIRCLE),
+    Tile(RED, SQUARE),
+    Tile(RED, TRIANGLE),
+    Tile(RED, STAR),
+    Tile(GREEN, CIRCLE),
+    Tile(GREEN, SQUARE),
+    Tile(GREEN, TRIANGLE),
+    Tile(GREEN, STAR),
+    Tile(BLUE, CIRCLE),
+    Tile(BLUE, SQUARE),
+    Tile(BLUE, TRIANGLE),
+    Tile(BLUE, STAR),
+    Tile(YELLOW, CIRCLE),
+    Tile(YELLOW, SQUARE),
+    Tile(YELLOW, TRIANGLE),
+    Tile(YELLOW, STAR)};
+
 /* Constructors */
 
 Board::Board()
 : quarterBoards{{QuarterBoard(0), QuarterBoard(1)}, {QuarterBoard(2), QuarterBoard(3)}}
 {
+   
     this->quarterBoards[0][0] = this->generateQuarterBoard(true, true);
     this->quarterBoards[0][1] = this->generateQuarterBoard(true, false);
     this->quarterBoards[1][0] = this->generateQuarterBoard(false, true);
@@ -28,7 +47,50 @@ Frame Board::getFrame(int x, int y)
 
 QuarterBoard Board::generateQuarterBoard(bool top, bool left)
 {
+    Frame frames[8][8];
+    // Génerer les bordures 
+    for (int i = 0; i<8 ; i++)
+    {
+        for(int j = 0; j<8 ; j++)
+        { 
+            // Contours
+            frames[i][j].setWall(top && j==0, UP);
+            frames[i][j].setWall(!top && j==7, DOWN);
+            frames[i][j].setWall(!left && i==7, RIGHT);
+            frames[i][j].setWall(left && i==0, LEFT);
+            
+            // Centre
+            frames[i][j].setWall(top && left && i==7 && j==7, UP);
+            frames[i][j].setWall(top && left && i==6 && j==7, DOWN);
+            frames[i][j].setWall(top && left && i==7 && j==7, LEFT);
+            frames[i][j].setWall(top && left && i==7 && j==6, RIGHT);
 
+
+            frames[i][j].setWall(!top && left && i==0 && j==7, LEFT);
+            frames[i][j].setWall(!top && left && i==0 && j==6, RIGHT);
+            frames[i][j].setWall(!top && left && i==0 && j==7, DOWN);
+            frames[i][j].setWall(!top && left && i==1 && j==7, UP);
+
+            frames[i][j].setWall(!top && !left && i==0 && j==0, DOWN);
+            frames[i][j].setWall(!top && !left && i==0 && j==1, UP);
+            frames[i][j].setWall(!top && !left && i==0 && j==0, RIGHT);
+            frames[i][j].setWall(!top && !left && i==1 && j==0, LEFT);
+
+
+            frames[i][j].setWall(top && !left && i==7 && j==0, UP);
+            frames[i][j].setWall(top && !left && i==6 && j==0, DOWN);
+            frames[i][j].setWall(top && !left && i==7 && j==0, RIGHT);
+            frames[i][j].setWall(top && !left && i==7 && j==1, LEFT);
+
+
+
+        } 
+    }
+
+    // Générer les murs intérieurs 
+
+
+   
 }
 
 void Board::generate()
