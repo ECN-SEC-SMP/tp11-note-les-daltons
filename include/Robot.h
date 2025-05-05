@@ -2,6 +2,7 @@
 
 #include <utility>
 #include "typedef.h"
+#include "Frame.h"
 
 class Robot
 {
@@ -17,4 +18,5 @@ public:
     int getX();
     int getY();
     void move(int x, int y);
+    void move(Direction d);
 };
