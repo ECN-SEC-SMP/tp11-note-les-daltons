@@ -101,8 +101,6 @@ std::string GameManager::displayBoard()
             else if (frame.getTile() != nullptr)
             {
                 /* Tile not empty */
-                Color frame_tile_color = frame.getTile()->getColor();
-                Shape frame_tile_shape = frame.getTile()->getShape();
                 temp_tiles += frame.getTile()->getEmojiFromTile(*frame.getTile()) + " ";
             }
             else
