@@ -8,6 +8,7 @@
 #include "Tile.h"
 #include "Board.h"
 #include "Player.h"
+#include "Robot.h"
 
 class GameManager
 {
@@ -15,6 +16,7 @@ private:
     Tile* goal_tile;
     Board board;
     std::vector<Player*> players;
+    std::vector<Robot*> robots;
 
 public:
     /* Constructors */
@@ -24,6 +26,8 @@ public:
     Tile* getGoalTile();
     std::vector<Player*> getPlayers();
     Player* getPlayer(int index);
+    Robot* getRobot(Color color);
+    Board* getBoard() { return &this->board; }
 
     /* Methods */
     void addPlayer(Player* player);

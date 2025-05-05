@@ -2,6 +2,7 @@
 #include <vector>
 
 #include "Board.h"
+#include "QuarterBoardHelper.h"
 
 /* Constructors */
 
@@ -24,6 +25,12 @@ Frame Board::getFrame(int x, int y)
 
 void Board::generate()
 {
+    /* Generate the quarterboards */
+    this->quarterBoards[0][0] = Quarter1;
+    this->quarterBoards[0][1] = Quarter2;
+    this->quarterBoards[1][0] = Quarter3;
+    this->quarterBoards[1][1] = Quarter4;
+
     /* Random shuffle the quarterboards */
     std::vector<QuarterBoard> quarterboards = {this->quarterBoards[0][0],
                                                this->quarterBoards[0][1],

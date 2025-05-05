@@ -46,12 +46,17 @@ std::string GameManager::displayBoard()
 {
     /* TODO: prévoir les 4 tiles éteintes au centre du plateau */
 
-    std::string output = "";
-    std::string temp_seperator = "+----+----+----+----+----+----+----+----+\n";
+    int BOARD_SIZE = 16;
+    std::string disabled_tile = "00 ";
+
+    std::string output = "\n";
+    std::string temp_seperator = "";
     std::string temp_tiles = "";
-    for (int x = 0; x < 16; x++)
+    for (int y = 0; y < BOARD_SIZE; y++)
     {
-        for (int y = 0; y < 16; y++)
+        temp_seperator = "";
+        temp_tiles = "";
+        for (int x = 0; x < BOARD_SIZE; x++)
         {
             Frame frame = this->board.getFrame(x, y);
             /* Top wall */
@@ -75,30 +80,79 @@ std::string GameManager::displayBoard()
             }
 
             /* Tile content */
-            if (frame.getTile() != nullptr)
+
+            /* Disabled tiles in the middle of the board */
+            if (x == 7 && y == 7)
+            {
+                temp_tiles += disabled_tile;
+            }
+            else if (x == 8 && y == 8)
+            {
+                temp_tiles += disabled_tile;
+            }
+            else if (x == 7 && y == 8)
+            {
+                temp_tiles += disabled_tile;
+            }
+            else if (x == 8 && y == 7)
+            {
+                temp_tiles += disabled_tile;
+            }
+            else if (frame.getTile() != nullptr)
             {
                 /* Tile not empty */
                 Color frame_tile_color = frame.getTile()->getColor();
                 Shape frame_tile_shape = frame.getTile()->getShape();
-                temp_tiles += "X";
+                temp_tiles += frame.getTile()->getEmojiFromTile(*frame.getTile()) + " ";
             }
             else
             {
                 /* Tile empty */
-                temp_tiles += " ";
+                temp_tiles += "   ";
             }
 
-            /* Check if it's the last tile of the row */
-            if (y == 15)
+            /* Last column */
+            if (x == BOARD_SIZE - 1)
             {
-                temp_tiles += "|";
+                if (frame.getWalls()[RIGHT])
+                {
+                    temp_tiles += "|";
+                }
+                else
+                {
+                    temp_tiles += " ";
+                }
+                temp_seperator += "+";
+            }
+
+            /* Last frame (bottom right) */
+            if (x == BOARD_SIZE - 1 && y == BOARD_SIZE - 1)
+            {
             }
         }
         output += temp_seperator + "\n";
         output += temp_tiles + "\n";
     }
-    /* Bottom wall */
-    output += "+----+----+----+----+----+----+----+----+";
+
+    /* Last row */
+    temp_seperator = "";
+    for (int x = 0; x < BOARD_SIZE; x++)
+    {
+        Frame frame = this->board.getFrame(x, BOARD_SIZE - 1);
+        if (frame.getWalls()[DOWN])
+        {
+            temp_seperator += "+----";
+        }
+        else
+        {
+            temp_seperator += "+    ";
+        }
+    }
+
+    /* Bottom right corner */
+    temp_seperator += "+";
+
+    output += temp_seperator + "\n\n";
 
     return output;
 }
