@@ -26,8 +26,8 @@ int Robot::getY()
     return this->position.second;
 }
 
-void Robot::move(int x, int y)
+void Robot::move(int dx, int dy)
 {
-    position.first += x;
-    position.second += y;
+    position.first += dx;
+    position.second += dy;
 }
