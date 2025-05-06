@@ -14,23 +14,23 @@ public:
     Tile(Color color, Shape shape) : color(color), shape(shape) {}
     Color getColor() const { return color; }
     Shape getShape() const { return shape; }
-    static const std::string &getEmojiFromTile(const Tile &tile)
+    static const std::string getEmojiFromTile(const Tile& tile)
     {
-        std::string emoji;
-        std::string shape_char;
+        std::string emoji = "";
+        std::string shape_char = "";
         switch (tile.shape)
         {
-        case CIRCLE:
-            shape_char = "●";
+        case Shape::CIRCLE:
+            shape_char = "● ";
             break;
-        case SQUARE:
-            shape_char = "◼";
+        case Shape::SQUARE:
+            shape_char = "■ ";
             break;
-        case TRIANGLE:
-            shape_char = "▲";
+        case Shape::TRIANGLE:
+            shape_char = "▲ ";
             break;
-        case STAR:
-            shape_char = "🟊";
+        case Shape::STAR:
+            shape_char = "🟊 ";
             break;
         default:
             break;
@@ -54,6 +54,7 @@ public:
             emoji = "🌈";
             break;
         default:
+            emoji = "  "; // Empty tile
             break;
         }
         return emoji;
