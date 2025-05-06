@@ -21,16 +21,16 @@ public:
         switch (tile.shape)
         {
         case Shape::CIRCLE:
-            shape_char = "●";
+            shape_char = "● ";
             break;
         case Shape::SQUARE:
-            shape_char = "◼";
+            shape_char = "■ ";
             break;
         case Shape::TRIANGLE:
-            shape_char = "▲";
+            shape_char = "▲ ";
             break;
         case Shape::STAR:
-            shape_char = "🟊";
+            shape_char = "🟊 ";
             break;
         default:
             break;

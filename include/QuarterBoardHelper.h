@@ -13,7 +13,7 @@ Frame framesQuarter1[8][8] = {
     {Frame(nullptr, (bool[4]){false, false, false, true}), Frame(new Tile(Color::RED, Shape::CIRCLE), (bool[4]){false, true, true, false}), Frame(), Frame(), Frame(), Frame(), Frame(nullptr, (bool[4]){false, false, false, true}), Frame()},
     {Frame(), Frame(nullptr, (bool[4]){true, false, false, false}), Frame(), Frame(), Frame(nullptr, (bool[4]){false, true, false, false}), Frame(), Frame(), Frame()},
     {Frame(nullptr, (bool[4]){false, true, false, false}), Frame(), Frame(), Frame(), Frame(new Tile(Color::BLUE, Shape::SQUARE), (bool[4]){true, false, false, true}), Frame(nullptr, (bool[4]){false, false, true, false}), Frame(), Frame()},
-    {Frame(nullptr, (bool[4]){true, false, false, false}), Frame(), Frame(), Frame(), Frame(), Frame(), Frame(), Frame()}};
+    {Frame(nullptr, (bool[4]){true, false, false, false}), Frame(), Frame(), Frame(), Frame(), Frame(), Frame(), Frame(nullptr, (bool[4]){true, true, true, true})}};
 
 const QuarterBoard Quarter1 = QuarterBoard(framesQuarter1, true);
 
