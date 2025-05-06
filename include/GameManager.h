@@ -2,6 +2,7 @@
 #define GAME_MANAGER_H
 
 #include <vector>
+#include <string>
 
 #include "typedef.h"
 #include "Tile.h"
@@ -15,7 +16,7 @@ private:
     Tile* goal_tile;
     Board board;
     std::vector<Player*> players;
-    std::vector<Robot> robots;
+    std::vector<Robot*> robots;
 
 public:
     /* Constructors */
@@ -25,6 +26,8 @@ public:
     Tile* getGoalTile();
     std::vector<Player*> getPlayers();
     Player* getPlayer(int index);
+    Robot* getRobot(Color color);
+    Board* getBoard() { return &this->board; }
 
     /* Methods */
     /**
