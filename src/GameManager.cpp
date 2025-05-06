@@ -65,7 +65,11 @@ void GameManager::removePlayer(Player *player)
 
 std::string GameManager::displayBoard()
 {
-    /* TODO: prévoir les 4 tiles éteintes au centre du plateau */
+
+    this->robots.push_back(new Robot(Color::RED, 1, 3));
+    this->robots.push_back(new Robot(Color::GREEN, 0, 13));
+    this->robots.push_back(new Robot(Color::BLUE, 10, 2));
+    this->robots.push_back(new Robot(Color::YELLOW, 5, 3));
 
     int BOARD_SIZE = 16;
 
@@ -80,6 +84,8 @@ std::string GameManager::displayBoard()
         for (int x = 0; x < BOARD_SIZE; x++)
         {
             Frame frame = this->board.getFrame(x, y);
+            bool frame_is_tile = frame.getTile() != nullptr;
+            Robot *robot_on_frame = getRobotOnFrame(x, y);
 
             /* Top left corner of the frame --------------------------------- */
 
@@ -168,19 +174,19 @@ std::string GameManager::displayBoard()
             }
             else if (frame.getWalls()[LEFT])
             {
-                temp_tiles += VERTICAL_WALL " ";
+                temp_tiles += VERTICAL_WALL;
             }
             else
             {
-                temp_tiles += VERTICAL_GRID " ";
+                temp_tiles += VERTICAL_GRID;
             }
 
             /* Tile content ------------------------------------------------- */
-
+            
             /* Disabled tiles in the middle of the board */
             if (x == 7 && y == 7)
             {
-                temp_tiles += DISABLED DISABLED DISABLED;
+                temp_tiles += DISABLED DISABLED DISABLED DISABLED;
             }
             else if (x == 8 && y == 8)
             {
@@ -188,21 +194,36 @@ std::string GameManager::displayBoard()
             }
             else if (x == 7 && y == 8)
             {
-                temp_tiles += DISABLED DISABLED DISABLED;
+                temp_tiles += DISABLED DISABLED DISABLED DISABLED;
             }
             else if (x == 8 && y == 7)
             {
                 temp_tiles += DISABLED DISABLED DISABLED " ";
             }
-            else if (frame.getTile() != nullptr)
+            else if (frame_is_tile || robot_on_frame)
             {
-                /* Tile not empty */
-                temp_tiles += Tile::getEmojiFromTile(*frame.getTile()) + " ";
+                /* Robot on the frame, and frame is a tile */
+                if (frame_is_tile && robot_on_frame)
+                {
+                    temp_tiles += Tile::getEmojiFromTile(*frame.getTile()) + robot_on_frame->getEmoji();
+                }
+                
+                /* Robot on the frame */
+                else if (robot_on_frame)
+                {
+                    temp_tiles += " " + robot_on_frame->getEmoji() + " ";
+                }
+
+                /* Frame is a tile */
+                else if (frame_is_tile)
+                {
+                    temp_tiles += " " + Tile::getEmojiFromTile(*frame.getTile()) + " ";
+                }
             }
             else
             {
                 /* Tile empty */
-                temp_tiles += "   ";
+                temp_tiles += "    ";
             }
 
             /* Add right wall if it's the last column */
@@ -254,4 +275,16 @@ std::string GameManager::displayBoard()
     output += temp_seperator + "\n";
 
     return output;
+}
+
+Robot *GameManager::getRobotOnFrame(int x, int y)
+{
+    for (Robot *robot : this->robots)
+    {
+        if (robot->getX() == x && robot->getY() == y)
+        {
+            return robot;
+        }
+    }
+    return nullptr;
 }

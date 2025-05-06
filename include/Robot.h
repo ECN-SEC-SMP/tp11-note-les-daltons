@@ -17,4 +17,5 @@ public:
     int getX();
     int getY();
     void move(int x, int y);
+    std::string getEmoji();
 };

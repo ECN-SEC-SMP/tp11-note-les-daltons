@@ -73,6 +73,7 @@ public:
      * @note This function is called at the end of the game.
      */
     void displayResults();
+    Robot* getRobotOnFrame(int x, int y);
 };
 
 #endif /* GAME_MANAGER_H */
