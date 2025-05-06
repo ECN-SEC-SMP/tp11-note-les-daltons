@@ -14,11 +14,11 @@ public:
     Tile(Color color, Shape shape) : color(color), shape(shape) {}
     Color getColor() const { return color; }
     Shape getShape() const { return shape; }
-    static const std::string getEmojiFromTile(const Tile& tile)
+    inline std::string getEmoji() const
     {
         std::string emoji = "";
         std::string shape_char = "";
-        switch (tile.shape)
+        switch (this->shape)
         {
         case Shape::CIRCLE:
             shape_char = "● ";
@@ -36,7 +36,7 @@ public:
             break;
         }
 
-        switch (tile.color)
+        switch (this->color)
         {
         case RED:
             emoji = "\033[31m" + shape_char + "\033[0m"; // Red

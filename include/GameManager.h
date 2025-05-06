@@ -26,7 +26,6 @@ public:
     Tile* getGoalTile();
     std::vector<Player*> getPlayers();
     Player* getPlayer(int index);
-    Robot* getRobot(Color color);
     Board* getBoard() { return &this->board; }
 
     /* Methods */
@@ -73,6 +72,7 @@ public:
      * @note This function is called at the end of the game.
      */
     void displayResults();
+    Robot* getRobotOnFrame(int x, int y);
 };
 
 #endif /* GAME_MANAGER_H */

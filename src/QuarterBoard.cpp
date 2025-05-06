@@ -34,18 +34,7 @@ Frame QuarterBoard::getFrame(int x, int y) const
     return this->frames[x][y];
 }
 
-void QuarterBoard::getFrames(Frame f[8][8])
-{
-    for (int i = 0; i < 8; i++)
-    {
-        for (int j = 0; j < 8; j++)
-        {
-            f[i][j] = this->frames[i][j];
-        }
-    }
-}
-
-QuarterBoard QuarterBoard::ApplySymmetry() const
+QuarterBoard QuarterBoard::applySymmetry() const
 {
     Frame tmp[8][8];
     for (int i = 0; i < 8; i++)

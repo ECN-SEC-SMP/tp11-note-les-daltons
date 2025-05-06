@@ -1,26 +1,30 @@
 #include <stdexcept>
 #include <algorithm>
+
+#include "typedef.h"
 #include "GameManager.h"
 
-/* FONT FORMAT */
-#define RESET "\033[0m"
+/* Grid style */
 #define GRID_COLOR "\033[38;5;245m"
-#define WALL_COLOR "\033[37m"
+#define HORIZONTAL_GRID GRID_COLOR "────" ANSI_RESET
+#define VERTICAL_GRID GRID_COLOR "│" ANSI_RESET
 
-#define NODE GRID_COLOR "┼" RESET
-#define NODE_TOP GRID_COLOR "┬" RESET
-#define NODE_BOTTOM GRID_COLOR "┴" RESET
-#define NODE_LEFT GRID_COLOR "├" RESET
-#define NODE_RIGHT GRID_COLOR "┤" RESET
-#define NODE_TOP_LEFT GRID_COLOR "┌" RESET
-#define NODE_TOP_RIGHT GRID_COLOR "┐" RESET
-#define NODE_BOTTOM_LEFT GRID_COLOR "└" RESET
-#define NODE_BOTTOM_RIGHT GRID_COLOR "┘" RESET
+/* Wall style */
+#define WALL_COLOR ANSI_WHITE
+#define HORIZONTAL_WALL WALL_COLOR "════" ANSI_RESET
+#define VERTICAL_WALL WALL_COLOR "║" ANSI_RESET
 
-#define HORIZONTAL_GRID GRID_COLOR "────" RESET
-#define HORIZONTAL_WALL WALL_COLOR "════" RESET
-#define VERTICAL_GRID GRID_COLOR "│" RESET
-#define VERTICAL_WALL WALL_COLOR "║" RESET
+/* Node styles */
+#define NODE GRID_COLOR "┼" ANSI_RESET
+#define NODE_TOP GRID_COLOR "┬" ANSI_RESET
+#define NODE_BOTTOM GRID_COLOR "┴" ANSI_RESET
+#define NODE_LEFT GRID_COLOR "├" ANSI_RESET
+#define NODE_RIGHT GRID_COLOR "┤" ANSI_RESET
+#define NODE_TOP_LEFT GRID_COLOR "┌" ANSI_RESET
+#define NODE_TOP_RIGHT GRID_COLOR "┐" ANSI_RESET
+#define NODE_BOTTOM_LEFT GRID_COLOR "└" ANSI_RESET
+#define NODE_BOTTOM_RIGHT GRID_COLOR "┘" ANSI_RESET
+
 #define DISABLED " " // for disabled frames in the middle of the board
 
 /* Constructors */
@@ -65,8 +69,6 @@ void GameManager::removePlayer(Player *player)
 
 std::string GameManager::displayBoard()
 {
-    /* TODO: prévoir les 4 tiles éteintes au centre du plateau */
-
     int BOARD_SIZE = 16;
 
     std::string output = "\n";
@@ -80,13 +82,15 @@ std::string GameManager::displayBoard()
         for (int x = 0; x < BOARD_SIZE; x++)
         {
             Frame frame = this->board.getFrame(x, y);
+            bool frame_is_tile = frame.getTile() != nullptr;
+            Robot *robot_on_frame = getRobotOnFrame(x, y);
 
             /* Top left corner of the frame --------------------------------- */
 
             /* Goal tile displayed in the center of the board */
             if (x == 8 && y == 8)
             {
-                temp_seperator += "o"; // Tile::getEmojiFromTile(*this->goal_tile);
+                temp_seperator += this->goal_tile->getEmoji();
             }
             /* Disabled frames in the middle */
             else if (x == 8 && y == 7)
@@ -168,19 +172,19 @@ std::string GameManager::displayBoard()
             }
             else if (frame.getWalls()[LEFT])
             {
-                temp_tiles += VERTICAL_WALL " ";
+                temp_tiles += VERTICAL_WALL;
             }
             else
             {
-                temp_tiles += VERTICAL_GRID " ";
+                temp_tiles += VERTICAL_GRID;
             }
 
             /* Tile content ------------------------------------------------- */
-
+            
             /* Disabled tiles in the middle of the board */
             if (x == 7 && y == 7)
             {
-                temp_tiles += DISABLED DISABLED DISABLED;
+                temp_tiles += DISABLED DISABLED DISABLED DISABLED;
             }
             else if (x == 8 && y == 8)
             {
@@ -188,21 +192,36 @@ std::string GameManager::displayBoard()
             }
             else if (x == 7 && y == 8)
             {
-                temp_tiles += DISABLED DISABLED DISABLED;
+                temp_tiles += DISABLED DISABLED DISABLED DISABLED;
             }
             else if (x == 8 && y == 7)
             {
                 temp_tiles += DISABLED DISABLED DISABLED " ";
             }
-            else if (frame.getTile() != nullptr)
+            else if (frame_is_tile || robot_on_frame)
             {
-                /* Tile not empty */
-                temp_tiles += Tile::getEmojiFromTile(*frame.getTile()) + " ";
+                /* Robot on the frame, and frame is a tile */
+                if (frame_is_tile && robot_on_frame)
+                {
+                    temp_tiles += frame.getTile()->getEmoji() + robot_on_frame->getEmoji();
+                }
+                
+                /* Robot on the frame */
+                else if (robot_on_frame)
+                {
+                    temp_tiles += " " + robot_on_frame->getEmoji() + " ";
+                }
+
+                /* Frame is a tile */
+                else if (frame_is_tile)
+                {
+                    temp_tiles += " " + frame.getTile()->getEmoji() + " ";
+                }
             }
             else
             {
                 /* Tile empty */
-                temp_tiles += "   ";
+                temp_tiles += "    ";
             }
 
             /* Add right wall if it's the last column */
@@ -254,4 +273,16 @@ std::string GameManager::displayBoard()
     output += temp_seperator + "\n";
 
     return output;
+}
+
+Robot *GameManager::getRobotOnFrame(int x, int y)
+{
+    for (Robot *robot : this->robots)
+    {
+        if (robot->getX() == x && robot->getY() == y)
+        {
+            return robot;
+        }
+    }
+    return nullptr;
 }
