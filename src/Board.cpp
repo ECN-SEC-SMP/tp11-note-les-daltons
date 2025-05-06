@@ -51,7 +51,7 @@ void Board::generate()
     //     {
     //         if (rand() % 2 == 0)
     //         {
-    //             this->quarterBoards[x][y] = this->quarterBoards[x][y].ApplySymmetry();
+    //             this->quarterBoards[x][y] = this->quarterBoards[x][y].applySymmetry();
     //         }
     //     }
     // }
