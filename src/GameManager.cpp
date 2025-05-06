@@ -1,26 +1,30 @@
 #include <stdexcept>
 #include <algorithm>
+
+#include "typedef.h"
 #include "GameManager.h"
 
-/* FONT FORMAT */
-#define RESET "\033[0m"
+/* Grid style */
 #define GRID_COLOR "\033[38;5;245m"
-#define WALL_COLOR "\033[37m"
+#define HORIZONTAL_GRID GRID_COLOR "────" ANSI_RESET
+#define VERTICAL_GRID GRID_COLOR "│" ANSI_RESET
 
-#define NODE GRID_COLOR "┼" RESET
-#define NODE_TOP GRID_COLOR "┬" RESET
-#define NODE_BOTTOM GRID_COLOR "┴" RESET
-#define NODE_LEFT GRID_COLOR "├" RESET
-#define NODE_RIGHT GRID_COLOR "┤" RESET
-#define NODE_TOP_LEFT GRID_COLOR "┌" RESET
-#define NODE_TOP_RIGHT GRID_COLOR "┐" RESET
-#define NODE_BOTTOM_LEFT GRID_COLOR "└" RESET
-#define NODE_BOTTOM_RIGHT GRID_COLOR "┘" RESET
+/* Wall style */
+#define WALL_COLOR ANSI_WHITE
+#define HORIZONTAL_WALL WALL_COLOR "════" ANSI_RESET
+#define VERTICAL_WALL WALL_COLOR "║" ANSI_RESET
 
-#define HORIZONTAL_GRID GRID_COLOR "────" RESET
-#define HORIZONTAL_WALL WALL_COLOR "════" RESET
-#define VERTICAL_GRID GRID_COLOR "│" RESET
-#define VERTICAL_WALL WALL_COLOR "║" RESET
+/* Node styles */
+#define NODE GRID_COLOR "┼" ANSI_RESET
+#define NODE_TOP GRID_COLOR "┬" ANSI_RESET
+#define NODE_BOTTOM GRID_COLOR "┴" ANSI_RESET
+#define NODE_LEFT GRID_COLOR "├" ANSI_RESET
+#define NODE_RIGHT GRID_COLOR "┤" ANSI_RESET
+#define NODE_TOP_LEFT GRID_COLOR "┌" ANSI_RESET
+#define NODE_TOP_RIGHT GRID_COLOR "┐" ANSI_RESET
+#define NODE_BOTTOM_LEFT GRID_COLOR "└" ANSI_RESET
+#define NODE_BOTTOM_RIGHT GRID_COLOR "┘" ANSI_RESET
+
 #define DISABLED " " // for disabled frames in the middle of the board
 
 /* Constructors */
