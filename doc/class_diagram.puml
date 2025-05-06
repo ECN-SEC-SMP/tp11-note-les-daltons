@@ -28,6 +28,7 @@ class Tile {
     + Tile(color: Color, shape: Shape)
     + getColor(): Color
     + getShape(): Shape
+    + getEmoji(): std::string
 }
 
 class Frame {
@@ -45,8 +46,8 @@ class QuarterBoard {
     - frames: Frame[8][8]
     + QuarterBoard(id: int, frames: Frame[8][8])
     + getId(): int
-    + getFrames(): Frame[8][8]
     + getFrame(int x, int y): Frame
+    + applySymetry(): QuarterBoard
 }
 
 class Board {
@@ -60,11 +61,13 @@ class Robot {
     - color: Color
     - position: std::pair
     + Robot(color: Color, position: std::pair)
+    + Robot(color: Color, x: int, y: int)
     + getColor(): Color
     + getPosition(): std::pair
     + getX(): int
     + getY(): int
     + move(int x, int y): void
+    getEmoji(): std::string
 }
 
 class Player {
@@ -83,13 +86,18 @@ class GameManager {
     - goal_tile: Tile
     - board: Board
     - players: std::vector<Player*>
+    - robots: std::vector<Robot*>
+
     + GameManager()
+    
     + getGoalTile(): Tile*
     + getPlayers(): std::vector<Player*>
     + getPlayer(int index): Player*
+    + getBoard(): Board*
+    
     + addPlayer(player: Player*): void
     + removePlayer(player: Player*): void
-    + displayBoard(): void
+    + displayBoard(): std::string
     + setupRound(): void
     + processPredictionsInputs(): void
     + sortPlayersByPredictions(): void
