@@ -1,6 +1,8 @@
 #include <iostream>
 #include <algorithm>
 #include <stdexcept>
+#include <chrono>
+#include <thread>
 
 #include "GameManager.h"
 #include "typedef.h"
@@ -32,6 +34,7 @@
 GameManager::GameManager()
     : goal_tile(nullptr), board(Board()), players(std::vector<Player *>())
 {
+    this->board.generate();
 }
 
 /* Getters */
@@ -67,199 +70,6 @@ void GameManager::removePlayer(Player *player)
     this->players.erase(std::find(this->players.begin(), this->players.end(), player));
 }
 
-std::string GameManager::displayBoard()
-{
-    /* TODO: prévoir les 4 tiles éteintes au centre du plateau */
-
-    int BOARD_SIZE = 16;
-
-    std::string output = "\n";
-    std::string temp_seperator = "";
-    std::string temp_tiles = "";
-
-    for (int y = 0; y < BOARD_SIZE; y++)
-    {
-        temp_seperator = "";
-        temp_tiles = "";
-        for (int x = 0; x < BOARD_SIZE; x++)
-        {
-            Frame frame = this->board.getFrame(x, y);
-
-            /* Top left corner of the frame --------------------------------- */
-
-            /* Goal tile displayed in the center of the board */
-            if (x == 8 && y == 8)
-            {
-                temp_seperator += "o"; // Tile::getEmojiFromTile(*this->goal_tile);
-            }
-            /* Disabled frames in the middle */
-            else if (x == 8 && y == 7)
-            {
-                temp_seperator += NODE_BOTTOM;
-            }
-            else if (x == 7 && y == 8)
-            {
-                temp_seperator += NODE_RIGHT;
-            }
-            else if (x == 9 && y == 8)
-            {
-                temp_seperator += NODE_LEFT;
-            }
-            else if (x == 8 && y == 9)
-            {
-                temp_seperator += NODE_TOP;
-            }
-            /* Top left corner */
-            else if (x == 0 && y == 0)
-            {
-                temp_seperator += NODE_TOP_LEFT;
-            }
-            /* Left border */
-            else if (x == 0)
-            {
-                temp_seperator += NODE_LEFT;
-            }
-            /* Top border */
-            else if (y == 0)
-            {
-                temp_seperator += NODE_TOP;
-            }
-            /* Classic node */
-            else
-            {
-                temp_seperator += NODE;
-            }
-
-            /* Top wall ----------------------------------------------------- */
-
-            /* No wall if it's the disabled frames in the middle */
-            if (x == 7 && y == 8)
-            {
-                temp_seperator += " " DISABLED DISABLED " ";
-            }
-            else if (x == 8 && y == 8)
-            {
-                temp_seperator += " " DISABLED DISABLED " ";
-            }
-            /* Classic wall */
-            else if (frame.getWalls()[UP])
-            {
-                temp_seperator += HORIZONTAL_WALL;
-            }
-            /* No wall */
-            else
-            {
-                temp_seperator += HORIZONTAL_GRID;
-            }
-
-            /* Add right node if it's the last column */
-            if (x == BOARD_SIZE - 1)
-            {
-                if (y == 0)
-                {
-                    temp_seperator += NODE_TOP_RIGHT;
-                }
-                else
-                {
-                    temp_seperator += NODE_RIGHT;
-                }
-            }
-
-            /* Left wall ---------------------------------------------------- */
-            if ((x == 8 && y == 7) || (x == 8 && y == 8))
-            {
-                temp_tiles += DISABLED;
-            }
-            else if (frame.getWalls()[LEFT])
-            {
-                temp_tiles += VERTICAL_WALL " ";
-            }
-            else
-            {
-                temp_tiles += VERTICAL_GRID " ";
-            }
-
-            /* Tile content ------------------------------------------------- */
-
-            /* Disabled tiles in the middle of the board */
-            if (x == 7 && y == 7)
-            {
-                temp_tiles += DISABLED DISABLED DISABLED;
-            }
-            else if (x == 8 && y == 8)
-            {
-                temp_tiles += DISABLED DISABLED DISABLED " ";
-            }
-            else if (x == 7 && y == 8)
-            {
-                temp_tiles += DISABLED DISABLED DISABLED;
-            }
-            else if (x == 8 && y == 7)
-            {
-                temp_tiles += DISABLED DISABLED DISABLED " ";
-            }
-            else if (frame.getTile() != nullptr)
-            {
-                /* Tile not empty */
-                temp_tiles += Tile::getEmojiFromTile(*frame.getTile()) + " ";
-            }
-            else
-            {
-                /* Tile empty */
-                temp_tiles += "   ";
-            }
-
-            /* Add right wall if it's the last column */
-            if (x == BOARD_SIZE - 1)
-            {
-                if (frame.getWalls()[RIGHT])
-                {
-                    temp_tiles += VERTICAL_WALL;
-                }
-                else
-                {
-                    temp_tiles += VERTICAL_GRID;
-                }
-            }
-        }
-        output += temp_seperator + "\n";
-        output += temp_tiles + "\n";
-    }
-
-    /* Last row */
-    temp_seperator = "";
-    for (int x = 0; x < BOARD_SIZE; x++)
-    {
-        Frame frame = this->board.getFrame(x, BOARD_SIZE - 1);
-        /* Node */
-        if (x == 0)
-        {
-            temp_seperator += NODE_BOTTOM_LEFT;
-        }
-        else
-        {
-            temp_seperator += NODE_BOTTOM;
-        }
-
-        /* Wall */
-        if (frame.getWalls()[DOWN])
-        {
-            temp_seperator += HORIZONTAL_WALL;
-        }
-        else
-        {
-            temp_seperator += HORIZONTAL_GRID;
-        }
-    }
-
-    /* Bottom right corner */
-    temp_seperator += NODE_BOTTOM_RIGHT;
-
-    output += temp_seperator + "\n";
-
-    return output;
-}
-
 void GameManager::setupRound()
 {
     // Get the goal tile
@@ -281,7 +91,7 @@ void GameManager::setupRound()
         if (y == 7)
             x -= 1;
 
-        this->robots.push_back(Robot(Color(i), std::pair<int, int>(x, y)));
+        this->robots.push_back(new Robot(Color(i), x, y));
     }
 }
 
@@ -297,12 +107,18 @@ void GameManager::processPredictionsInputs()
     std::cout << this->displayBoard() << std::endl;
     std::cout << std::endl;
     std::cout << "When a player find a solution, press [ENTER] to send your predictions..." << std::endl;
-    getchar();
-    Menu menu("Predictions inputs:", 1);
-    menu.setTimeout(10);
-    menu.cancelTimeoutOnKeyPress(false);
-    menu.resetTimeoutOnKeyPress(false);
-    menu.preventQuitOnEnter(true);
+    getchar(); // Wait ENTER pressed
+
+    for (int i = 10; i > 0; i--)
+    {
+        Menu::clear();
+        std::cout << this->displayBoard() << std::endl;
+        std::cout << std::endl;
+        std::cout << "\033[1mYou have \033[31m" << i << "\033[0m\033[1m seconds to find your solution prdiction...\033[0m" << std::endl;
+        std::this_thread::sleep_for(std::chrono::seconds(1));
+    }
+
+    Menu menu("Predictions inputs:\n[Press ENTER to comfirm ALL PREDICTION !!]", 0);
     for (auto &&player : this->players)
     {
         menu.addOption(player->getName());
@@ -327,6 +143,6 @@ void GameManager::processPredictionsInputs()
 
 void GameManager::sortPlayersByPredictions()
 {
-    std::sort(this->players.begin(), this->players.end(), [](Player a, Player b)
-              { return a.getPrediction() < b.getPrediction(); });
+    std::sort(this->players.begin(), this->players.end(), [](Player* a, Player* b)
+              { return a->getPrediction() < b->getPrediction(); });
 }

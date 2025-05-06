@@ -1,3 +1,13 @@
+/**
+ * @file Menu.h
+ * @author Louis Vaillant (louis.vaillant@eleves.ec-nantes.fr)
+ * @brief Menu manager
+ * @version 0.1
+ * @date 2025-04-29
+ * 
+ * @copyright Copyright (c) 2025
+ * 
+ */
 #pragma once
 
 #include <vector>
