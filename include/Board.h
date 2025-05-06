@@ -1,5 +1,7 @@
 #pragma once
-
+#include <algorithm>
+#include <vector>
+#include <iostream>
 #include "QuarterBoard.h"
 
 class Board
