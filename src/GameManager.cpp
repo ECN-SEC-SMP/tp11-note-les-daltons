@@ -90,7 +90,7 @@ std::string GameManager::displayBoard()
             /* Goal tile displayed in the center of the board */
             if (x == 8 && y == 8)
             {
-                temp_seperator += "o"; // Tile::getEmojiFromTile(*this->goal_tile);
+                temp_seperator += this->goal_tile->getEmoji();
             }
             /* Disabled frames in the middle */
             else if (x == 8 && y == 7)
@@ -203,7 +203,7 @@ std::string GameManager::displayBoard()
                 /* Robot on the frame, and frame is a tile */
                 if (frame_is_tile && robot_on_frame)
                 {
-                    temp_tiles += Tile::getEmojiFromTile(*frame.getTile()) + robot_on_frame->getEmoji();
+                    temp_tiles += frame.getTile()->getEmoji() + robot_on_frame->getEmoji();
                 }
                 
                 /* Robot on the frame */
@@ -215,7 +215,7 @@ std::string GameManager::displayBoard()
                 /* Frame is a tile */
                 else if (frame_is_tile)
                 {
-                    temp_tiles += " " + Tile::getEmojiFromTile(*frame.getTile()) + " ";
+                    temp_tiles += " " + frame.getTile()->getEmoji() + " ";
                 }
             }
             else

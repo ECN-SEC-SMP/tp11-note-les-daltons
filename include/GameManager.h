@@ -26,7 +26,6 @@ public:
     Tile* getGoalTile();
     std::vector<Player*> getPlayers();
     Player* getPlayer(int index);
-    Robot* getRobot(Color color);
     Board* getBoard() { return &this->board; }
 
     /* Methods */
