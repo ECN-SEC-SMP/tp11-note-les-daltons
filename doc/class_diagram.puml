@@ -31,10 +31,11 @@ class Tile {
 }
 
 class Frame {
-    - tile: *Tile
+    - tile: Tile*
     - walls: bool[4]
-    + Frame(tile: Tile, walls: bool[4])
-    + getTile(): Tile
+    + Frame()
+    + Frame(tile: Tile*, walls: bool[4])
+    + getTile(): Tile*
     + getWalls(): bool[4]
     + canMove(direction: Direction): bool
 }
@@ -51,9 +52,8 @@ class QuarterBoard {
 class Board {
     - quarters: QuarterBoard[2][2]
     + Board()
-    + generate(): void
     + getFrame(int x, int y): Frame
-    + getQuarter(int x, int y): QuarterBoard
+    + generate(): void
 }
 
 class Robot {
@@ -82,13 +82,13 @@ class Player {
 class GameManager {
     - goal_tile: Tile
     - board: Board
-    - players: std::vector<Player>
+    - players: std::vector<Player*>
     + GameManager()
-    + getGoalTile(): Tile
-    + getPlayers(): std::vector<Player>
-    + addPlayer(player: Player): void
-    + removePlayer(player: Player): void
-    + getPlayer(int index): Player
+    + getGoalTile(): Tile*
+    + getPlayers(): std::vector<Player*>
+    + getPlayer(int index): Player*
+    + addPlayer(player: Player*): void
+    + removePlayer(player: Player*): void
     + displayBoard(): void
     + setupRound(): void
     + processPredictionsInputs(): void
