@@ -65,12 +65,6 @@ void GameManager::removePlayer(Player *player)
 
 std::string GameManager::displayBoard()
 {
-
-    this->robots.push_back(new Robot(Color::RED, 1, 3));
-    this->robots.push_back(new Robot(Color::GREEN, 0, 13));
-    this->robots.push_back(new Robot(Color::BLUE, 10, 2));
-    this->robots.push_back(new Robot(Color::YELLOW, 5, 3));
-
     int BOARD_SIZE = 16;
 
     std::string output = "\n";
