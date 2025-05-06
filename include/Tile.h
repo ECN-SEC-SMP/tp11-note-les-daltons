@@ -38,20 +38,20 @@ public:
 
         switch (this->color)
         {
-        case Color::RED:
-            emoji = ANSI_RED + shape_char + ANSI_RESET; // Red
+        case RED:
+            emoji = "\033[31m" + shape_char + "\033[0m"; // Red
             break;
-        case Color::GREEN:
-            emoji = ANSI_GREEN + shape_char + ANSI_RESET; // Green
+        case GREEN:
+            emoji = "\033[32m" + shape_char + "\033[0m"; // Green
             break;
-        case Color::BLUE:
-            emoji = ANSI_BLUE + shape_char + ANSI_RESET; // Blue
+        case BLUE:
+            emoji = "\033[34m" + shape_char + "\033[0m"; // Blue
             break;
-        case Color::YELLOW:
-            emoji = ANSI_YELLOW + shape_char + ANSI_RESET; // Yellow
+        case YELLOW:
+            emoji = "\033[33m" + shape_char + "\033[0m"; // Yellow
             break;
-        case Color::RAINBOW:
-            emoji = "🌈"; 
+        case RAINBOW:
+            emoji = "🌈";
             break;
         default:
             emoji = "  "; // Empty tile
