@@ -2,6 +2,7 @@
 #include <vector>
 #include <ctime>
 
+#include "Utils.h"
 #include "Board.h"
 #include "QuarterBoardHelper.h"
 
@@ -103,11 +104,11 @@ QuarterBoard Board::generateQuarterBoard(bool top, bool left)
     {
         // Murs colés à la bordures
 
-        int k = 1 + std::rand() % 6;
+        int k = 1 + getRandomNumber(5);
         frames[k - 1][0].setWall(1, RIGHT);
         frames[k][0].setWall(1, LEFT);
 
-        int n = std::rand() % 6 + 1;
+        int n = getRandomNumber(5) + 1;
         frames[0][n - 1].setWall(1, UP);
         frames[0][n].setWall(1, DOWN);
     }
@@ -115,11 +116,11 @@ QuarterBoard Board::generateQuarterBoard(bool top, bool left)
     // Quarter 2
     if (top && !left)
     {
-        int k = 1 + std::rand() % 6;
+        int k = 1 + getRandomNumber(5);
         frames[k - 1][0].setWall(1, LEFT);
         frames[k][0].setWall(1, RIGHT);
 
-        int n = 1 + std::rand() % 6;
+        int n = 1 + getRandomNumber(5);
         frames[7][n - 1].setWall(1, UP);
         frames[7][n].setWall(1, DOWN);
     }
@@ -127,11 +128,11 @@ QuarterBoard Board::generateQuarterBoard(bool top, bool left)
     // Quarter 3
     if (!top && left)
     {
-        int k = 1 + std::rand() % 6;
+        int k = 1 + getRandomNumber(5);
         frames[k - 1][7].setWall(1, RIGHT);
         frames[k][7].setWall(1, LEFT);
 
-        int n = 1 + std::rand() % 6;
+        int n = 1 + getRandomNumber(5);
         frames[0][n - 1].setWall(1, DOWN);
         frames[0][n].setWall(1, UP);
     }
@@ -139,11 +140,11 @@ QuarterBoard Board::generateQuarterBoard(bool top, bool left)
     // Quarter 4
     if (!top && !left)
     {
-        int k = 1 + std::rand() % 6;
+        int k = 1 + getRandomNumber(5);
         frames[k - 1][7].setWall(1, LEFT);
         frames[k][7].setWall(1, RIGHT);
 
-        int n = 1 + std::rand() % 6;
+        int n = 1 + getRandomNumber(5);
         frames[7][n - 1].setWall(1, DOWN);
         frames[7][n].setWall(1, UP);
     }
@@ -167,8 +168,8 @@ QuarterBoard Board::generateQuarterBoard(bool top, bool left)
         int x, y;
         do
         {
-            x = std::rand() % 8;
-            y = std::rand() % 8;
+            x = getRandomNumber(7);
+            y = getRandomNumber(7);
         } while (std::count(used_positions.begin(), used_positions.end(), std::pair<int, int>(x, y))); // Vérifie si la position est déjà utilisée
 
         used_positions.push_back({x, y}); // Marque la position comme utilisée
@@ -184,7 +185,7 @@ QuarterBoard Board::generateQuarterBoard(bool top, bool left)
         used_positions.push_back({x - 1, y + 1});
 
         // orientaion random of angle
-        int orientation_of_angle = std::rand() % 4; // 0: up-left, 1: up-right, 2: down-left, 3: down-right
+        int orientation_of_angle = getRandomNumber(3); // 0: up-left, 1: up-right, 2: down-left, 3: down-right
         if (orientation_of_angle == 0)
         {
             frames[x][y].setWall(1, UP);
@@ -214,6 +215,15 @@ QuarterBoard Board::generateQuarterBoard(bool top, bool left)
             frames[x][y + 1].setWall(1, UP);
 
         }
+        std::cout << x << " " << y << " => " << orientation_of_angle << std::endl;
+    }
+
+    //Todo: remove the cout
+    for (auto &&c : corners)
+    {
+        int x = c.first;
+        int y = c.second;
+        // std::cout << x << " " << y << std::endl;
     }
 
     return QuarterBoard(frames, 0);
@@ -225,4 +235,16 @@ void Board::generate()
     this->quarterBoards[0][1] = this->generateQuarterBoard(false, true);
     this->quarterBoards[1][0] = this->generateQuarterBoard(true, false);
     this->quarterBoards[1][1] = this->generateQuarterBoard(false, false);
+  
+   /* Randomly apply symetry to the quarterboards */
+    for (int x = 0; x < 2; x++)
+    {
+        for (int y = 0; y < 2; y++)
+        {
+            if (rand() % 2 == 0)
+            {
+                this->quarterBoards[x][y] = this->quarterBoards[x][y].applySymmetry();
+            }
+        }
+    }
 }

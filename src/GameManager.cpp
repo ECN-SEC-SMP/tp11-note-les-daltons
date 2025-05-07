@@ -2,8 +2,8 @@
 #include <algorithm>
 #include <iostream>
 
-#include "GameManager.h"
 #include "typedef.h"
+#include "GameManager.h"
 
 /* Grid style */
 #define GRID_COLOR "\033[38;5;245m"
@@ -73,18 +73,6 @@ void GameManager::removePlayer(Player *player)
     this->players.erase(std::find(this->players.begin(), this->players.end(), player));
 }
 
-Robot *GameManager::getRobotOnFrame(int x, int y)
-{
-    for (Robot *robot : this->robots)
-    {
-        if (robot->getX() == x && robot->getY() == y)
-        {
-            return robot;
-        }
-    }
-    return nullptr;
-}
-
 std::string GameManager::displayBoard()
 {
     int BOARD_SIZE = 16;
@@ -108,7 +96,7 @@ std::string GameManager::displayBoard()
             /* Goal tile displayed in the center of the board */
             if (x == 8 && y == 8)
             {
-                temp_seperator += "X";//this->goal_tile->getEmoji();
+                temp_seperator += this->goal_tile->getEmoji();
             }
             /* Disabled frames in the middle */
             else if (x == 8 && y == 7)
@@ -293,6 +281,18 @@ std::string GameManager::displayBoard()
     return output;
 }
 
+Robot *GameManager::getRobotOnFrame(int x, int y)
+{
+    for (Robot *robot : this->robots)
+    {
+        if (robot->getX() == x && robot->getY() == y)
+        {
+            return robot;
+        }
+    }
+    return nullptr;
+}
+
 bool GameManager::processMovement(Robot *robot, Direction direction, int *deplacement, Menu *m, int player_index)
 {
     int robot_X = robot->getX();
@@ -380,19 +380,6 @@ bool GameManager::processMovement(Robot *robot, Direction direction, int *deplac
 
 bool GameManager::playRound(int player_index)
 {
-    ///////////////////////////////
-    this->robots.push_back(new Robot(RED, std::pair<int, int>(random() % 16, random() % 16)));
-    this->robots.push_back(new Robot(BLUE, std::pair<int, int>(random() % 16, random() % 16)));
-    this->robots.push_back(new Robot(GREEN, std::pair<int, int>(random() % 16, random() % 16)));
-    this->robots.push_back(new Robot(YELLOW, std::pair<int, int>(random() % 16, random() % 16)));
-    for (auto &&p : this->players)
-    {
-        p->setPrediction(100);
-    }
-    this->goal_tile = new Tile(RED, TRIANGLE);
-    this->board.generate();
-    ///////////////////////////////
-
     int move_count = 0;
     Menu menu(displayBoard(), 0);
     menu.preventArguments(true);
@@ -480,173 +467,3 @@ bool GameManager::playRound(int player_index)
 
     return this->cur_player_won;
 }
-
-// void GameManager::playRound(int player_index)
-// {
-//     int deplacement = 0;
-
-//     Menu menu(displayBoard(), 1);
-
-//     for (size_t i = 0; i < robots.size(); i++)
-//     {
-//         int robot_X = robots[i]->getX();
-//         int robot_Y = robots[i]->getY();
-
-//         menu.addOption("Robot " + std::to_string(robots[i]->getColor()), [&](int, Menu *m)
-//                        {
-//             m->preventDeplacement(true);
-//             m->preventArguments(true);
-//             m->setColorSelection(31);
-//             m->displayMenu();
-//             // Menu::resetTerminal();
-//             char c = 0;
-//             std::cout << "Press 'ENTER' to unselect." << std::endl;
-//             while (c != '\r')
-//             {
-//                 c = getchar(); 
-//                 if (c == '\r' || c == 127) // enter or backspace
-//                     break;
-//                 if (c == 27) // escape
-//                 {
-//                     c = getchar();
-//                     if (c == 91) // [
-//                     {
-//                         c = getchar();
-//                         switch (c)
-//                         {
-//                         case 65: // up arrow
-//                         {
-//                             bool robotAbove = std::any_of(robots.begin(), robots.end(), [robot_X, robot_Y](Robot *r) {
-//                                 return r->getX() == robot_X && r->getY() == robot_Y - 1;
-//                             });
-//                             bool canMoveUp = board.getFrame(robot_X, robot_Y).canMove(UP);
-//                             int previousRobotY = robot_Y;
-//                             while(canMoveUp && !robotAbove)
-//                             {   
-//                                 robots[i]->move(UP);
-//                                 robotAbove = std::any_of(robots.begin(), robots.end(), [robot_X, robot_Y](Robot *r) {
-//                                     return r->getX() == robot_X && r->getY() == robot_Y - 1;});
-//                                 canMoveUp = board.getFrame(robot_X, robot_Y).canMove(UP);
-//                             }
-//                             if (robot_Y != previousRobotY)
-//                             {
-//                                 deplacement += 1;
-//                             }
-//                             m->setTitle(displayBoard());
-//                             m->displayMenu();
-//                             if(deplacement >= players[player_index]->getPrediction())
-//                             {
-//                                 std::cout << "You have reached your prediction!" << std::endl;
-//                                 m->preventDeplacement(false);
-//                                 m->preventArguments(false);
-//                                 m->setColorSelection(32);
-//                                 return true;
-//                             }
-//                             break;
-//                         }
-//                         case 66: // down arrow
-//                         {
-//                             bool robotBelow = std::any_of(robots.begin(), robots.end(), [robot_X, robot_Y](Robot *r) {
-//                                 return r->getX() == robot_X && r->getY() == robot_Y + 1;});
-//                             bool canMoveDown = board.getFrame(robot_X, robot_Y).canMove(DOWN);
-//                             int previousRobotY = robot_Y;
-//                             while(canMoveDown && !robotBelow)
-//                             {
-//                                 robots[i]->move(DOWN);
-//                                 robotBelow = std::any_of(robots.begin(), robots.end(), [robot_X, robot_Y](Robot *r) {
-//                                     return r->getX() == robot_X && r->getY() == robot_Y + 1;});
-//                                 canMoveDown = board.getFrame(robot_X, robot_Y).canMove(DOWN);
-//                             }
-//                             if (robot_Y != previousRobotY)
-//                             {
-//                                 deplacement += 1;
-//                             }
-//                             m->setTitle(displayBoard());
-//                             m->displayMenu();
-//                             if(deplacement >= players[player_index]->getPrediction())
-//                             {
-//                                 std::cout << "You have reached your prediction!" << std::endl;
-//                                 m->preventDeplacement(false);
-//                                 m->preventArguments(false);
-//                                 m->setColorSelection(32);
-//                                 return true;
-//                             }
-//                             break;
-//                         }
-//                         case 67: // right arrow
-//                         {
-//                             bool robotRight = std::any_of(robots.begin(), robots.end(), [robot_X, robot_Y](Robot *r) {
-//                                 return r->getX() == robot_X + 1 && r->getY() == robot_Y;});
-//                             bool canMoveRight = board.getFrame(robot_X, robot_Y).canMove(RIGHT);
-//                             int previousRobotX = robot_X;
-//                             while(canMoveRight && !robotRight)
-//                             {
-//                                 robots[i]->move(RIGHT);
-//                                 robotRight = std::any_of(robots.begin(), robots.end(), [robot_X, robot_Y](Robot *r) {
-//                                     return r->getX() == robot_X + 1 && r->getY() == robot_Y;});
-//                                 canMoveRight = board.getFrame(robot_X, robot_Y).canMove(RIGHT);
-//                             }
-//                             if (robot_X != previousRobotX)
-//                             {
-//                                 deplacement += 1;
-//                             }
-//                             m->setTitle(displayBoard());
-//                             m->displayMenu();
-//                             if(deplacement >= players[player_index]->getPrediction())
-//                             {
-//                                 std::cout << "You have reached your prediction!" << std::endl;
-//                                 m->preventDeplacement(false);
-//                                 m->preventArguments(false);
-//                                 m->setColorSelection(32);
-//                                 return true;
-//                             }
-//                             break;
-//                         }
-//                         case 68: // left arrow
-//                         {
-//                             bool robotLeft = std::any_of(robots.begin(), robots.end(), [robot_X, robot_Y](Robot *r) {
-//                                 return r->getX() == robot_X - 1 && r->getY() == robot_Y;});
-//                             bool canMoveLeft = board.getFrame(robot_X, robot_Y).canMove(LEFT);
-//                             int previousRobotX = robot_X;
-//                             while(canMoveLeft && !robotLeft)
-//                             {
-//                                 robots[i]->move(LEFT);
-//                                 robotLeft = std::any_of(robots.begin(), robots.end(), [robot_X, robot_Y](Robot *r) {
-//                                     return r->getX() == robot_X - 1 && r->getY() == robot_Y;});
-//                                 canMoveLeft = board.getFrame(robot_X, robot_Y).canMove(LEFT);
-//                             }
-//                             if (robot_X != previousRobotX)
-//                             {
-//                                 deplacement += 1;
-//                             }
-//                             m->setTitle(displayBoard());
-//                             m->displayMenu();
-//                             if (deplacement >= players[player_index]->getPrediction())
-//                             {
-//                                 std::cout << "You have reached your prediction!" << std::endl;
-//                                 m->preventDeplacement(false);
-//                                 m->preventArguments(false);
-//                                 m->setColorSelection(32);
-//                                 return true;
-//                             }
-//                             break;
-//                         }
-//                         }
-//                     }
-//                 }
-//             }
-//             // Menu::setTerminal();
-//             m->preventDeplacement(false);
-//             m->preventArguments(false);
-//             m->setColorSelection(32);
-//             return true; });
-//     }
-//     int result = menu.run();
-
-//     std::cout << "You selected option " << result << std::endl;
-//     std::cout << "Arguments: " << std::endl;
-//     for (const auto &arg : menu.getOptionsArgs())
-//     {
-//         std::cout << arg << std::endl;
-//     }
-// }
