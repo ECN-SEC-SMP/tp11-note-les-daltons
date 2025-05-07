@@ -1,9 +1,12 @@
 #include <stdexcept>
 #include <algorithm>
 #include <iostream>
+#include <chrono>
+#include <thread>
 
 #include "typedef.h"
 #include "GameManager.h"
+#include "Menu.h"
 
 /* Grid style */
 #define GRID_COLOR "\033[38;5;245m"
@@ -29,7 +32,6 @@
 #define DISABLED " " // for disabled frames in the middle of the board
 
 /* Constructors */
-
 GameManager::GameManager()
     : goal_tile(nullptr), board(Board()), players(std::vector<Player *>())
 {
@@ -41,7 +43,6 @@ GameManager::~GameManager()
 }
 
 /* Getters */
-
 Tile *GameManager::getGoalTile()
 {
     return this->goal_tile;
@@ -62,7 +63,6 @@ Player *GameManager::getPlayer(int index)
 }
 
 /* Methods */
-
 void GameManager::addPlayer(Player *player)
 {
     this->players.push_back(player);
@@ -291,6 +291,97 @@ Robot *GameManager::getRobotOnFrame(int x, int y)
         }
     }
     return nullptr;
+}
+
+void GameManager::setupRound()
+{
+    // Get the goal tile
+    int goal_tile_index = rand() % TILES.size();
+    this->goal_tile = &TILES[goal_tile_index];
+
+    // Place randomly robots on the board
+    for (int i = 0; i < 4; i++)
+    {
+        int x = rand() % 16;
+        if (x == 8)
+            x += 1;
+        if (x == 7)
+            x -= 1;
+
+        int y = rand() % 16;
+        if (y == 8)
+            x += 1;
+        if (y == 7)
+            x -= 1;
+
+        this->robots.push_back(new Robot(Color(i), x, y));
+    }
+}
+
+bool is_number(const std::string &s)
+{
+    return !s.empty() && std::find_if(s.begin(),
+                                      s.end(), [](unsigned char c)
+                                      { return !std::isdigit(c); }) == s.end();
+}
+
+void GameManager::processPredictionsInputs()
+{
+    std::cout << this->displayBoard() << std::endl;
+    std::cout << std::endl;
+    std::cout << "When a player find a solution, press [ENTER] to send your predictions..." << std::endl;
+    getchar(); // Wait ENTER pressed
+
+    for (int i = 10; i > 0; i--)
+    {
+        Menu::clear();
+        std::cout << this->displayBoard() << std::endl;
+        std::cout << std::endl;
+        std::cout << "\033[1mYou have \033[31m" << i << "\033[0m\033[1m seconds to find your solution prdiction...\033[0m" << std::endl;
+        std::this_thread::sleep_for(std::chrono::seconds(1));
+    }
+
+    for (auto &&player : this->players)
+    {
+        std::string prediction_str;
+        std::cout << "Prediction for player " << player->getName() << ": " << std::flush;
+        std::cin >> prediction_str;
+        while (!is_number(prediction_str))
+        {
+            std::cout << "Prediction invalid! New prediction: " << std::flush;
+            std::cin >> prediction_str;
+        }
+        player->setPrediction(std::stoi(prediction_str));
+    }
+
+    // Menu menu("Predictions inputs:\n[Press ENTER to comfirm ALL PREDICTION !!]", 0);
+    // for (auto &&player : this->players)
+    // {
+    //     menu.addOption(player->getName());
+    // }
+    // menu.run();
+
+    // int i = 0;
+    // for (auto &&prediction_str : menu.getOptionsArgs())
+    // {
+    //     while (!is_number(prediction_str))
+    //     {
+    //         std::cout << "Prediction for player " << this->players[i]->getName() << " invalid!" << std::endl;
+    //         std::cout << "New prediction: " << std::flush;
+    //         std::cin >> prediction_str;
+    //     }
+
+    //     int prediction = std::stoi(prediction_str);
+    //     this->players[i]->setPrediction(prediction);
+    //     i++;
+    // }
+}
+
+void GameManager::sortPlayersByPredictions()
+{
+    std::sort(this->players.begin(), this->players.end(), [](Player* a, Player* b)
+              { return a->getPrediction() < b->getPrediction(); });
+
 }
 
 bool GameManager::processMovement(Robot *robot, Direction direction, int *deplacement, Menu *m, int player_index)

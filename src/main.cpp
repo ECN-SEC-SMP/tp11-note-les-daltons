@@ -1,4 +1,10 @@
+
+#include <iostream>
+
 #include "GameManager.h"
+
+int main(int argc, char const *argv[])
+{
 
 int main(int argc, char const *argv[])
 {
@@ -15,6 +21,5 @@ int main(int argc, char const *argv[])
     gm.playRound(0);
 
     getchar();
-
     return 0;
 }

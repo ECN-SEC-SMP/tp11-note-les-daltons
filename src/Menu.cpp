@@ -83,6 +83,12 @@ Menu *Menu::preventArguments(bool prevent)
     return this;
 }
 
+Menu *Menu::preventQuitOnEnter(bool prevent)
+{
+    this->prevent_quit_on_enter = prevent;
+    return this;
+}
+
 Menu *Menu::setMode(int mode)
 {
     this->mode = mode;

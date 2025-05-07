@@ -1,3 +1,13 @@
+/**
+ * @file Menu.h
+ * @author Louis Vaillant (louis.vaillant@eleves.ec-nantes.fr)
+ * @brief Menu manager
+ * @version 0.1
+ * @date 2025-04-29
+ * 
+ * @copyright Copyright (c) 2025
+ * 
+ */
 #pragma once
 
 #include <vector>
@@ -29,6 +39,8 @@ private:
     bool prevent_deplacement;
     /// @brief Prevent the argument of the selected option
     bool prevent_argument;
+    /// @brief Prevent quit when enter key is pressed
+    bool prevent_quit_on_enter;
     /// @brief Quit key char
     /// @note 0 to disable the quit key
     char quitKey;
@@ -137,19 +149,26 @@ public:
     /**
      * @brief Prevent the deplacement of the cursor
      *
-     * @param prevent (IN) Prevent the deplacement of the cursor (default: false)
+     * @param prevent (IN) Prevent the deplacement of the cursor (default: true)
      *
      * @return Menu*
      */
-    Menu *preventDeplacement(bool prevent = false);
+    Menu *preventDeplacement(bool prevent = true);
     /**
      * @brief Prevent the argument of the selected option
      *
-     * @param prevent (IN) Prevent the argument of the selected option (default: false)
+     * @param prevent (IN) Prevent the argument of the selected option (default: true)
      *
      * @return Menu*
      */
-    Menu *preventArguments(bool prevent = false);
+    Menu *preventArguments(bool prevent = true);
+    /**
+     * @brief Prevent quit when enter key is pressed
+     * 
+     * @param prevent (IN) Prevent quit when enter key is pressed (default: true)
+     * @return Menu* 
+     */
+    Menu *preventQuitOnEnter(bool prevent = true);
     /**
      * @brief Set the mode of the menu
      *
