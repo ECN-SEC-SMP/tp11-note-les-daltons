@@ -15,7 +15,7 @@ Menu::Menu(std::string title, int mode)
 
 Menu::~Menu() {}
 
-Menu *Menu::addOption(const std::string &option, MenuCallback_t func)
+Menu &Menu::addOption(const std::string &option, MenuCallback_t func)
 {
     this->options.push_back(option);
     this->options_args.push_back("");
@@ -28,13 +28,13 @@ Menu *Menu::addOption(const std::string &option, MenuCallback_t func)
         this->callbacks.push_back([](int, Menu *)
                                   { return false; }); // default callback
     }
-    return this;
+    return *this;
 }
 
-Menu *Menu::setColorSelection(int color)
+Menu &Menu::setColorSelection(int color)
 {
     this->colorSelection = color;
-    return this;
+    return *this;
 }
 
 std::vector<std::string> &Menu::getOptions()
@@ -47,49 +47,49 @@ std::vector<std::string> &Menu::getOptionsArgs()
     return this->options_args;
 }
 
-Menu *Menu::setTimeout(int timeout)
+Menu &Menu::setTimeout(int timeout)
 {
     this->timeout = timeout;
-    return this;
+    return *this;
 }
 
-Menu *Menu::setTitle(const std::string &title)
+Menu &Menu::setTitle(const std::string &title)
 {
     this->title = title;
-    return this;
+    return *this;
 }
 
-Menu *Menu::resetTimeoutOnKeyPress(bool reset)
+Menu &Menu::resetTimeoutOnKeyPress(bool reset)
 {
     this->reset_timeout_on_key_press = reset;
-    return this;
+    return *this;
 }
 
-Menu *Menu::cancelTimeoutOnKeyPress(bool reset)
+Menu &Menu::cancelTimeoutOnKeyPress(bool reset)
 {
     this->cancel_timeout_on_key_press = reset;
-    return this;
+    return *this;
 }
 
-Menu *Menu::preventDeplacement(bool prevent)
+Menu &Menu::preventDeplacement(bool prevent)
 {
     this->prevent_deplacement = prevent;
-    return this;
+    return *this;
 }
 
-Menu *Menu::preventArguments(bool prevent)
+Menu &Menu::preventArguments(bool prevent)
 {
     this->prevent_argument = prevent;
-    return this;
+    return *this;
 }
 
-Menu *Menu::preventQuitOnEnter(bool prevent)
+Menu &Menu::preventQuitOnEnter(bool prevent)
 {
     this->prevent_quit_on_enter = prevent;
-    return this;
+    return *this;
 }
 
-Menu *Menu::setMode(int mode)
+Menu &Menu::setMode(int mode)
 {
     this->mode = mode;
     if (mode == 1)
@@ -99,13 +99,13 @@ Menu *Menu::setMode(int mode)
         this->cancel_timeout_on_key_press = true; // default cancel timeout on key press
         this->setQuitKey(0);
     }
-    return this;
+    return *this;
 }
 
-Menu *Menu::setQuitKey(char key)
+Menu &Menu::setQuitKey(char key)
 {
     this->quitKey = key;
-    return this;
+    return *this;
 }
 
 void Menu::printMenu(int pos)

@@ -79,7 +79,7 @@ public:
      *
      * @return (Menu*) Pointer to the Menu object
      */
-    Menu *addOption(const std::string &option, MenuCallback_t func = nullptr);
+    Menu &addOption(const std::string &option, MenuCallback_t func = nullptr);
     /**
      * @brief Set the Color Selection object
      *
@@ -88,7 +88,7 @@ public:
      *
      * @return (Menu*) Pointer to the Menu object
      */
-    Menu *setColorSelection(int color);
+    Menu &setColorSelection(int color);
 
     /**
      * @brief Executes the main logic of the menu.
@@ -120,14 +120,14 @@ public:
      *
      * @return Menu*
      */
-    Menu *setTimeout(int timeout);
+    Menu &setTimeout(int timeout);
     /**
      * @brief Set the title of the menu
      *
      * @param title (IN) Title of the menu
      * @return Menu*
      */
-    Menu *setTitle(const std::string &title);
+    Menu &setTitle(const std::string &title);
     /**
      * @brief Enable/Disable the reset of the timeout on key press
      *
@@ -136,7 +136,7 @@ public:
      *
      * @return Menu*
      */
-    Menu *resetTimeoutOnKeyPress(bool reset = true);
+    Menu &resetTimeoutOnKeyPress(bool reset = true);
     /**
      * @brief Enable/Disable the cancel of the timeout on key press
      *
@@ -145,7 +145,7 @@ public:
      *
      * @return Menu*
      */
-    Menu *cancelTimeoutOnKeyPress(bool reset = true);
+    Menu &cancelTimeoutOnKeyPress(bool reset = true);
     /**
      * @brief Prevent the deplacement of the cursor
      *
@@ -153,7 +153,7 @@ public:
      *
      * @return Menu*
      */
-    Menu *preventDeplacement(bool prevent = true);
+    Menu &preventDeplacement(bool prevent = true);
     /**
      * @brief Prevent the argument of the selected option
      *
@@ -161,21 +161,21 @@ public:
      *
      * @return Menu*
      */
-    Menu *preventArguments(bool prevent = true);
+    Menu &preventArguments(bool prevent = true);
     /**
      * @brief Prevent quit when enter key is pressed
      *
      * @param prevent (IN) Prevent quit when enter key is pressed (default: true)
      * @return Menu*
      */
-    Menu *preventQuitOnEnter(bool prevent = true);
+    Menu &preventQuitOnEnter(bool prevent = true);
     /**
      * @brief Set the mode of the menu
      *
      * @param mode (IN) Mode of the menu : 0 = 'q to quit', 1 = 'timeout' (default: 0)
      * @return Menu*
      */
-    Menu *setMode(int mode = 0);
+    Menu &setMode(int mode = 0);
     /**
      * @brief Set the quit key char
      *
@@ -184,7 +184,7 @@ public:
      *
      * @return Menu*
      */
-    Menu *setQuitKey(char key = 'q');
+    Menu &setQuitKey(char key = 'q');
     /**
      * @brief Clear the screen
      *
