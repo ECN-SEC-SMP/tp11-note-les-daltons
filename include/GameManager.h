@@ -9,6 +9,7 @@
 #include "Board.h"
 #include "Player.h"
 #include "Robot.h"
+#include "Menu.h"
 
 class GameManager
 {
@@ -17,10 +18,16 @@ private:
     Board board;
     std::vector<Player*> players;
     std::vector<Robot*> robots;
+    bool round_finished = false; // #TODO: setup in setupRound() method
+    bool cur_player_won = false; // #TODO: setup in setupRound() method
+
+private:
+    bool processMovement(Robot *robot, Direction direction, int * deplacement, Menu *m, int player_index);
 
 public:
     /* Constructors */
     GameManager();
+    ~GameManager();
 
     /* Getters */
     Tile* getGoalTile();
@@ -66,7 +73,7 @@ public:
      * @brief Plays a round of the game.
      * @note This function is called to play a round of the game.
      */
-    void playRound();
+    bool playRound(int player_index);
     /**
      * @brief Displays the results of the game.
      * @note This function is called at the end of the game.
