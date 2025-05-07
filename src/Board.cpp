@@ -103,8 +103,8 @@ QuarterBoard Board::generateQuarterBoard(bool top, bool left)
         frames[k - 1][0].setWall(1, RIGHT);
         frames[k][0].setWall(1, LEFT);
 
-        int n = getRandomNumber(5) + 1;
-        frames[0][n - 1].setWall(1, UP);
+        int n = 1 + getRandomNumber(5);
+        frames[0][n + 1].setWall(1, UP);
         frames[0][n].setWall(1, DOWN);
     }
 
@@ -112,11 +112,11 @@ QuarterBoard Board::generateQuarterBoard(bool top, bool left)
     if (top && !left)
     {
         int k = 1 + getRandomNumber(5);
-        frames[k - 1][0].setWall(1, LEFT);
+        frames[k + 1][0].setWall(1, LEFT);
         frames[k][0].setWall(1, RIGHT);
 
         int n = 1 + getRandomNumber(5);
-        frames[7][n - 1].setWall(1, UP);
+        frames[7][n + 1].setWall(1, UP);
         frames[7][n].setWall(1, DOWN);
     }
 
@@ -136,7 +136,7 @@ QuarterBoard Board::generateQuarterBoard(bool top, bool left)
     if (!top && !left)
     {
         int k = 1 + getRandomNumber(5);
-        frames[k - 1][7].setWall(1, LEFT);
+        frames[k + 1][7].setWall(1, LEFT);
         frames[k][7].setWall(1, RIGHT);
 
         int n = 1 + getRandomNumber(5);
