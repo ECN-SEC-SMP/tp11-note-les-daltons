@@ -1,4 +1,3 @@
-#include <iostream>
 #include "Robot.h"
 
 Robot::Robot(Color c, std::pair<int, int> p)
@@ -31,6 +30,25 @@ void Robot::move(int x, int y)
 {
     position.first += x;
     position.second += y;
+}
+
+void Robot::move(Direction d)
+{
+    switch (d)
+    {
+    case UP:
+        position.second--;
+        break;
+    case DOWN:
+        position.second++;
+        break;
+    case LEFT:
+        position.first--;
+        break;
+    case RIGHT:
+        position.first++;
+        break;
+    }
 }
 
 std::string Robot::getEmoji()

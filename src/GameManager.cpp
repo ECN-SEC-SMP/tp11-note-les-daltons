@@ -32,14 +32,17 @@
 #define DISABLED " " // for disabled frames in the middle of the board
 
 /* Constructors */
-
 GameManager::GameManager()
     : goal_tile(nullptr), board(Board()), players(std::vector<Player *>())
 {
 }
 
-/* Getters */
+GameManager::~GameManager()
+{
+    delete this->goal_tile;
+}
 
+/* Getters */
 Tile *GameManager::getGoalTile()
 {
     return this->goal_tile;
@@ -60,7 +63,6 @@ Player *GameManager::getPlayer(int index)
 }
 
 /* Methods */
-
 void GameManager::addPlayer(Player *player)
 {
     this->players.push_back(player);
@@ -366,4 +368,180 @@ void GameManager::sortPlayersByPredictions()
 {
     std::sort(this->players.begin(), this->players.end(), [](Player* a, Player* b)
               { return a->getPrediction() < b->getPrediction(); });
+
+}
+
+bool GameManager::processMovement(Robot *robot, Direction direction, int *deplacement, Menu *m, int player_index)
+{
+    int robot_X = robot->getX();
+    int robot_Y = robot->getY();
+
+    bool robotNextTo = std::any_of(this->robots.begin(), this->robots.end(), [direction, robot_X, robot_Y](Robot *r)
+                                   {
+        bool result = false;
+        switch (direction)
+        {
+        case UP:
+            result = r->getX() == robot_X && r->getY() == robot_Y - 1;
+            break;
+        case DOWN:
+            result = r->getX() == robot_X && r->getY() == robot_Y + 1;
+            break;
+        case LEFT:
+            result = r->getX() == robot_X - 1 && r->getY() == robot_Y;
+            break;
+        case RIGHT:
+            result = r->getX() == robot_X + 1 && r->getY() == robot_Y;
+            break;
+    
+        default:
+            break;
+        }
+        return result; });
+    bool canMove = board.getFrame(robot_X, robot_Y).canMove(direction);
+    int previousRobotX = robot_X;
+    int previousRobotY = robot_Y;
+
+    while (canMove && !robotNextTo && robot_X >= 0 && robot_X <= 15 && robot_Y >= 0 && robot_Y <= 15)
+    {
+        robot->move(direction);
+        robot_X = robot->getX();
+        robot_Y = robot->getY();
+        robotNextTo = std::any_of(this->robots.begin(), this->robots.end(), [direction, robot_X, robot_Y](Robot *r)
+                                  {
+            bool result = false;
+            switch (direction)
+            {
+            case UP:
+                result = r->getX() == robot_X && r->getY() == robot_Y - 1;
+                break;
+            case DOWN:
+                result = r->getX() == robot_X && r->getY() == robot_Y + 1;
+                break;
+            case LEFT:
+                result = r->getX() == robot_X - 1 && r->getY() == robot_Y;
+                break;
+            case RIGHT:
+                result = r->getX() == robot_X + 1 && r->getY() == robot_Y;
+                break;
+        
+            default:
+                break;
+            }
+            return result; });
+        canMove = board.getFrame(robot_X, robot_Y).canMove(direction);
+    }
+    if (robot_X != previousRobotX || robot_Y != previousRobotY)
+    {
+        *deplacement += 1;
+    }
+    m->setTitle(displayBoard());
+    m->displayMenu();
+
+    if (this->board.getFrame(robot_X, robot_Y).getTile() == this->goal_tile && this->goal_tile->getColor() == robot->getColor())
+    {
+        std::cout << "\033[32m\033[1m You won !!\033[0m" << std::endl;
+        this->round_finished = true;
+        this->cur_player_won = true;
+        return true;
+    }
+
+    if (*deplacement >= players[player_index]->getPrediction())
+    {
+        std::cout << "You have reached your prediction!" << std::endl;
+        this->round_finished = true;
+        this->cur_player_won = false;
+        return true;
+    }
+    return false;
+}
+
+bool GameManager::playRound(int player_index)
+{
+    int move_count = 0;
+    Menu menu(displayBoard(), 0);
+    menu.preventArguments(true);
+    this->cur_player_won = false;
+
+    for (auto &&robot : this->robots)
+    {
+        std::string color;
+        switch (robot->getColor())
+        {
+        case RED:
+            color = "Red";
+            break;
+        case GREEN:
+            color = "Green";
+            break;
+        case YELLOW:
+            color = "Yellow";
+            break;
+        case BLUE:
+            color = "Blue";
+            break;
+
+        default:
+            break;
+        }
+
+        menu.addOption(color + " Robot", [&](int pos, Menu *m)
+                       {
+
+            // Setup Menu
+            m->preventDeplacement(true);
+            m->setColorSelection(31);
+            m->displayMenu();
+
+            // Process movements
+            char c = 0;
+            std::cout << "Press 'ENTER' to unselect." << std::endl;
+            while (c != '\r' && !this->round_finished)
+            {
+                c = getchar(); 
+                if (c == '\r' || c == 127) // enter or backspace
+                    break;
+                if (c == 27) // escape
+                {
+                    c = getchar();
+                    if (c == 91) // [
+                    {
+                        c = getchar();
+                        switch (c)
+                        {
+                        case 65: // up arrow
+                            if (this->processMovement(robot, UP, &move_count, m, player_index))
+                                c = '\r';
+                            break;
+                        case 66: // down arrow
+                            if (this->processMovement(robot, DOWN, &move_count, m, player_index))
+                                c = '\r';
+                            break;
+                        case 67: // right arrow
+                            if (this->processMovement(robot, RIGHT, &move_count, m, player_index))
+                                c = '\r';
+                            break;
+                        case 68: // left arrow
+                            if (this->processMovement(robot, LEFT, &move_count, m, player_index))
+                                c = '\r';
+                            break;
+                        default: 
+                            break;
+                        }
+                    }
+                }
+            }
+
+            // Reset Menu
+            m->preventDeplacement(false);
+            m->preventArguments(false);
+            m->setColorSelection(32);
+
+            return !this->round_finished;
+        });
+    }
+
+    menu.run();
+
+    return this->cur_player_won;
 }

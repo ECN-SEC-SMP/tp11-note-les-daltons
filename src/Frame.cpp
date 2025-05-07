@@ -24,7 +24,7 @@ bool *Frame::getWalls()
 
 bool Frame::canMove(Direction d)
 {
-    return this->walls[d];
+    return !this->walls[d];
 }
 
 void Frame::setTile(Tile *t)
