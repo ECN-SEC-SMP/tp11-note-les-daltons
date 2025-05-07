@@ -14,43 +14,43 @@
 class GameManager
 {
 private:
-    Tile* goal_tile;
+    Tile *goal_tile;
     Board board;
-    std::vector<Player*> players;
-    std::vector<Robot*> robots;
+    std::vector<Player *> players;
+    std::vector<Robot *> robots;
     bool round_finished = false; // #TODO: setup in setupRound() method
     bool cur_player_won = false; // #TODO: setup in setupRound() method
 
 private:
-    bool processMovement(Robot *robot, Direction direction, int * deplacement, Menu *m, int player_index);
+    bool processMovement(Robot *robot, Direction direction, int *deplacement, Menu *m, int player_index);
 
 public:
     /* Constructors */
     GameManager();
 
     /* Getters */
-    Tile* getGoalTile();
-    std::vector<Player*> getPlayers();
-    Player* getPlayer(int index);
-    Board* getBoard() { return &this->board; }
+    Tile *getGoalTile();
+    std::vector<Player *> getPlayers();
+    Player *getPlayer(int index);
+    Board *getBoard() { return &this->board; }
 
     /* Methods */
     /**
      * @brief Adds a player to the game.
-     * 
+     *
      * @param player (IN) Pointer to the player to be added.
      */
-    void addPlayer(Player* player);
+    void addPlayer(Player *player);
     /**
      * @brief Removes a player from the game.
-     * 
+     *
      * @param player (IN) Pointer to the player to be removed.
      */
-    void removePlayer(Player* player);
+    void removePlayer(Player *player);
     /**
      * @brief Returns displayed board string
-     * 
-     * @return std::string 
+     *
+     * @return std::string
      */
     std::string displayBoard();
     /**
@@ -82,7 +82,7 @@ public:
      * @note This function is called at the end of the game.
      */
     void displayResults();
-    Robot* getRobotOnFrame(int x, int y);
+    Robot *getRobotOnFrame(int x, int y);
 };
 
 #endif /* GAME_MANAGER_H */

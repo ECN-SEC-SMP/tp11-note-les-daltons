@@ -1,5 +1,6 @@
 #include "Frame.h"
 
+/* Constructors */
 Frame::Frame()
     : tile(nullptr), walls{false, false, false, false} {}
 
@@ -12,6 +13,7 @@ Frame::Frame(Tile *t, bool walls[4])
     }
 }
 
+/* Getters */
 Tile *Frame::getTile()
 {
     return this->tile;
@@ -22,11 +24,7 @@ bool *Frame::getWalls()
     return this->walls;
 }
 
-bool Frame::canMove(Direction d)
-{
-    return !this->walls[d];
-}
-
+/* Setters */
 void Frame::setTile(Tile *t)
 {
     this->tile = t;
@@ -43,4 +41,10 @@ void Frame::setWalls(const bool walls[4])
 void Frame::setWall(bool wall, Direction d)
 {
     this->walls[d] = wall;
+}
+
+/* Methods */
+bool Frame::canMove(Direction d)
+{
+    return !this->walls[d];
 }

@@ -22,18 +22,15 @@ std::vector<Tile> Board::TILES = {
     Tile(YELLOW, CIRCLE),
     Tile(YELLOW, SQUARE),
     Tile(YELLOW, TRIANGLE),
-    Tile(YELLOW, STAR)
-};
+    Tile(YELLOW, STAR)};
 
 /* Constructors */
-
 Board::Board()
     : quarterBoards{{QuarterBoard(0), QuarterBoard(1)}, {QuarterBoard(2), QuarterBoard(3)}}
 {
 }
 
 /* Getters */
-
 Frame Board::getFrame(int x, int y)
 {
     /* Top left frame coordinates = (0,0) */
@@ -43,7 +40,6 @@ Frame Board::getFrame(int x, int y)
 }
 
 /* Methods */
-
 QuarterBoard Board::generateQuarterBoard(bool top, bool left)
 {
     Frame frames[8][8];
@@ -99,12 +95,10 @@ QuarterBoard Board::generateQuarterBoard(bool top, bool left)
     }
 
     // Générer les murs intérieurs
-
     // Quarter 1
     if (top && left)
     {
         // Murs colés à la bordures
-
         int k = 1 + getRandomNumber(5);
         frames[k - 1][0].setWall(1, RIGHT);
         frames[k][0].setWall(1, LEFT);
@@ -151,7 +145,6 @@ QuarterBoard Board::generateQuarterBoard(bool top, bool left)
     }
 
     // Murs en angles à l'intérieurs
-
     std::vector<std::pair<int, int>> used_positions; // vecteur pour stocker les positions utilisées et les positions inutisables
     std::vector<std::pair<int, int>> corners;        // vecteur pour stocker les positions utilisées
 
@@ -214,7 +207,6 @@ QuarterBoard Board::generateQuarterBoard(bool top, bool left)
             frames[x][y].setWall(1, RIGHT);
             frames[x + 1][y].setWall(1, LEFT);
             frames[x][y + 1].setWall(1, UP);
-
         }
     }
 

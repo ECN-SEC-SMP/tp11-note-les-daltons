@@ -4,9 +4,9 @@
  * @brief Menu manager
  * @version 0.1
  * @date 2025-04-29
- * 
+ *
  * @copyright Copyright (c) 2025
- * 
+ *
  */
 #pragma once
 
@@ -105,13 +105,13 @@ public:
      *
      * @return (std::vector<std::string>) Options of the menu
      */
-    std::vector<std::string>& getOptions();
+    std::vector<std::string> &getOptions();
     /**
      * @brief Get the arguments of the options
      *
      * @return (std::vector<std::string>) Arguments of the options
      */
-    std::vector<std::string>& getOptionsArgs();
+    std::vector<std::string> &getOptionsArgs();
     /**
      * @brief Set the timeout for the menu
      *
@@ -164,9 +164,9 @@ public:
     Menu *preventArguments(bool prevent = true);
     /**
      * @brief Prevent quit when enter key is pressed
-     * 
+     *
      * @param prevent (IN) Prevent quit when enter key is pressed (default: true)
-     * @return Menu* 
+     * @return Menu*
      */
     Menu *preventQuitOnEnter(bool prevent = true);
     /**

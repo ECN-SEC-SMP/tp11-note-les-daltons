@@ -1,5 +1,6 @@
 #include "QuarterBoard.h"
 
+/* Constructors */
 QuarterBoard::QuarterBoard(int id)
     : id(id)
 {
@@ -24,6 +25,7 @@ QuarterBoard::QuarterBoard(Frame f[8][8], int id)
     }
 }
 
+/* Getters */
 int QuarterBoard::getID()
 {
     return this->id;
@@ -34,6 +36,7 @@ Frame QuarterBoard::getFrame(int x, int y) const
     return this->frames[x][y];
 }
 
+/* Methods */
 QuarterBoard QuarterBoard::applySymmetry() const
 {
     Frame tmp[8][8];

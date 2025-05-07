@@ -1,11 +1,13 @@
 #include "Robot.h"
 
+/* Constructor */
 Robot::Robot(Color c, std::pair<int, int> p)
     : color(c), position(p) {}
 
 Robot::Robot(Color c, int x, int y)
     : color(c), position(std::make_pair(x, y)) {}
 
+/* Getters */
 Color Robot::getColor()
 {
     return this->color;
@@ -26,6 +28,24 @@ int Robot::getY()
     return this->position.second;
 }
 
+std::string Robot::getEmoji()
+{
+    switch (this->color)
+    {
+    case Color::RED:
+        return "🔴"; // Red
+    case Color::GREEN:
+        return "🟢"; // Green
+    case Color::BLUE:
+        return "🔵"; // Blue
+    case Color::YELLOW:
+        return "🟡"; // Yellow
+    default:
+        return "  "; // Empty tile
+    }
+}
+
+/* Methods */
 void Robot::move(int x, int y)
 {
     position.first += x;
@@ -48,22 +68,5 @@ void Robot::move(Direction d)
     case RIGHT:
         position.first++;
         break;
-    }
-}
-
-std::string Robot::getEmoji()
-{
-    switch (this->color)
-    {
-    case Color::RED:
-        return "🔴"; // Red
-    case Color::GREEN:
-        return "🟢"; // Green
-    case Color::BLUE:
-        return "🔵"; // Blue
-    case Color::YELLOW:
-        return "🟡"; // Yellow
-    default:
-        return "  "; // Empty tile
     }
 }

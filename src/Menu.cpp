@@ -37,12 +37,12 @@ Menu *Menu::setColorSelection(int color)
     return this;
 }
 
-std::vector<std::string>& Menu::getOptions()
+std::vector<std::string> &Menu::getOptions()
 {
     return this->options;
 }
 
-std::vector<std::string>& Menu::getOptionsArgs()
+std::vector<std::string> &Menu::getOptionsArgs()
 {
     return this->options_args;
 }
@@ -250,7 +250,6 @@ int Menu::run()
             if (this->current_option >= 0 && this->current_option < (int)this->options.size())
             {
                 is_running = this->callbacks[this->current_option](this->current_option, this); // call the callback function
-                
             }
             break;
         case 'q': // quit

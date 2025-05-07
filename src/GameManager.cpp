@@ -36,7 +36,8 @@
 /* Constructors */
 GameManager::GameManager()
     : goal_tile(nullptr), board(Board()), players(std::vector<Player *>())
-{}
+{
+}
 
 /* Getters */
 Tile *GameManager::getGoalTile()
@@ -372,9 +373,8 @@ void GameManager::processPredictionsInputs()
 
 void GameManager::sortPlayersByPredictions()
 {
-    std::sort(this->players.begin(), this->players.end(), [](Player* a, Player* b)
+    std::sort(this->players.begin(), this->players.end(), [](Player *a, Player *b)
               { return a->getPrediction() < b->getPrediction(); });
-
 }
 
 bool GameManager::processMovement(Robot *robot, Direction direction, int *deplacement, Menu *m, int player_index)
@@ -543,8 +543,7 @@ bool GameManager::playRound(int player_index)
             m->preventArguments(false);
             m->setColorSelection(32);
 
-            return !this->round_finished;
-        });
+            return !this->round_finished; });
     }
 
     menu.run();

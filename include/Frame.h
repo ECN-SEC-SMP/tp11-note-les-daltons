@@ -15,13 +15,20 @@ private:
     bool walls[4];
 
 public:
+    /* Contructors */
     Frame();
     Frame(Tile *t, bool walls[4]);
     Frame(Tile *t, const bool walls[4]);
+
+    /* Getters */
     Tile *getTile();
     bool *getWalls();
-    bool canMove(Direction d);
+
+    /* Setters */
     void setTile(Tile *t);
     void setWalls(const bool walls[4]);
     void setWall(bool wall, Direction d);
+
+    /* Methods */
+    bool canMove(Direction d);
 };
