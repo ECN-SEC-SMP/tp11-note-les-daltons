@@ -1,6 +1,7 @@
 #pragma once
 
 #include <utility>
+#include <string>
 #include "typedef.h"
 
 class Robot
@@ -17,4 +18,5 @@ public:
     int getX();
     int getY();
     void move(int x, int y);
+    std::string getEmoji();
 };
