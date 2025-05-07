@@ -2,6 +2,7 @@
 
 #include <array>
 #include <cstddef>
+
 #include "typedef.h"
 #include "Tile.h"
 

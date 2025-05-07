@@ -6,6 +6,25 @@
 #include "Board.h"
 #include "QuarterBoardHelper.h"
 
+std::vector<Tile> Board::TILES = {
+    Tile(RED, CIRCLE),
+    Tile(RED, SQUARE),
+    Tile(RED, TRIANGLE),
+    Tile(RED, STAR),
+    Tile(GREEN, CIRCLE),
+    Tile(GREEN, SQUARE),
+    Tile(GREEN, TRIANGLE),
+    Tile(GREEN, STAR),
+    Tile(BLUE, CIRCLE),
+    Tile(BLUE, SQUARE),
+    Tile(BLUE, TRIANGLE),
+    Tile(BLUE, STAR),
+    Tile(YELLOW, CIRCLE),
+    Tile(YELLOW, SQUARE),
+    Tile(YELLOW, TRIANGLE),
+    Tile(YELLOW, STAR)
+};
+
 /* Constructors */
 
 Board::Board()
@@ -208,16 +227,4 @@ void Board::generate()
     this->quarterBoards[0][1] = this->generateQuarterBoard(false, true);
     this->quarterBoards[1][0] = this->generateQuarterBoard(true, false);
     this->quarterBoards[1][1] = this->generateQuarterBoard(false, false);
-  
-   /* Randomly apply symetry to the quarterboards */
-    for (int x = 0; x < 2; x++)
-    {
-        for (int y = 0; y < 2; y++)
-        {
-            if (rand() % 2 == 0)
-            {
-                this->quarterBoards[x][y] = this->quarterBoards[x][y].applySymmetry();
-            }
-        }
-    }
 }

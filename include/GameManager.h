@@ -27,7 +27,6 @@ private:
 public:
     /* Constructors */
     GameManager();
-    ~GameManager();
 
     /* Getters */
     Tile* getGoalTile();
@@ -54,6 +53,10 @@ public:
      * @return std::string 
      */
     std::string displayBoard();
+    /**
+     * @brief Generate or regenerate game board
+     */
+    void generateBoard();
     /**
      * @brief Sets up the game for a new round.
      * @note This function is called at the beginning of each round.
