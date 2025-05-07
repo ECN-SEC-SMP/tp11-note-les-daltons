@@ -3,12 +3,9 @@
 #include <thread>
 #include <future>
 #include <chrono>
-
-#include "Menu.h"
 #include <fcntl.h>
 
-// #TODO: add callback ??
-// #TODO: add close mode (manual / timeout)
+#include "Menu.h"
 
 Menu::Menu(std::string title, int mode)
     : title(title), colorSelection(32), mode(mode), timeout(10), reset_timeout_on_key_press(true),
@@ -123,7 +120,8 @@ void Menu::printMenu(int pos)
 
 void Menu::clear()
 {
-    std::cout << "\033[2J\033[1;1H";
+    // std::cout << "\033[2J\033[1;1H";
+    system("clear");
 }
 
 void Menu::setTerminal()
@@ -259,17 +257,20 @@ int Menu::run()
             }
             else
             {
-                if (this->current_option >= 0 && this->current_option < (int)this->options.size())
-                    this->options_args[this->current_option] += c; // add character to the selected option
+                if (!prevent_argument)
+                    if (this->current_option >= 0 && this->current_option < (int)this->options.size())
+                        this->options_args[this->current_option] += c; // add character to the selected option
             }
             break;
         case 127: // backspace
-            if (this->current_option >= 0 && this->current_option < (int)this->options.size() && this->options_args[this->current_option].length() > 0)
-                this->options_args[this->current_option].pop_back(); // remove last character from the selected option
+            if (!prevent_argument)
+                if (this->current_option >= 0 && this->current_option < (int)this->options.size() && this->options_args[this->current_option].length() > 0)
+                    this->options_args[this->current_option].pop_back(); // remove last character from the selected option
             break;
         default:
-            if (this->current_option >= 0 && this->current_option < (int)this->options.size() && c != -1)
-                this->options_args[this->current_option] += c; // add character to the selected option
+            if (!prevent_argument)
+                if (this->current_option >= 0 && this->current_option < (int)this->options.size() && c != -1)
+                    this->options_args[this->current_option] += c; // add character to the selected option
             break;
         }
 
@@ -278,7 +279,7 @@ int Menu::run()
 
     // std::cout << "\033[?1049l"; // switch back to normal screen buffer
     std::cout << "\033[?25h"; // show cursor
-    Menu::clear();
+    // Menu::clear();
 
     return this->current_option < 0 ? this->current_option : this->current_option + 1; // return the selected option index
 }

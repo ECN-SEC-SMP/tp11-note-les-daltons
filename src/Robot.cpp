@@ -50,3 +50,20 @@ void Robot::move(Direction d)
         break;
     }
 }
+
+std::string Robot::getEmoji()
+{
+    switch (this->color)
+    {
+    case Color::RED:
+        return "🔴"; // Red
+    case Color::GREEN:
+        return "🟢"; // Green
+    case Color::BLUE:
+        return "🔵"; // Blue
+    case Color::YELLOW:
+        return "🟡"; // Yellow
+    default:
+        return "  "; // Empty tile
+    }
+}

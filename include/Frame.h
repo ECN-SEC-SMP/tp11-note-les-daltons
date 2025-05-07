@@ -20,4 +20,7 @@ public:
     Tile *getTile();
     bool *getWalls();
     bool canMove(Direction d);
+    void setTile(Tile *t);
+    void setWalls(const bool walls[4]);
+    void setWall(bool wall, Direction d);
 };
