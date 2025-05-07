@@ -341,27 +341,40 @@ void GameManager::processPredictionsInputs()
         std::this_thread::sleep_for(std::chrono::seconds(1));
     }
 
-    Menu menu("Predictions inputs:\n[Press ENTER to comfirm ALL PREDICTION !!]", 0);
     for (auto &&player : this->players)
     {
-        menu.addOption(player->getName());
+        std::string prediction_str;
+        std::cout << "Prediction for player " << player->getName() << ": " << std::flush;
+        std::cin >> prediction_str;
+        while (!is_number(prediction_str))
+        {
+            std::cout << "Prediction invalid! New prediction: " << std::flush;
+            std::cin >> prediction_str;
+        }
+        player->setPrediction(std::stoi(prediction_str));
     }
-    menu.run();
 
-    int i = 0;
-    for (auto &&prediction_str : menu.getOptionsArgs())
-    {
-        if (!is_number(prediction_str))
-        {
-            std::cout << "Prediction for player " << this->players[i]->getName() << " invalid (set to 10)" << std::endl;
-        }
-        else
-        {
-            int prediction = std::stoi(prediction_str);
-            this->players[i]->setPrediction(prediction);
-        }
-        i++;
-    }
+    // Menu menu("Predictions inputs:\n[Press ENTER to comfirm ALL PREDICTION !!]", 0);
+    // for (auto &&player : this->players)
+    // {
+    //     menu.addOption(player->getName());
+    // }
+    // menu.run();
+
+    // int i = 0;
+    // for (auto &&prediction_str : menu.getOptionsArgs())
+    // {
+    //     while (!is_number(prediction_str))
+    //     {
+    //         std::cout << "Prediction for player " << this->players[i]->getName() << " invalid!" << std::endl;
+    //         std::cout << "New prediction: " << std::flush;
+    //         std::cin >> prediction_str;
+    //     }
+
+    //     int prediction = std::stoi(prediction_str);
+    //     this->players[i]->setPrediction(prediction);
+    //     i++;
+    // }
 }
 
 void GameManager::sortPlayersByPredictions()

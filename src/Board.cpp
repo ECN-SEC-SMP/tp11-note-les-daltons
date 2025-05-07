@@ -6,24 +6,6 @@
 #include "Board.h"
 #include "QuarterBoardHelper.h"
 
-std::vector<Tile> TILES = {
-    Tile(RED, CIRCLE),
-    Tile(RED, SQUARE),
-    Tile(RED, TRIANGLE),
-    Tile(RED, STAR),
-    Tile(GREEN, CIRCLE),
-    Tile(GREEN, SQUARE),
-    Tile(GREEN, TRIANGLE),
-    Tile(GREEN, STAR),
-    Tile(BLUE, CIRCLE),
-    Tile(BLUE, SQUARE),
-    Tile(BLUE, TRIANGLE),
-    Tile(BLUE, STAR),
-    Tile(YELLOW, CIRCLE),
-    Tile(YELLOW, SQUARE),
-    Tile(YELLOW, TRIANGLE),
-    Tile(YELLOW, STAR)};
-
 /* Constructors */
 
 Board::Board()
@@ -215,15 +197,6 @@ QuarterBoard Board::generateQuarterBoard(bool top, bool left)
             frames[x][y + 1].setWall(1, UP);
 
         }
-        std::cout << x << " " << y << " => " << orientation_of_angle << std::endl;
-    }
-
-    //Todo: remove the cout
-    for (auto &&c : corners)
-    {
-        int x = c.first;
-        int y = c.second;
-        // std::cout << x << " " << y << std::endl;
     }
 
     return QuarterBoard(frames, 0);
