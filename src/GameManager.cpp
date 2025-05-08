@@ -2,6 +2,7 @@
 #include <algorithm>
 
 #include "typedef.h"
+#include "Utils.h"
 #include "GameManager.h"
 
 #define BOARD_SIZE 16
@@ -12,6 +13,7 @@ GameManager::GameManager()
     : goal_tile(nullptr), board(Board()), players(std::vector<Player *>())
 {
     this->setWallsStyle(SIMPLE_WALLS);
+    this->setColorTheme(LIGHT_THEME);
 }
 
 /* Getters */
@@ -82,25 +84,30 @@ void GameManager::setWallsStyle(WallsStyle wallsStyle)
     default:
         throw std::invalid_argument("Invalid walls style");
     }
-} 
+}
 
-// void GameManager::setColorTheme(ColorTheme colorTheme)
-// {
-//     switch (colorTheme)
-//     {
-//     case LIGHT_THEME:
-//         this->boardTheme.background_color = ANSI_WHITE_BG;
-//         this->boardTheme.grid_color = ANSI_LIGHT_GRAY;
-//         this->boardTheme.wall_color = ANSI_BLACK;
-//         break;
+void GameManager::setColorTheme(ColorTheme colorTheme)
+{
+    switch (colorTheme)
+    {
+    case LIGHT_THEME:
+        this->boardTheme.background_color = ANSI_WHITE_BG;
+        this->boardTheme.grid_color = ANSI_LIGHT_GRAY;
+        this->boardTheme.wall_color = ANSI_BLACK;
+        break;
 
-//     case DARK_THEME:
-//         this->boardTheme.background_color = ANSI_BLACK;
-//         this->boardTheme.grid_color = ANSI_LIGHT_GRAY;
-//         this->boardTheme.wall_color = ANSI_WHITE_BG;
-//         break;
-//     }
-// }
+    case DARK_THEME:
+        this->boardTheme.background_color = ANSI_BLACK_BG;
+        this->boardTheme.grid_color = ANSI_DARK_GRAY;
+        this->boardTheme.wall_color = ANSI_WHITE;
+        break;
+
+    default:
+        throw std::invalid_argument("Invalid color theme");
+    }
+
+    this->boardTheme.reset_color = ANSI_RESET + this->boardTheme.background_color;
+}
 
 /* Methods */
 
@@ -120,9 +127,9 @@ std::string GameManager::computeNode(int x, int y)
     /*
                    XXXX¦                     ¦XXXX
         top_left:  ----+----   top:      ----+----
-                       ¦                     ¦    
+                       ¦                     ¦
 
-                       ¦                     ¦    
+                       ¦                     ¦
         left:      ----+----   current:  ----+----
                    XXXX¦                     ¦XXXX
     */
@@ -133,13 +140,13 @@ std::string GameManager::computeNode(int x, int y)
 
     /* Get the walls around the node */
     /*
-                  ║                   ¦    
+                  ║                   ¦
         top:  ----+----   bottom: ----+----
-                  ¦                   ║    
+                  ¦                   ║
 
-                  ¦                   ¦    
+                  ¦                   ¦
         left: ════+----   right:  ----+════
-                  ¦                   ¦    
+                  ¦                   ¦
     */
     bool left_wall;
     bool right_wall;
@@ -164,7 +171,7 @@ std::string GameManager::computeNode(int x, int y)
         right_wall = false;
         bottom_wall = left_frame.getWalls()[RIGHT];
     }
-    
+
     /* Inside the board */
     else
     {
@@ -195,13 +202,13 @@ std::string GameManager::computeNode(int x, int y)
             top_wall = top_frame.getWalls()[LEFT];
             right_wall = top_frame.getWalls()[DOWN];
         }
-        /* Left frame doesn't exist because y is outside the board. Thus, the 
+        /* Left frame doesn't exist because y is outside the board. Thus, the
         top left frame is used to get the left wall */
         left_wall = top_left_frame.getWalls()[DOWN];
         bottom_wall = false;
     }
 
-    /* Inside the board, except the right border because it has already been 
+    /* Inside the board, except the right border because it has already been
     set when checking the x coordinate */
     else if (x != BOARD_SIZE)
     {
@@ -209,7 +216,7 @@ std::string GameManager::computeNode(int x, int y)
         bottom_wall = current_frame.getWalls()[LEFT];
     }
 
-    std::string node;
+    std::string node = "";;
     /* Goal tile displayed in the center of the board */
     if (x == 8 && y == 8)
     {
@@ -217,74 +224,77 @@ std::string GameManager::computeNode(int x, int y)
         {
             throw std::runtime_error("Goal tile is not set");
         }
-        node = this->goal_tile->getEmoji();
+        node += this->goal_tile->getEmoji();
     }
     else
     {
+        node += this->boardTheme.wall_color;
         if (top_wall && left_wall && bottom_wall && right_wall)
         {
-            node = this->boardTheme.node_middle;
+            node += this->boardTheme.node_middle;
         }
 
         /* Walls */
-        else if (left_wall && right_wall && !top_wall && !bottom_wall) 
+        else if (left_wall && right_wall && !top_wall && !bottom_wall)
         {
-            node = this->boardTheme.node_horizontal;
+            node += this->boardTheme.node_horizontal;
         }
-        else if (top_wall && bottom_wall && !left_wall && !right_wall) 
+        else if (top_wall && bottom_wall && !left_wall && !right_wall)
         {
-            node = this->boardTheme.node_vertical;
+            node += this->boardTheme.node_vertical;
         }
 
         /* Corners */
         else if (bottom_wall && right_wall && !top_wall && !left_wall)
         {
-            node = this->boardTheme.node_top_left;
+            node += this->boardTheme.node_top_left;
         }
         else if (left_wall && bottom_wall && !top_wall && !right_wall)
         {
-            node = this->boardTheme.node_top_right;
+            node += this->boardTheme.node_top_right;
         }
         else if (top_wall && left_wall && !bottom_wall && !right_wall)
         {
-            node = this->boardTheme.node_bottom_right;
+            node += this->boardTheme.node_bottom_right;
         }
         else if (top_wall && right_wall && !bottom_wall && !left_wall)
         {
-            node = this->boardTheme.node_bottom_left;
+            node += this->boardTheme.node_bottom_left;
         }
-        
+
         /* Node with 3 walls */
         else if (left_wall && bottom_wall && right_wall && !top_wall)
         {
-            node = this->boardTheme.node_top;
+            node += this->boardTheme.node_top;
         }
         else if (left_wall && top_wall && right_wall && !bottom_wall)
         {
-            node = this->boardTheme.node_bottom;
+            node += this->boardTheme.node_bottom;
         }
         else if (top_wall && right_wall && bottom_wall && !left_wall)
         {
-            node = this->boardTheme.node_left;
+            node += this->boardTheme.node_left;
         }
         else if (top_wall && left_wall && bottom_wall && !right_wall)
         {
-            node = this->boardTheme.node_right;
+            node += this->boardTheme.node_right;
         }
 
         /* Grid node */
         else
         {
+            node += this->boardTheme.grid_color;
             node += this->boardTheme.node;
         }
     }
+    node += this->boardTheme.reset_color;
 
     return node;
 }
 
 std::string GameManager::displayBoard()
 {
-    std::string output = "\n" RESET;
+    std::string output = "\n" + this->boardTheme.reset_color;
     std::string temp_seperator = "";
     std::string temp_tiles = "";
 
@@ -304,7 +314,7 @@ std::string GameManager::displayBoard()
             /* Top wall ----------------------------------------------------- */
 
             /* No wall if it's the disabled frames in the middle */
-            temp_seperator += RESET;
+            temp_seperator += this->boardTheme.reset_color;
             if (x == 7 && y == 8)
             {
                 temp_seperator += "    ";
@@ -316,13 +326,16 @@ std::string GameManager::displayBoard()
             /* Classic wall */
             else if (frame.getWalls()[UP])
             {
+                temp_seperator += this->boardTheme.wall_color;
                 temp_seperator += this->boardTheme.horizontal_wall;
             }
             /* No wall */
             else
             {
+                temp_seperator += this->boardTheme.grid_color;
                 temp_seperator += this->boardTheme.horizontal_grid;
             }
+            temp_seperator += this->boardTheme.reset_color;
 
             /* Add right node if it's the last column */
             if (x == BOARD_SIZE - 1)
@@ -338,12 +351,15 @@ std::string GameManager::displayBoard()
             }
             else if (frame.getWalls()[LEFT])
             {
+                temp_tiles += this->boardTheme.wall_color;
                 temp_tiles += this->boardTheme.vertical_wall;
             }
             else
             {
+                temp_tiles += this->boardTheme.grid_color;
                 temp_tiles += this->boardTheme.vertical_grid;
             }
+            temp_seperator += this->boardTheme.reset_color;
 
             /* Tile content ------------------------------------------------- */
 
@@ -383,16 +399,19 @@ std::string GameManager::displayBoard()
             {
                 if (frame.getWalls()[RIGHT])
                 {
+                    temp_tiles += this->boardTheme.wall_color;
                     temp_tiles += this->boardTheme.vertical_wall;
                 }
                 else
                 {
+                    temp_tiles += this->boardTheme.grid_color;
                     temp_tiles += this->boardTheme.vertical_grid;
                 }
+                temp_seperator += this->boardTheme.reset_color;
             }
         }
-        output += temp_seperator + ANSI_RESET + "\n" + RESET;
-        output += temp_tiles + ANSI_RESET + "\n" + RESET;
+        output += temp_seperator + ANSI_RESET + "\n" + this->boardTheme.reset_color;
+        output += temp_tiles + ANSI_RESET + "\n" + this->boardTheme.reset_color;
     }
 
     /* Bottom border of the board */
@@ -406,12 +425,15 @@ std::string GameManager::displayBoard()
         /* Wall */
         if (frame.getWalls()[DOWN])
         {
+            temp_seperator += this->boardTheme.wall_color;
             temp_seperator += this->boardTheme.horizontal_wall;
         }
         else
         {
+            temp_seperator += this->boardTheme.grid_color;
             temp_seperator += this->boardTheme.horizontal_grid;
         }
+        temp_seperator += this->boardTheme.reset_color;
     }
 
     /* Bottom right corner */
@@ -485,7 +507,7 @@ void GameManager::processPredictionsInputs()
         std::cout << this->displayBoard() << std::endl;
         std::cout << std::endl;
         std::cout << "\033[1mYou have \033[31m" << i << "\033[0m\033[1m seconds to find your solution prdiction...\033[0m" << std::endl;
-        std::this_thread::sleep_for(std::chrono::seconds(1));
+        sleep(1);
     }
 
     Menu::clear();

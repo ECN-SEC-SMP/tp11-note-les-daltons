@@ -30,6 +30,7 @@ struct BoardTheme_t
     std::string background_color = ANSI_WHITE_BG;
     std::string grid_color = ANSI_LIGHT_GRAY;
     std::string wall_color = ANSI_BLACK;
+    std::string reset_color = ANSI_RESET + background_color;
 
     /* Grid */
     std::string node = NODE;
