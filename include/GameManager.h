@@ -5,6 +5,7 @@
 #include <string>
 
 #include "typedef.h"
+#include "DisplayUtils.h"
 #include "Tile.h"
 #include "Board.h"
 #include "Player.h"
@@ -15,6 +16,50 @@
 #define MOVE_ARROW_DOWN "↓"
 #define MOVE_ARROW_LEFT "←"
 #define MOVE_ARROW_RIGHT "→"
+
+enum WallsStyle
+{
+    SIMPLE_WALLS,
+    DOUBLE_WALLS,
+};
+
+enum ColorTheme
+{
+    LIGHT_THEME,
+    DARK_THEME,
+};
+
+struct BoardTheme_t
+{
+    /* Colors */
+    std::string background_color = ANSI_WHITE_BG;
+    std::string grid_color = ANSI_LIGHT_GRAY;
+    std::string wall_color = ANSI_BLACK;
+
+    /* Grid */
+    std::string node = NODE;
+    std::string horizontal_grid = HORIZONTAL_GRID;
+    std::string vertical_grid = VERTICAL_GRID;
+
+    /* Walls */
+    std::string horizontal_wall;
+    std::string vertical_wall;
+
+    /* Wall nodes */
+    std::string node_middle;
+    std::string node_horizontal;
+    std::string node_vertical;
+
+    std::string node_top;
+    std::string node_left;
+    std::string node_right;
+    std::string node_bottom;
+
+    std::string node_top_left;
+    std::string node_top_right;
+    std::string node_bottom_left;
+    std::string node_bottom_right;
+};
 
 class GameManager
 {
@@ -36,6 +81,7 @@ private:
     std::string moves_str = "";
     /// @brief Coordinate of robots
     std::vector<std::pair<int, int>> robots_coordinates;
+    BoardTheme_t boardTheme;
 
 private:
     bool processMovement(Robot *robot, Direction direction, int *deplacement, Menu *m, int player_index);
@@ -70,6 +116,10 @@ public:
      * @return Board*
      */
     Board *getBoard();
+
+    /* Setters */
+    void setWallsStyle(WallsStyle wallsStyle);
+    void setColorTheme(ColorTheme colorTheme);
 
     /* Methods */
     /**
@@ -137,6 +187,7 @@ public:
      * @return Robot*
      */
     Robot *getRobotOnFrame(int x, int y);
+    std::string computeNode(int x, int y);
 };
 
 #endif /* GAME_MANAGER_H */
