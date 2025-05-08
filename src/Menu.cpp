@@ -3,12 +3,9 @@
 #include <thread>
 #include <future>
 #include <chrono>
-
-#include "Menu.h"
 #include <fcntl.h>
 
-// #TODO: add callback ??
-// #TODO: add close mode (manual / timeout)
+#include "Menu.h"
 
 Menu::Menu(std::string title, int mode)
     : title(title), colorSelection(32), mode(mode), timeout(10), reset_timeout_on_key_press(true),
@@ -18,7 +15,7 @@ Menu::Menu(std::string title, int mode)
 
 Menu::~Menu() {}
 
-Menu *Menu::addOption(const std::string &option, MenuCallback_t func)
+Menu &Menu::addOption(const std::string &option, MenuCallback_t func)
 {
     this->options.push_back(option);
     this->options_args.push_back("");
@@ -31,62 +28,68 @@ Menu *Menu::addOption(const std::string &option, MenuCallback_t func)
         this->callbacks.push_back([](int, Menu *)
                                   { return false; }); // default callback
     }
-    return this;
+    return *this;
 }
 
-Menu *Menu::setColorSelection(int color)
+Menu &Menu::setColorSelection(int color)
 {
     this->colorSelection = color;
-    return this;
+    return *this;
 }
 
-std::vector<std::string>& Menu::getOptions()
+std::vector<std::string> &Menu::getOptions()
 {
     return this->options;
 }
 
-std::vector<std::string>& Menu::getOptionsArgs()
+std::vector<std::string> &Menu::getOptionsArgs()
 {
     return this->options_args;
 }
 
-Menu *Menu::setTimeout(int timeout)
+Menu &Menu::setTimeout(int timeout)
 {
     this->timeout = timeout;
-    return this;
+    return *this;
 }
 
-Menu *Menu::setTitle(const std::string &title)
+Menu &Menu::setTitle(const std::string &title)
 {
     this->title = title;
-    return this;
+    return *this;
 }
 
-Menu *Menu::resetTimeoutOnKeyPress(bool reset)
+Menu &Menu::resetTimeoutOnKeyPress(bool reset)
 {
     this->reset_timeout_on_key_press = reset;
-    return this;
+    return *this;
 }
 
-Menu *Menu::cancelTimeoutOnKeyPress(bool reset)
+Menu &Menu::cancelTimeoutOnKeyPress(bool reset)
 {
     this->cancel_timeout_on_key_press = reset;
-    return this;
+    return *this;
 }
 
-Menu *Menu::preventDeplacement(bool prevent)
+Menu &Menu::preventDeplacement(bool prevent)
 {
     this->prevent_deplacement = prevent;
-    return this;
+    return *this;
 }
 
-Menu *Menu::preventArguments(bool prevent)
+Menu &Menu::preventArguments(bool prevent)
 {
     this->prevent_argument = prevent;
-    return this;
+    return *this;
 }
 
-Menu *Menu::setMode(int mode)
+Menu &Menu::preventQuitOnEnter(bool prevent)
+{
+    this->prevent_quit_on_enter = prevent;
+    return *this;
+}
+
+Menu &Menu::setMode(int mode)
 {
     this->mode = mode;
     if (mode == 1)
@@ -96,13 +99,13 @@ Menu *Menu::setMode(int mode)
         this->cancel_timeout_on_key_press = true; // default cancel timeout on key press
         this->setQuitKey(0);
     }
-    return this;
+    return *this;
 }
 
-Menu *Menu::setQuitKey(char key)
+Menu &Menu::setQuitKey(char key)
 {
     this->quitKey = key;
-    return this;
+    return *this;
 }
 
 void Menu::printMenu(int pos)
@@ -123,7 +126,8 @@ void Menu::printMenu(int pos)
 
 void Menu::clear()
 {
-    std::cout << "\033[2J\033[1;1H";
+    // std::cout << "\033[2J\033[1;1H";
+    system("clear");
 }
 
 void Menu::setTerminal()
@@ -246,7 +250,6 @@ int Menu::run()
             if (this->current_option >= 0 && this->current_option < (int)this->options.size())
             {
                 is_running = this->callbacks[this->current_option](this->current_option, this); // call the callback function
-                
             }
             break;
         case 'q': // quit
@@ -259,17 +262,20 @@ int Menu::run()
             }
             else
             {
-                if (this->current_option >= 0 && this->current_option < (int)this->options.size())
-                    this->options_args[this->current_option] += c; // add character to the selected option
+                if (!prevent_argument)
+                    if (this->current_option >= 0 && this->current_option < (int)this->options.size())
+                        this->options_args[this->current_option] += c; // add character to the selected option
             }
             break;
         case 127: // backspace
-            if (this->current_option >= 0 && this->current_option < (int)this->options.size() && this->options_args[this->current_option].length() > 0)
-                this->options_args[this->current_option].pop_back(); // remove last character from the selected option
+            if (!prevent_argument)
+                if (this->current_option >= 0 && this->current_option < (int)this->options.size() && this->options_args[this->current_option].length() > 0)
+                    this->options_args[this->current_option].pop_back(); // remove last character from the selected option
             break;
         default:
-            if (this->current_option >= 0 && this->current_option < (int)this->options.size() && c != -1)
-                this->options_args[this->current_option] += c; // add character to the selected option
+            if (!prevent_argument)
+                if (this->current_option >= 0 && this->current_option < (int)this->options.size() && c != -1)
+                    this->options_args[this->current_option] += c; // add character to the selected option
             break;
         }
 
@@ -278,7 +284,7 @@ int Menu::run()
 
     // std::cout << "\033[?1049l"; // switch back to normal screen buffer
     std::cout << "\033[?25h"; // show cursor
-    Menu::clear();
+    // Menu::clear();
 
     return this->current_option < 0 ? this->current_option : this->current_option + 1; // return the selected option index
 }

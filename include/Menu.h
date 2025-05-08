@@ -1,3 +1,13 @@
+/**
+ * @file Menu.h
+ * @author Louis Vaillant (louis.vaillant@eleves.ec-nantes.fr)
+ * @brief Menu manager
+ * @version 0.1
+ * @date 2025-04-29
+ *
+ * @copyright Copyright (c) 2025
+ *
+ */
 #pragma once
 
 #include <vector>
@@ -29,6 +39,8 @@ private:
     bool prevent_deplacement;
     /// @brief Prevent the argument of the selected option
     bool prevent_argument;
+    /// @brief Prevent quit when enter key is pressed
+    bool prevent_quit_on_enter;
     /// @brief Quit key char
     /// @note 0 to disable the quit key
     char quitKey;
@@ -67,7 +79,7 @@ public:
      *
      * @return (Menu*) Pointer to the Menu object
      */
-    Menu *addOption(const std::string &option, MenuCallback_t func = nullptr);
+    Menu &addOption(const std::string &option, MenuCallback_t func = nullptr);
     /**
      * @brief Set the Color Selection object
      *
@@ -76,7 +88,7 @@ public:
      *
      * @return (Menu*) Pointer to the Menu object
      */
-    Menu *setColorSelection(int color);
+    Menu &setColorSelection(int color);
 
     /**
      * @brief Executes the main logic of the menu.
@@ -93,13 +105,13 @@ public:
      *
      * @return (std::vector<std::string>) Options of the menu
      */
-    std::vector<std::string>& getOptions();
+    std::vector<std::string> &getOptions();
     /**
      * @brief Get the arguments of the options
      *
      * @return (std::vector<std::string>) Arguments of the options
      */
-    std::vector<std::string>& getOptionsArgs();
+    std::vector<std::string> &getOptionsArgs();
     /**
      * @brief Set the timeout for the menu
      *
@@ -108,14 +120,14 @@ public:
      *
      * @return Menu*
      */
-    Menu *setTimeout(int timeout);
+    Menu &setTimeout(int timeout);
     /**
      * @brief Set the title of the menu
      *
      * @param title (IN) Title of the menu
      * @return Menu*
      */
-    Menu *setTitle(const std::string &title);
+    Menu &setTitle(const std::string &title);
     /**
      * @brief Enable/Disable the reset of the timeout on key press
      *
@@ -124,7 +136,7 @@ public:
      *
      * @return Menu*
      */
-    Menu *resetTimeoutOnKeyPress(bool reset = true);
+    Menu &resetTimeoutOnKeyPress(bool reset = true);
     /**
      * @brief Enable/Disable the cancel of the timeout on key press
      *
@@ -133,30 +145,37 @@ public:
      *
      * @return Menu*
      */
-    Menu *cancelTimeoutOnKeyPress(bool reset = true);
+    Menu &cancelTimeoutOnKeyPress(bool reset = true);
     /**
      * @brief Prevent the deplacement of the cursor
      *
-     * @param prevent (IN) Prevent the deplacement of the cursor (default: false)
+     * @param prevent (IN) Prevent the deplacement of the cursor (default: true)
      *
      * @return Menu*
      */
-    Menu *preventDeplacement(bool prevent = false);
+    Menu &preventDeplacement(bool prevent = true);
     /**
      * @brief Prevent the argument of the selected option
      *
-     * @param prevent (IN) Prevent the argument of the selected option (default: false)
+     * @param prevent (IN) Prevent the argument of the selected option (default: true)
      *
      * @return Menu*
      */
-    Menu *preventArguments(bool prevent = false);
+    Menu &preventArguments(bool prevent = true);
+    /**
+     * @brief Prevent quit when enter key is pressed
+     *
+     * @param prevent (IN) Prevent quit when enter key is pressed (default: true)
+     * @return Menu*
+     */
+    Menu &preventQuitOnEnter(bool prevent = true);
     /**
      * @brief Set the mode of the menu
      *
      * @param mode (IN) Mode of the menu : 0 = 'q to quit', 1 = 'timeout' (default: 0)
      * @return Menu*
      */
-    Menu *setMode(int mode = 0);
+    Menu &setMode(int mode = 0);
     /**
      * @brief Set the quit key char
      *
@@ -165,7 +184,7 @@ public:
      *
      * @return Menu*
      */
-    Menu *setQuitKey(char key = 'q');
+    Menu &setQuitKey(char key = 'q');
     /**
      * @brief Clear the screen
      *

@@ -10,6 +10,7 @@
 #include "Board.h"
 #include "Player.h"
 #include "Robot.h"
+#include "Menu.h"
 
 enum WallsStyle
 {
@@ -58,21 +59,26 @@ struct BoardTheme_t
 class GameManager
 {
 private:
-    Tile* goal_tile;
+    Tile *goal_tile;
     Board board;
     std::vector<Player*> players;
     std::vector<Robot*> robots;
     BoardTheme_t boardTheme;
+    bool round_finished = false; // #TODO: setup in setupRound() method
+    bool cur_player_won = false; // #TODO: setup in setupRound() method
+
+private:
+    bool processMovement(Robot *robot, Direction direction, int *deplacement, Menu *m, int player_index);
 
 public:
     /* Constructors */
     GameManager();
 
     /* Getters */
-    Tile* getGoalTile();
-    std::vector<Player*> getPlayers();
-    Player* getPlayer(int index);
-    Board* getBoard() { return &this->board; }
+    Tile *getGoalTile();
+    std::vector<Player *> getPlayers();
+    Player *getPlayer(int index);
+    Board *getBoard() { return &this->board; }
 
     /* Setters */
     void setWallsStyle(WallsStyle wallsStyle);
@@ -81,22 +87,26 @@ public:
     /* Methods */
     /**
      * @brief Adds a player to the game.
-     * 
+     *
      * @param player (IN) Pointer to the player to be added.
      */
-    void addPlayer(Player* player);
+    void addPlayer(Player *player);
     /**
      * @brief Removes a player from the game.
-     * 
+     *
      * @param player (IN) Pointer to the player to be removed.
      */
-    void removePlayer(Player* player);
+    void removePlayer(Player *player);
     /**
      * @brief Returns displayed board string
-     * 
-     * @return std::string 
+     *
+     * @return std::string
      */
     std::string displayBoard();
+    /**
+     * @brief Generate or regenerate game board
+     */
+    void generateBoard();
     /**
      * @brief Sets up the game for a new round.
      * @note This function is called at the beginning of each round.
@@ -116,7 +126,7 @@ public:
      * @brief Plays a round of the game.
      * @note This function is called to play a round of the game.
      */
-    void playRound();
+    bool playRound(int player_index);
     /**
      * @brief Displays the results of the game.
      * @note This function is called at the end of the game.
