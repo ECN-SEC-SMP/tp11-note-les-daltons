@@ -1,0 +1,31 @@
+@startuml usecase_diagram
+
+left to right direction
+actor "Joueur(s)" as player
+actor "Joueur Selectioné" as selected_player
+rectangle Jeu {
+  usecase "Réflexion (Attente annonce)" as UC1
+  usecase "Annonce (démarrage minuteur)" as UC2
+  usecase "Saisie prédictions" as UC3
+  usecase "Traitement prédictions" as UC3_1
+
+  rectangle Plateau {
+    usecase "Déplacer robot" as UC4
+    usecase "Vérification Résultat" as UC5
+  }
+}
+
+player --> UC1
+player --> UC2
+player --> UC3
+
+UC3 --> UC3_1
+UC3_1 --> selected_player
+
+selected_player -left-> UC4
+UC4 -left-> UC5
+
+UC5 --> "Si échec" UC3_1
+
+
+@enduml
