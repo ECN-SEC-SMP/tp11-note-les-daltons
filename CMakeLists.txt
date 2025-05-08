@@ -19,11 +19,11 @@ set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 # Collect all header and source files
-file(GLOB_RECURSE HEADER_FILES ${INCLUDE_DIR}/*.h ${INCLUDE_DIR}/*.hpp)
+file(GLOB_RECURSE HEADER_FILES ${INCLUDE_DIR}/*.hpp ${INCLUDE_DIR}/*.h)
 file(GLOB_RECURSE SOURCE_FILES ${SOURCE_DIR}/*.cpp ${SOURCE_DIR}/*.c)
 
 # Add the executable
-add_executable(${PROJECT_NAME}${EXECUTABLE_EXTENTION} ${SOURCE_FILES})
+add_executable(${PROJECT_NAME}${EXECUTABLE_EXTENTION} ${SOURCE_FILES} ${HEADER_FILES})
 
 # Add the include directories
 target_include_directories(${PROJECT_NAME}${EXECUTABLE_EXTENTION} PUBLIC ${INCLUDE_DIR})
@@ -38,6 +38,8 @@ target_compile_options(${PROJECT_NAME}${EXECUTABLE_EXTENTION} PRIVATE
   $<$<CONFIG:Debug>:-g ${DEBUG_COMPILE_OPTIONS}>
   $<$<CONFIG:Release>:${RELEASE_COMPILE_OPTIONS}>
 )
+set_target_properties(${TARGET_NAME} PROPERTIES
+    $<$<CONFIG:Release>COMPILE_WARNING_AS_ERROR ON>)
 
 # Add other necessary directories or libraries here
 # target_link_libraries(${PROJECT_NAME} PRIVATE some_library) # Example: linking to a library

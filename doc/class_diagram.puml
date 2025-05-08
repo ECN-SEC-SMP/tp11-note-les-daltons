@@ -28,13 +28,15 @@ class Tile {
     + Tile(color: Color, shape: Shape)
     + getColor(): Color
     + getShape(): Shape
+    + getEmoji(): std::string
 }
 
 class Frame {
-    - tile: *Tile
+    - tile: Tile*
     - walls: bool[4]
-    + Frame(tile: Tile, walls: bool[4])
-    + getTile(): Tile
+    + Frame()
+    + Frame(tile: Tile*, walls: bool[4])
+    + getTile(): Tile*
     + getWalls(): bool[4]
     + canMove(direction: Direction): bool
 }
@@ -44,27 +46,28 @@ class QuarterBoard {
     - frames: Frame[8][8]
     + QuarterBoard(id: int, frames: Frame[8][8])
     + getId(): int
-    + getFrames(): Frame[8][8]
     + getFrame(int x, int y): Frame
+    + applySymetry(): QuarterBoard
 }
 
 class Board {
     - quarters: QuarterBoard[2][2]
     + Board()
-    + generate(): void
     + getFrame(int x, int y): Frame
-    + getQuarter(int x, int y): QuarterBoard
+    + generate(): void
 }
 
 class Robot {
     - color: Color
     - position: std::pair
     + Robot(color: Color, position: std::pair)
+    + Robot(color: Color, x: int, y: int)
     + getColor(): Color
     + getPosition(): std::pair
     + getX(): int
     + getY(): int
     + move(int x, int y): void
+    getEmoji(): std::string
 }
 
 class Player {
@@ -82,14 +85,19 @@ class Player {
 class GameManager {
     - goal_tile: Tile
     - board: Board
-    - players: std::vector<Player>
+    - players: std::vector<Player*>
+    - robots: std::vector<Robot*>
+
     + GameManager()
-    + getGoalTile(): Tile
-    + getPlayers(): std::vector<Player>
-    + addPlayer(player: Player): void
-    + removePlayer(player: Player): void
-    + getPlayer(int index): Player
-    + displayBoard(): void
+    
+    + getGoalTile(): Tile*
+    + getPlayers(): std::vector<Player*>
+    + getPlayer(int index): Player*
+    + getBoard(): Board*
+    
+    + addPlayer(player: Player*): void
+    + removePlayer(player: Player*): void
+    + displayBoard(): std::string
     + setupRound(): void
     + processPredictionsInputs(): void
     + sortPlayersByPredictions(): void
