@@ -60,8 +60,9 @@ Player *GameManager::getPlayer(int index)
     return players[index];
 }
 
-Board *GameManager::getBoard() { 
-    return &this->board; 
+Board *GameManager::getBoard()
+{
+    return &this->board;
 }
 
 /* Methods */
@@ -205,19 +206,19 @@ std::string GameManager::displayBoard()
                 /* Robot on the frame, and frame is a tile */
                 if (frame_is_tile && robot_on_frame)
                 {
-                    temp_tiles += frame.getTile()->getEmoji() + robot_on_frame->getEmoji();
+                    temp_tiles += frame.getTile()->getEmoji() + RESET + robot_on_frame->getEmoji() + RESET;
                 }
 
                 /* Robot on the frame */
                 else if (robot_on_frame)
                 {
-                    temp_tiles += " " + robot_on_frame->getEmoji() + " ";
+                    temp_tiles += " " + robot_on_frame->getEmoji() + RESET " ";
                 }
 
                 /* Frame is a tile */
                 else if (frame_is_tile)
                 {
-                    temp_tiles += " " + frame.getTile()->getEmoji() + " ";
+                    temp_tiles += " " + frame.getTile()->getEmoji() + RESET " ";
                 }
             }
             else
@@ -310,6 +311,37 @@ Robot *GameManager::getRobotOnFrame(int x, int y)
     return nullptr;
 }
 
+void GameManager::setupNewRound()
+{
+    // Get the goal tile
+    int goal_tile_index = rand() % Board::TILES.size();
+    this->goal_tile = &Board::TILES[goal_tile_index];
+
+    // Place randomly robots on the board
+    this->robots_coordinates.clear();
+    for (int i = 0; i < 4; i++)
+    {
+        int x, y;
+        do
+        {
+            x = rand() % 16;
+            if (x == 8)
+                x += 1;
+            if (x == 7)
+                x -= 1;
+
+            y = rand() % 16;
+            if (y == 8)
+                x += 1;
+            if (y == 7)
+                x -= 1;
+        } while (std::count(this->robots_coordinates.begin(), this->robots_coordinates.end(), std::make_pair(x, y))); // Vérifie si la position est déjà utilisée
+
+        // Add coordinate
+        this->robots_coordinates.push_back(std::make_pair(x, y));
+    }
+}
+
 void GameManager::setupRound()
 {
     // Reset members
@@ -317,32 +349,22 @@ void GameManager::setupRound()
     this->cur_player_won = false;
     this->moves_str = "";
 
-    // Get the goal tile
-    int goal_tile_index = rand() % Board::TILES.size();
-    this->goal_tile = &Board::TILES[goal_tile_index];
-
-    // Place randomly robots on the board
+    // Place robots on the board
+    if (this->robots_coordinates.size() < 4)
+        return;
     this->robots.clear();
     for (int i = 0; i < 4; i++)
     {
-        int x = rand() % 16;
-        if (x == 8)
-            x += 1;
-        if (x == 7)
-            x -= 1;
-
-        int y = rand() % 16;
-        if (y == 8)
-            x += 1;
-        if (y == 7)
-            x -= 1;
-
+        int x = this->robots_coordinates[i].first;
+        int y = this->robots_coordinates[i].second;
         this->robots.push_back(new Robot(Color(i), x, y));
     }
 }
 
 void GameManager::processPredictionsInputs()
 {
+    this->setupRound();
+
     Menu::clear();
     std::cout << this->displayBoard() << std::endl;
     std::cout << std::endl;
@@ -482,10 +504,11 @@ bool GameManager::processMovement(Robot *robot, Direction direction, int *deplac
         }
         this->moves_str += ANSI_RESET;
     }
-    m->setTitle(displayBoard() + "\nMoves: " + this->moves_str + "\n");
+    m->setTitle(displayBoard() + this->players[player_index]->getName() + "'s moves: " + this->moves_str + "\n");
     m->displayMenu();
 
-    if (this->board.getFrame(robot_X, robot_Y).getTile() == this->goal_tile && this->goal_tile->getColor() == robot->getColor())
+    if (this->board.getFrame(robot_X, robot_Y).getTile() == this->goal_tile &&
+        (this->goal_tile->getColor() == robot->getColor() || this->goal_tile->getColor() == RAINBOW))
     {
         std::cout << "\033[32m\033[1m You won !!\033[0m" << std::endl;
         this->round_finished = true;
@@ -505,11 +528,13 @@ bool GameManager::processMovement(Robot *robot, Direction direction, int *deplac
 
 bool GameManager::playRound(int player_index)
 {
+    // Reset values
     int move_count = 0;
-    Menu menu(displayBoard(), 0);
+    this->setupRound();
+
+    // Setup Menu
+    Menu menu(displayBoard() + this->players[player_index]->getName() + " round\n", 0);
     menu.preventArguments(true);
-    this->cur_player_won = false;
-    this->moves_str = "";
 
     for (auto &&robot : this->robots)
     {

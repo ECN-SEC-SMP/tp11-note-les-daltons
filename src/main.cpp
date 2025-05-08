@@ -1,4 +1,3 @@
-
 #include <iostream>
 
 #include "GameManager.h"
@@ -40,21 +39,32 @@ int main(int argc, char const *argv[])
                 CONTINUE_ON_ENTER_PROMPT
                 continue;
             }
-            gm.setupRound();
+            gm.setupNewRound();
             gm.processPredictionsInputs();
             gm.sortPlayersByPredictions();
-            if (gm.playRound(0))
-                std::cout << ANSI_GREEN ANSI_BOLD "You WON!!" ANSI_RESET << std::endl;
-            else
-                std::cout << ANSI_RED ANSI_BOLD "You Lose!" ANSI_RESET << std::endl;
-            CONTINUE_ON_ENTER_PROMPT
+            int player_index = 0;
+            bool player_won = false;
+            do
+            {
+                if ((player_won = gm.playRound(player_index)) == true)
+                    std::cout << ANSI_GREEN ANSI_BOLD "You WON!!" ANSI_RESET << std::endl;
+                else
+                {
+                    std::cout << ANSI_RED ANSI_BOLD "You Lose!" ANSI_RESET << std::endl;
+                    player_index++;
+                    if (player_index >= (int)gm.getPlayers().size())
+                        break;
+                }
+                CONTINUE_ON_ENTER_PROMPT
+            } while (player_won == false);
         }
         else if (pos == 2) // Add Player
         {
             Menu player_menu(GAME_ASCII_BANNER ANSI_BOLD "Add Player\n" ANSI_ITALIC "(Set player name on first option)\n" ANSI_RESET, 0);
             player_menu.addOption("Player name: ").addOption("Cancel.");
             int sel_pos = player_menu.run();
-            if (sel_pos != 1) continue;
+            if (sel_pos != 1)
+                continue;
             std::string player_name = player_menu.getOptionsArgs()[0];
             gm.addPlayer(new Player(player_name));
         }

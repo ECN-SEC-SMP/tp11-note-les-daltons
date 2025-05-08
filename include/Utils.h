@@ -1,6 +1,8 @@
 #ifndef _UTILS_H_
 #define _UTILS_H_
 
+#include <string>
+
 /**
  * @brief Generate new random seed (based on time)
  */
