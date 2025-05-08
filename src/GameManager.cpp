@@ -1,7 +1,7 @@
 #include <stdexcept>
 #include <algorithm>
 /* TEMP ===================================================================== */
-// #define SHOW_DOUBLE_WALLS
+// #define SHOW_ALL_WALLS
 #include <ctime>
 #include <cstdlib>
 #include <initializer_list>
@@ -9,36 +9,6 @@
 
 #include "typedef.h"
 #include "GameManager.h"
-
-#define RESET ANSI_RESET ANSI_WHITE_BG
-
-/* Grid style */
-#define GRID_COLOR ANSI_LIGHT_GRAY
-#define HORIZONTAL_GRID GRID_COLOR "────" RESET
-#define VERTICAL_GRID GRID_COLOR "│" RESET
-
-/* Wall style */
-#define WALL_COLOR ANSI_BLACK
-#define HORIZONTAL_WALL WALL_COLOR "════" RESET
-#define VERTICAL_WALL WALL_COLOR "║" RESET
-
-/* Node styles */
-#define NODE GRID_COLOR "┼" RESET
-#define NODE_MIDDLE WALL_COLOR "╬" RESET
-#define NODE_HORIZONTAL WALL_COLOR "═" RESET
-#define NODE_VERTICAL WALL_COLOR "║" RESET
-
-#define NODE_TOP WALL_COLOR "╦" RESET
-#define NODE_LEFT WALL_COLOR "╠" RESET
-#define NODE_RIGHT WALL_COLOR "╣" RESET
-#define NODE_BOTTOM WALL_COLOR "╩" RESET
-
-#define NODE_TOP_LEFT WALL_COLOR "╔" RESET
-#define NODE_TOP_RIGHT WALL_COLOR "╗" RESET
-#define NODE_BOTTOM_LEFT WALL_COLOR "╚" RESET
-#define NODE_BOTTOM_RIGHT WALL_COLOR "╝" RESET
-
-#define EMPTY_FRAME RESET "    "
 
 #define BOARD_SIZE 16
 
@@ -48,12 +18,14 @@ GameManager::GameManager()
     : goal_tile(nullptr), board(Board()), players(std::vector<Player *>())
 {
     /* TEMP ================================================================= */
-    // this->goal_tile = new Tile(RED, CIRCLE);
-    // std::srand(unsigned(std::time(0)));
-    // this->robots.push_back(new Robot(RED, std::pair<int, int>(std::rand() % 16, std::rand() % 16)));
-    // this->robots.push_back(new Robot(BLUE, std::pair<int, int>(std::rand() % 16, std::rand() % 16)));
-    // this->robots.push_back(new Robot(GREEN, std::pair<int, int>(std::rand() % 16, std::rand() % 16)));
-    // this->robots.push_back(new Robot(YELLOW, std::pair<int, int>(std::rand() % 16, std::rand() % 16)));
+    this->goal_tile = new Tile(RED, CIRCLE);
+    std::srand(unsigned(std::time(0)));
+    this->robots.push_back(new Robot(RED, std::pair<int, int>(std::rand() % 16, std::rand() % 16)));
+    this->robots.push_back(new Robot(BLUE, std::pair<int, int>(std::rand() % 16, std::rand() % 16)));
+    this->robots.push_back(new Robot(GREEN, std::pair<int, int>(std::rand() % 16, std::rand() % 16)));
+    this->robots.push_back(new Robot(YELLOW, std::pair<int, int>(std::rand() % 16, std::rand() % 16)));
+
+    this->setWallsStyle(DOUBLE_WALLS);
     /* ====================================================================== */
 }
 
@@ -77,6 +49,73 @@ Player *GameManager::getPlayer(int index)
     }
     return players[index];
 }
+
+/* Setters */
+
+void GameManager::setWallsStyle(WallsStyle wallsStyle)
+{
+    switch (wallsStyle)
+    {
+    case SIMPLE_WALLS:
+        this->boardTheme.horizontal_wall = HORIZONTAL_WALL_SIMPLE;
+        this->boardTheme.vertical_wall = VERTICAL_WALL_SIMPLE;
+
+        this->boardTheme.node_middle = NODE_MIDDLE_SIMPLE;
+        this->boardTheme.node_horizontal = NODE_HORIZONTAL_SIMPLE;
+        this->boardTheme.node_vertical = NODE_VERTICAL_SIMPLE;
+
+        this->boardTheme.node_top = NODE_TOP_SIMPLE;
+        this->boardTheme.node_left = NODE_LEFT_SIMPLE;
+        this->boardTheme.node_right = NODE_RIGHT_SIMPLE;
+        this->boardTheme.node_bottom = NODE_BOTTOM_SIMPLE;
+
+        this->boardTheme.node_top_left = NODE_TOP_LEFT_SIMPLE;
+        this->boardTheme.node_top_right = NODE_TOP_RIGHT_SIMPLE;
+        this->boardTheme.node_bottom_left = NODE_BOTTOM_LEFT_SIMPLE;
+        this->boardTheme.node_bottom_right = NODE_BOTTOM_RIGHT_SIMPLE;
+        break;
+
+    case DOUBLE_WALLS:
+        this->boardTheme.horizontal_wall = HORIZONTAL_WALL_DOUBLE;
+        this->boardTheme.vertical_wall = VERTICAL_WALL_DOUBLE;
+
+        this->boardTheme.node_middle = NODE_MIDDLE_DOUBLE;
+        this->boardTheme.node_horizontal = NODE_HORIZONTAL_DOUBLE;
+        this->boardTheme.node_vertical = NODE_VERTICAL_DOUBLE;
+
+        this->boardTheme.node_top = NODE_TOP_DOUBLE;
+        this->boardTheme.node_left = NODE_LEFT_DOUBLE;
+        this->boardTheme.node_right = NODE_RIGHT_DOUBLE;
+        this->boardTheme.node_bottom = NODE_BOTTOM_DOUBLE;
+
+        this->boardTheme.node_top_left = NODE_TOP_LEFT_DOUBLE;
+        this->boardTheme.node_top_right = NODE_TOP_RIGHT_DOUBLE;
+        this->boardTheme.node_bottom_left = NODE_BOTTOM_LEFT_DOUBLE;
+        this->boardTheme.node_bottom_right = NODE_BOTTOM_RIGHT_DOUBLE;
+        break;
+
+    default:
+        throw std::invalid_argument("Invalid walls style");
+    }
+} 
+
+// void GameManager::setColorTheme(ColorTheme colorTheme)
+// {
+//     switch (colorTheme)
+//     {
+//     case LIGHT_THEME:
+//         this->boardTheme.background_color = ANSI_WHITE_BG;
+//         this->boardTheme.grid_color = ANSI_LIGHT_GRAY;
+//         this->boardTheme.wall_color = ANSI_BLACK;
+//         break;
+
+//     case DARK_THEME:
+//         this->boardTheme.background_color = ANSI_BLACK;
+//         this->boardTheme.grid_color = ANSI_LIGHT_GRAY;
+//         this->boardTheme.wall_color = ANSI_WHITE_BG;
+//         break;
+//     }
+// }
 
 /* Methods */
 
@@ -199,59 +238,59 @@ std::string GameManager::computeNode(int x, int y)
     {
         if (top_wall && left_wall && bottom_wall && right_wall)
         {
-            node = NODE_MIDDLE;
+            node = this->boardTheme.node_middle;
         }
 
         /* Walls */
         else if (left_wall && right_wall && !top_wall && !bottom_wall) 
         {
-            node = NODE_HORIZONTAL;
+            node = this->boardTheme.node_horizontal;
         }
         else if (top_wall && bottom_wall && !left_wall && !right_wall) 
         {
-            node = NODE_VERTICAL;
+            node = this->boardTheme.node_vertical;
         }
 
         /* Corners */
         else if (bottom_wall && right_wall && !top_wall && !left_wall)
         {
-            node = NODE_TOP_LEFT;
+            node = this->boardTheme.node_top_left;
         }
         else if (left_wall && bottom_wall && !top_wall && !right_wall)
         {
-            node = NODE_TOP_RIGHT;
+            node = this->boardTheme.node_top_right;
         }
         else if (top_wall && left_wall && !bottom_wall && !right_wall)
         {
-            node = NODE_BOTTOM_RIGHT;
+            node = this->boardTheme.node_bottom_right;
         }
         else if (top_wall && right_wall && !bottom_wall && !left_wall)
         {
-            node = NODE_BOTTOM_LEFT;
+            node = this->boardTheme.node_bottom_left;
         }
         
         /* Node with 3 walls */
         else if (left_wall && bottom_wall && right_wall && !top_wall)
         {
-            node = NODE_TOP;
+            node = this->boardTheme.node_top;
         }
         else if (left_wall && top_wall && right_wall && !bottom_wall)
         {
-            node = NODE_BOTTOM;
+            node = this->boardTheme.node_bottom;
         }
         else if (top_wall && right_wall && bottom_wall && !left_wall)
         {
-            node = NODE_LEFT;
+            node = this->boardTheme.node_left;
         }
         else if (top_wall && left_wall && bottom_wall && !right_wall)
         {
-            node = NODE_RIGHT;
+            node = this->boardTheme.node_right;
         }
 
         /* Grid node */
         else
         {
-            node += NODE;
+            node += this->boardTheme.node;
         }
     }
 
@@ -269,7 +308,7 @@ std::string GameManager::displayBoard()
         temp_seperator = "";
         temp_tiles = "";
 /* TEMP ===================================================================== */
-#ifdef SHOW_DOUBLE_WALLS
+#ifdef SHOW_ALL_WALLS
         temp_seperator += " ";
         temp_tiles += VERTICAL_WALL;
 #endif
@@ -298,12 +337,12 @@ std::string GameManager::displayBoard()
             /* Classic wall */
             else if (frame.getWalls()[UP])
             {
-                temp_seperator += HORIZONTAL_WALL;
+                temp_seperator += this->boardTheme.horizontal_wall;
             }
             /* No wall */
             else
             {
-                temp_seperator += HORIZONTAL_GRID;
+                temp_seperator += this->boardTheme.horizontal_grid;
             }
 
             /* Add right node if it's the last column */
@@ -320,11 +359,11 @@ std::string GameManager::displayBoard()
             }
             else if (frame.getWalls()[LEFT])
             {
-                temp_tiles += VERTICAL_WALL;
+                temp_tiles += this->boardTheme.vertical_wall;
             }
             else
             {
-                temp_tiles += VERTICAL_GRID;
+                temp_tiles += this->boardTheme.vertical_grid;
             }
 
             /* Tile content ------------------------------------------------- */
@@ -361,8 +400,8 @@ std::string GameManager::displayBoard()
             }
 
 /* TEMP ===================================================================== */
-#ifdef SHOW_DOUBLE_WALLS
-            temp_seperator += NODE;
+#ifdef SHOW_ALL_WALLS
+            temp_seperator += this->boardTheme.node;
             if (frame.getWalls()[RIGHT])
             {
                 temp_tiles += VERTICAL_WALL;
@@ -379,17 +418,17 @@ std::string GameManager::displayBoard()
             {
                 if (frame.getWalls()[RIGHT])
                 {
-                    temp_tiles += VERTICAL_WALL;
+                    temp_tiles += this->boardTheme.vertical_wall;
                 }
                 else
                 {
-                    temp_tiles += VERTICAL_GRID;
+                    temp_tiles += this->boardTheme.vertical_grid;
                 }
             }
         }
         output += temp_seperator + ANSI_RESET + "\n" + RESET;
 /* TEMP ===================================================================== */
-#ifdef SHOW_DOUBLE_WALLS
+#ifdef SHOW_ALL_WALLS
         temp_seperator = "";
         for (int x = 0; x < BOARD_SIZE; x++)
         {
@@ -431,11 +470,11 @@ std::string GameManager::displayBoard()
         /* Wall */
         if (frame.getWalls()[DOWN])
         {
-            temp_seperator += HORIZONTAL_WALL;
+            temp_seperator += this->boardTheme.horizontal_wall;
         }
         else
         {
-            temp_seperator += HORIZONTAL_GRID;
+            temp_seperator += this->boardTheme.horizontal_grid;
         }
     }
 
