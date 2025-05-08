@@ -75,6 +75,10 @@ public:
     /**
      * @brief Plays a round of the game.
      * @note This function is called to play a round of the game.
+     * 
+     * @param player_index (IN) Player index in vector (0: first, 1: second, ...)
+     * @return true if player win
+     * @return false else
      */
     bool playRound(int player_index);
     /**

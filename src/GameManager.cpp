@@ -8,7 +8,7 @@
 #include "GameManager.h"
 #include "Menu.h"
 
-#define RESET ANSI_RESET ANSI_WHITE_BG
+#define RESET ANSI_RESET ANSI_BG_WHITE
 
 /* Grid style */
 #define GRID_COLOR ANSI_LIGHT_GRAY
@@ -307,11 +307,16 @@ Robot *GameManager::getRobotOnFrame(int x, int y)
 
 void GameManager::setupRound()
 {
+    // Reset members
+    this->round_finished = false;
+    this->cur_player_won = false;
+
     // Get the goal tile
     int goal_tile_index = rand() % Board::TILES.size();
     this->goal_tile = &Board::TILES[goal_tile_index];
 
     // Place randomly robots on the board
+    this->robots.clear();
     for (int i = 0; i < 4; i++)
     {
         int x = rand() % 16;
