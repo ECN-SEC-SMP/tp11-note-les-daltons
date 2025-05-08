@@ -3,6 +3,7 @@
 
 #include "typedef.h"
 #include "GameManager.h"
+#include "Utils.h"
 
 #define BOARD_SIZE 16
 
@@ -89,7 +90,7 @@ void GameManager::setWallsStyle(WallsStyle wallsStyle)
 //     switch (colorTheme)
 //     {
 //     case LIGHT_THEME:
-//         this->boardTheme.background_color = ANSI_WHITE_BG;
+//         this->boardTheme.background_color = ANSI_BG_WHITE;
 //         this->boardTheme.grid_color = ANSI_LIGHT_GRAY;
 //         this->boardTheme.wall_color = ANSI_BLACK;
 //         break;
@@ -97,7 +98,7 @@ void GameManager::setWallsStyle(WallsStyle wallsStyle)
 //     case DARK_THEME:
 //         this->boardTheme.background_color = ANSI_BLACK;
 //         this->boardTheme.grid_color = ANSI_LIGHT_GRAY;
-//         this->boardTheme.wall_color = ANSI_WHITE_BG;
+//         this->boardTheme.wall_color = ANSI_BG_WHITE;
 //         break;
 //     }
 // }
@@ -357,19 +358,19 @@ std::string GameManager::displayBoard()
                 /* Robot on the frame, and frame is a tile */
                 if (frame_is_tile && robot_on_frame)
                 {
-                    temp_tiles += frame.getTile()->getEmoji() + robot_on_frame->getEmoji();
+                    temp_tiles += frame.getTile()->getEmoji() + RESET + robot_on_frame->getEmoji() + RESET;
                 }
 
                 /* Robot on the frame */
                 else if (robot_on_frame)
                 {
-                    temp_tiles += " " + robot_on_frame->getEmoji() + " ";
+                    temp_tiles += " " + robot_on_frame->getEmoji() + RESET " ";
                 }
 
                 /* Frame is a tile */
                 else if (frame_is_tile)
                 {
-                    temp_tiles += " " + frame.getTile()->getEmoji() + " ";
+                    temp_tiles += " " + frame.getTile()->getEmoji() + RESET " ";
                 }
             }
             else
@@ -505,7 +506,7 @@ void GameManager::processPredictionsInputs()
         std::cout << this->displayBoard() << std::endl;
         std::cout << std::endl;
         std::cout << "\033[1mYou have \033[31m" << i << "\033[0m\033[1m seconds to find your solution prdiction...\033[0m" << std::endl;
-        std::this_thread::sleep_for(std::chrono::seconds(1));
+        sleep(1);
     }
 
     Menu::clear();

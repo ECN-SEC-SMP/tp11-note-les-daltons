@@ -32,7 +32,7 @@ enum ColorTheme
 struct BoardTheme_t
 {
     /* Colors */
-    std::string background_color = ANSI_WHITE_BG;
+    std::string background_color = ANSI_BG_WHITE;
     std::string grid_color = ANSI_LIGHT_GRAY;
     std::string wall_color = ANSI_BLACK;
 

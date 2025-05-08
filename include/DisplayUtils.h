@@ -1,7 +1,7 @@
 #pragma once
 
 /* Colors */
-#define BACKGROUND_COLOR ANSI_WHITE_BG
+#define BACKGROUND_COLOR ANSI_BG_WHITE
 #define GRID_COLOR ANSI_LIGHT_GRAY
 #define NODE GRID_COLOR "┼" RESET
 #define WALL_COLOR ANSI_BLACK
