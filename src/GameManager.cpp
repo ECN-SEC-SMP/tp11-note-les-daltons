@@ -117,48 +117,68 @@ std::string GameManager::computeNode(int x, int y)
         left: ════+----   right:  ----+════
                   ¦                   ¦    
     */
-
     bool left_wall;
     bool right_wall;
     bool top_wall;
     bool bottom_wall;
 
+    /* Check x coordinate to get left and right walls ----------------------- */
+    /* Left border of the board */
     if (x == 0)
     {
         left_wall = false;
         right_wall = current_frame.getWalls()[UP];
     }
+
+    /* Right border of the board */
     else if (x == BOARD_SIZE)
     {
+        /* Current and top frames don't exist because x is outside the board. */
+        /* Thus, only the left and top-left frames are used to get the walls. */
         top_wall = top_left_frame.getWalls()[RIGHT];
         left_wall = left_frame.getWalls()[UP];
         right_wall = false;
         bottom_wall = left_frame.getWalls()[RIGHT];
     }
+    
+    /* Inside the board */
     else
     {
         left_wall = left_frame.getWalls()[UP];
         right_wall = current_frame.getWalls()[UP];
     }
 
+    /* Check y coordinate to get top and bottom walls ----------------------- */
+    /* Top boarder of the board */
     if (y == 0)
     {
         top_wall = false;
+        /* Don't change bottom_wall when x is outside the board because it has
+        already been set when checking the x coordinate */
         if (x != BOARD_SIZE)
         {
             bottom_wall = current_frame.getWalls()[LEFT];
         }
     }
+
+    /* Bottom border of the board */
     else if (y == BOARD_SIZE)
     {
+        /* Don't change top_wall and right_wall when x is outside the board
+        because it has already been set when checking the x coordinate */
         if (x != BOARD_SIZE)
         {
             top_wall = top_frame.getWalls()[LEFT];
             right_wall = top_frame.getWalls()[DOWN];
         }
+        /* Left frame doesn't exist because y is outside the board. Thus, the 
+        top left frame is used to get the left wall */
         left_wall = top_left_frame.getWalls()[DOWN];
         bottom_wall = false;
     }
+
+    /* Inside the board, except the right border because it has already been 
+    set when checking the x coordinate */
     else if (x != BOARD_SIZE)
     {
         top_wall = top_frame.getWalls()[LEFT];
@@ -182,6 +202,7 @@ std::string GameManager::computeNode(int x, int y)
             node = NODE_MIDDLE;
         }
 
+        /* Walls */
         else if (left_wall && right_wall && !top_wall && !bottom_wall) 
         {
             node = NODE_HORIZONTAL;
@@ -191,6 +212,7 @@ std::string GameManager::computeNode(int x, int y)
             node = NODE_VERTICAL;
         }
 
+        /* Corners */
         else if (bottom_wall && right_wall && !top_wall && !left_wall)
         {
             node = NODE_TOP_LEFT;
@@ -208,6 +230,7 @@ std::string GameManager::computeNode(int x, int y)
             node = NODE_BOTTOM_LEFT;
         }
         
+        /* Node with 3 walls */
         else if (left_wall && bottom_wall && right_wall && !top_wall)
         {
             node = NODE_TOP;
@@ -224,6 +247,8 @@ std::string GameManager::computeNode(int x, int y)
         {
             node = NODE_RIGHT;
         }
+
+        /* Grid node */
         else
         {
             node += NODE;
