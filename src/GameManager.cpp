@@ -1,8 +1,11 @@
 #include <stdexcept>
 #include <algorithm>
-// #include <ctime>
-// #include <cstdlib>
-// #include <initializer_list>
+/* TEMP ===================================================================== */
+// #define SHOW_DOUBLE_WALLS
+#include <ctime>
+#include <cstdlib>
+#include <initializer_list>
+/* ========================================================================== */
 
 #include "typedef.h"
 #include "GameManager.h"
@@ -21,10 +24,15 @@
 
 /* Node styles */
 #define NODE GRID_COLOR "┼" RESET
-#define NODE_TOP WALL_COLOR "═" RESET
-#define NODE_BOTTOM WALL_COLOR "═" RESET
-#define NODE_LEFT WALL_COLOR "║" RESET
-#define NODE_RIGHT WALL_COLOR "║" RESET
+#define NODE_MIDDLE WALL_COLOR "╬" RESET
+#define NODE_HORIZONTAL WALL_COLOR "═" RESET
+#define NODE_VERTICAL WALL_COLOR "║" RESET
+
+#define NODE_TOP WALL_COLOR "╦" RESET
+#define NODE_LEFT WALL_COLOR "╠" RESET
+#define NODE_RIGHT WALL_COLOR "╣" RESET
+#define NODE_BOTTOM WALL_COLOR "╩" RESET
+
 #define NODE_TOP_LEFT WALL_COLOR "╔" RESET
 #define NODE_TOP_RIGHT WALL_COLOR "╗" RESET
 #define NODE_BOTTOM_LEFT WALL_COLOR "╚" RESET
@@ -32,18 +40,21 @@
 
 #define EMPTY_FRAME RESET "    "
 
+#define BOARD_SIZE 16
+
 /* Constructors */
 
 GameManager::GameManager()
     : goal_tile(nullptr), board(Board()), players(std::vector<Player *>())
 {
-    // // TODO: clear constructor
+    /* TEMP ================================================================= */
     // this->goal_tile = new Tile(RED, CIRCLE);
     // std::srand(unsigned(std::time(0)));
     // this->robots.push_back(new Robot(RED, std::pair<int, int>(std::rand() % 16, std::rand() % 16)));
     // this->robots.push_back(new Robot(BLUE, std::pair<int, int>(std::rand() % 16, std::rand() % 16)));
     // this->robots.push_back(new Robot(GREEN, std::pair<int, int>(std::rand() % 16, std::rand() % 16)));
     // this->robots.push_back(new Robot(YELLOW, std::pair<int, int>(std::rand() % 16, std::rand() % 16)));
+    /* ====================================================================== */
 }
 
 /* Getters */
@@ -79,10 +90,151 @@ void GameManager::removePlayer(Player *player)
     this->players.erase(std::find(this->players.begin(), this->players.end(), player));
 }
 
+std::string GameManager::computeNode(int x, int y)
+{
+    /* Get the frames around to the node */
+    /*
+                   XXXX¦                     ¦XXXX
+        top_left:  ----+----   top:      ----+----
+                       ¦                     ¦    
+
+                       ¦                     ¦    
+        left:      ----+----   current:  ----+----
+                   XXXX¦                     ¦XXXX
+    */
+    Frame current_frame = this->board.getFrame(x, y);
+    Frame left_frame = this->board.getFrame(x - 1, y);
+    Frame top_left_frame = this->board.getFrame(x - 1, y - 1);
+    Frame top_frame = this->board.getFrame(x, y - 1);
+
+    /* Get the walls around the node */
+    /*
+                  ║                   ¦    
+        top:  ----+----   bottom: ----+----
+                  ¦                   ║    
+
+                  ¦                   ¦    
+        left: ════+----   right:  ----+════
+                  ¦                   ¦    
+    */
+
+    bool left_wall;
+    bool right_wall;
+    bool top_wall;
+    bool bottom_wall;
+
+    if (x == 0)
+    {
+        left_wall = false;
+        right_wall = current_frame.getWalls()[UP];
+    }
+    else if (x == BOARD_SIZE)
+    {
+        top_wall = top_left_frame.getWalls()[RIGHT];
+        left_wall = left_frame.getWalls()[UP];
+        right_wall = false;
+        bottom_wall = left_frame.getWalls()[RIGHT];
+    }
+    else
+    {
+        left_wall = left_frame.getWalls()[UP];
+        right_wall = current_frame.getWalls()[UP];
+    }
+
+    if (y == 0)
+    {
+        top_wall = false;
+        if (x != BOARD_SIZE)
+        {
+            bottom_wall = current_frame.getWalls()[LEFT];
+        }
+    }
+    else if (y == BOARD_SIZE)
+    {
+        if (x != BOARD_SIZE)
+        {
+            top_wall = top_frame.getWalls()[LEFT];
+            right_wall = top_frame.getWalls()[DOWN];
+        }
+        left_wall = top_left_frame.getWalls()[DOWN];
+        bottom_wall = false;
+    }
+    else if (x != BOARD_SIZE)
+    {
+        top_wall = top_frame.getWalls()[LEFT];
+        bottom_wall = current_frame.getWalls()[LEFT];
+    }
+
+    std::string node;
+    /* Goal tile displayed in the center of the board */
+    if (x == 8 && y == 8)
+    {
+        if (this->goal_tile == nullptr)
+        {
+            throw std::runtime_error("Goal tile is not set");
+        }
+        node = this->goal_tile->getEmoji();
+    }
+    else
+    {
+        if (top_wall && left_wall && bottom_wall && right_wall)
+        {
+            node = NODE_MIDDLE;
+        }
+
+        else if (left_wall && right_wall && !top_wall && !bottom_wall) 
+        {
+            node = NODE_HORIZONTAL;
+        }
+        else if (top_wall && bottom_wall && !left_wall && !right_wall) 
+        {
+            node = NODE_VERTICAL;
+        }
+
+        else if (bottom_wall && right_wall && !top_wall && !left_wall)
+        {
+            node = NODE_TOP_LEFT;
+        }
+        else if (left_wall && bottom_wall && !top_wall && !right_wall)
+        {
+            node = NODE_TOP_RIGHT;
+        }
+        else if (top_wall && left_wall && !bottom_wall && !right_wall)
+        {
+            node = NODE_BOTTOM_RIGHT;
+        }
+        else if (top_wall && right_wall && !bottom_wall && !left_wall)
+        {
+            node = NODE_BOTTOM_LEFT;
+        }
+        
+        else if (left_wall && bottom_wall && right_wall && !top_wall)
+        {
+            node = NODE_TOP;
+        }
+        else if (left_wall && top_wall && right_wall && !bottom_wall)
+        {
+            node = NODE_BOTTOM;
+        }
+        else if (top_wall && right_wall && bottom_wall && !left_wall)
+        {
+            node = NODE_LEFT;
+        }
+        else if (top_wall && left_wall && bottom_wall && !right_wall)
+        {
+            node = NODE_RIGHT;
+        }
+        else
+        {
+            node += NODE;
+        }
+    }
+
+    return node;
+}
+
 std::string GameManager::displayBoard()
 {
-    int BOARD_SIZE = 16;
-
     std::string output = "\n" RESET;
     std::string temp_seperator = "";
     std::string temp_tiles = "";
@@ -91,6 +243,12 @@ std::string GameManager::displayBoard()
     {
         temp_seperator = "";
         temp_tiles = "";
+/* TEMP ===================================================================== */
+#ifdef SHOW_DOUBLE_WALLS
+        temp_seperator += " ";
+        temp_tiles += VERTICAL_WALL;
+#endif
+/* ========================================================================== */
         for (int x = 0; x < BOARD_SIZE; x++)
         {
             Frame frame = this->board.getFrame(x, y);
@@ -98,60 +256,19 @@ std::string GameManager::displayBoard()
             Robot *robot_on_frame = getRobotOnFrame(x, y);
 
             /* Top left corner of the frame --------------------------------- */
-
-            /* Goal tile displayed in the center of the board */
-            if (x == 8 && y == 8)
-            {
-                temp_seperator += this->goal_tile->getEmoji();
-            }
-            /* Disabled frames in the middle */
-            else if (x == 8 && y == 7)
-            {
-                temp_seperator += NODE_BOTTOM;
-            }
-            else if (x == 7 && y == 8)
-            {
-                temp_seperator += NODE_RIGHT;
-            }
-            else if (x == 9 && y == 8)
-            {
-                temp_seperator += NODE_LEFT;
-            }
-            else if (x == 8 && y == 9)
-            {
-                temp_seperator += NODE_TOP;
-            }
-            /* Top left corner */
-            else if (x == 0 && y == 0)
-            {
-                temp_seperator += NODE_TOP_LEFT;
-            }
-            /* Left border */
-            else if (x == 0)
-            {
-                temp_seperator += NODE_LEFT;
-            }
-            /* Top border */
-            else if (y == 0)
-            {
-                temp_seperator += NODE_TOP;
-            }
-            /* Classic node */
-            else
-            {
-                temp_seperator += NODE;
-            }
+            temp_seperator += computeNode(x, y);
 
             /* Top wall ----------------------------------------------------- */
 
             /* No wall if it's the disabled frames in the middle */
+            temp_seperator += RESET;
             if (x == 7 && y == 8)
             {
                 temp_seperator += "    ";
             }
             else if (x == 8 && y == 8)
             {
-                temp_seperator += RESET "   ";
+                temp_seperator += "   ";
             }
             /* Classic wall */
             else if (frame.getWalls()[UP])
@@ -167,14 +284,7 @@ std::string GameManager::displayBoard()
             /* Add right node if it's the last column */
             if (x == BOARD_SIZE - 1)
             {
-                if (y == 0)
-                {
-                    temp_seperator += NODE_TOP_RIGHT;
-                }
-                else
-                {
-                    temp_seperator += NODE_RIGHT;
-                }
+                temp_seperator += computeNode(x + 1, y);
             }
 
             /* Left wall ---------------------------------------------------- */
@@ -225,26 +335,19 @@ std::string GameManager::displayBoard()
                 temp_tiles += EMPTY_FRAME;
             }
 
-            /* TEMP ========================================================= */
-            // if (frame.getWalls()[RIGHT])
-            // {
-            //     temp_tiles += VERTICAL_WALL;
-            // }
-            // else
-            // {
-            //     temp_tiles += VERTICAL_GRID;
-            // }
-
-            // if (frame.getWalls()[DOWN])
-            // {
-            //     temp_seperator += HORIZONTAL_WALL;
-            // }
-            // else
-            // {
-            //     temp_seperator += HORIZONTAL_GRID;
-            // }
-
-            /* ============================================================== */
+/* TEMP ===================================================================== */
+#ifdef SHOW_DOUBLE_WALLS
+            temp_seperator += NODE;
+            if (frame.getWalls()[RIGHT])
+            {
+                temp_tiles += VERTICAL_WALL;
+            }
+            else
+            {
+                temp_tiles += VERTICAL_GRID;
+            }
+#endif
+/* ========================================================================== */
 
             /* Add right wall if it's the last column */
             if (x == BOARD_SIZE - 1)
@@ -260,23 +363,45 @@ std::string GameManager::displayBoard()
             }
         }
         output += temp_seperator + ANSI_RESET + "\n" + RESET;
+/* TEMP ===================================================================== */
+#ifdef SHOW_DOUBLE_WALLS
+        temp_seperator = "";
+        for (int x = 0; x < BOARD_SIZE; x++)
+        {
+            Frame frame = this->board.getFrame(x, y);
+            /* Node */
+            temp_seperator += computeNode(x + 1, y + 1);
+            temp_seperator += computeNode(x + 1, y + 1);
+
+            /* Wall */
+            if (frame.getWalls()[DOWN])
+            {
+                temp_seperator += HORIZONTAL_WALL;
+            }
+            else
+            {
+                temp_seperator += HORIZONTAL_GRID;
+            }
+
+            /* Last column */
+            if (x == BOARD_SIZE - 1)
+            {
+                temp_seperator += computeNode(BOARD_SIZE, y);
+            }
+        }
+        output += temp_seperator + ANSI_RESET + "\n" + RESET;
+#endif
+/* ========================================================================== */
         output += temp_tiles + ANSI_RESET + "\n" + RESET;
     }
 
-    /* Last row */
+    /* Bottom border of the board */
     temp_seperator = "";
     for (int x = 0; x < BOARD_SIZE; x++)
     {
         Frame frame = this->board.getFrame(x, BOARD_SIZE - 1);
         /* Node */
-        if (x == 0)
-        {
-            temp_seperator += NODE_BOTTOM_LEFT;
-        }
-        else
-        {
-            temp_seperator += NODE_BOTTOM;
-        }
+        temp_seperator += computeNode(x, BOARD_SIZE);
 
         /* Wall */
         if (frame.getWalls()[DOWN])
@@ -290,7 +415,7 @@ std::string GameManager::displayBoard()
     }
 
     /* Bottom right corner */
-    temp_seperator += NODE_BOTTOM_RIGHT;
+    temp_seperator += computeNode(BOARD_SIZE, BOARD_SIZE);
 
     output += temp_seperator + ANSI_RESET + "\n";
 

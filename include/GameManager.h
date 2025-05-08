@@ -73,6 +73,7 @@ public:
      */
     void displayResults();
     Robot* getRobotOnFrame(int x, int y);
+    std::string computeNode(int x, int y);
 };
 
 #endif /* GAME_MANAGER_H */
