@@ -177,6 +177,7 @@ int Menu::run()
     int c = 0;
     bool is_running = true;
     bool timeout_cancelled = false;
+    this->current_option = 0;
 
     std::cout << "\033[?25l"; // hide cursor
     // std::cout << "\033[?1049h"; // switch to alternate screen buffer
