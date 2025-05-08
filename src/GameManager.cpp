@@ -7,6 +7,7 @@
 #include "typedef.h"
 #include "GameManager.h"
 #include "Menu.h"
+#include "Utils.h"
 
 #define RESET ANSI_RESET ANSI_BG_WHITE
 
@@ -59,6 +60,10 @@ Player *GameManager::getPlayer(int index)
     return players[index];
 }
 
+Board *GameManager::getBoard() { 
+    return &this->board; 
+}
+
 /* Methods */
 void GameManager::addPlayer(Player *player)
 {
@@ -79,7 +84,7 @@ std::string GameManager::displayBoard()
 {
     int BOARD_SIZE = 16;
 
-    std::string output = "\n" RESET;
+    std::string output = GAME_ASCII_BANNER "\n" RESET;
     std::string temp_seperator = "";
     std::string temp_tiles = "";
 
@@ -310,6 +315,7 @@ void GameManager::setupRound()
     // Reset members
     this->round_finished = false;
     this->cur_player_won = false;
+    this->moves_str = "";
 
     // Get the goal tile
     int goal_tile_index = rand() % Board::TILES.size();
@@ -335,13 +341,6 @@ void GameManager::setupRound()
     }
 }
 
-bool is_number(const std::string &s)
-{
-    return !s.empty() && std::find_if(s.begin(),
-                                      s.end(), [](unsigned char c)
-                                      { return !std::isdigit(c); }) == s.end();
-}
-
 void GameManager::processPredictionsInputs()
 {
     Menu::clear();
@@ -361,6 +360,7 @@ void GameManager::processPredictionsInputs()
 
     Menu::clear();
     std::cin.clear();
+    std::cout << GAME_ASCII_BANNER << std::endl;
 
     for (auto &&player : this->players)
     {
@@ -445,8 +445,44 @@ bool GameManager::processMovement(Robot *robot, Direction direction, int *deplac
     if (robot_X != previousRobotX || robot_Y != previousRobotY)
     {
         *deplacement += 1;
+        this->moves_str += ANSI_BOLD;
+        switch (robot->getColor())
+        {
+        case RED:
+            this->moves_str += ANSI_RED;
+            break;
+        case GREEN:
+            this->moves_str += ANSI_GREEN;
+            break;
+        case BLUE:
+            this->moves_str += ANSI_BLUE;
+            break;
+        case YELLOW:
+            this->moves_str += ANSI_YELLOW;
+            break;
+        default:
+            break;
+        }
+        switch (direction)
+        {
+        case UP:
+            this->moves_str += MOVE_ARROW_UP;
+            break;
+        case DOWN:
+            this->moves_str += MOVE_ARROW_DOWN;
+            break;
+        case LEFT:
+            this->moves_str += MOVE_ARROW_LEFT;
+            break;
+        case RIGHT:
+            this->moves_str += MOVE_ARROW_RIGHT;
+            break;
+        default:
+            break;
+        }
+        this->moves_str += ANSI_RESET;
     }
-    m->setTitle(displayBoard());
+    m->setTitle(displayBoard() + "\nMoves: " + this->moves_str + "\n");
     m->displayMenu();
 
     if (this->board.getFrame(robot_X, robot_Y).getTile() == this->goal_tile && this->goal_tile->getColor() == robot->getColor())
@@ -473,6 +509,7 @@ bool GameManager::playRound(int player_index)
     Menu menu(displayBoard(), 0);
     menu.preventArguments(true);
     this->cur_player_won = false;
+    this->moves_str = "";
 
     for (auto &&robot : this->robots)
     {

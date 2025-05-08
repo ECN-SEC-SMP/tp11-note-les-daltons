@@ -13,6 +13,8 @@ int main(int argc, char const *argv[])
 {
     bool running = true;
     GameManager gm;
+
+    newRandomSeed();
     gm.generateBoard();
     Menu main_menu = Menu(GAME_ASCII_BANNER ANSI_BOLD "Main Menu" ANSI_RESET, 0)
                          .addOption("Play")

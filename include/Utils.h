@@ -21,4 +21,13 @@ int getRandomNumber(int max);
  */
 void sleep(int seconds);
 
+/**
+ * @brief Test if a string is a number
+ * 
+ * @param s (IN) String to test
+ * @return true if the string is a number
+ * @return false else (letters, special chars, empty, ...)
+ */
+bool is_number(const std::string &s);
+
 #endif /* _UTILS_H_ */

@@ -11,15 +11,29 @@
 #include "Robot.h"
 #include "Menu.h"
 
+#define MOVE_ARROW_UP       "↑"
+#define MOVE_ARROW_DOWN     "↓"
+#define MOVE_ARROW_LEFT     "←"
+#define MOVE_ARROW_RIGHT    "→"
+
 class GameManager
 {
 private:
+    /// @brief Tile to go on
     Tile *goal_tile;
+    /// @brief Game board
     Board board;
+    /// @brief Container of game players
     std::vector<Player *> players;
+    /// @brief Container of board robots
     std::vector<Robot *> robots;
-    bool round_finished = false; // #TODO: setup in setupRound() method
-    bool cur_player_won = false; // #TODO: setup in setupRound() method
+    /// @brief Flag to know if round is finished
+    bool round_finished = false;
+    /// @brief Flag to know if current player has won
+    bool cur_player_won = false;
+    /// @brief String containing all player moves with colored arrows 
+    /// @note "←↑→↓←↑→↓" with color corresponding to the robot that moved
+    std::string moves_str = "";
 
 private:
     bool processMovement(Robot *robot, Direction direction, int *deplacement, Menu *m, int player_index);
@@ -29,10 +43,31 @@ public:
     GameManager();
 
     /* Getters */
+    /**
+     * @brief Get the Goal Tile object
+     * 
+     * @return Tile* 
+     */
     Tile *getGoalTile();
+    /**
+     * @brief Get the Players container
+     * 
+     * @return std::vector<Player *> 
+     */
     std::vector<Player *> getPlayers();
+    /**
+     * @brief Get the Player object by index
+     * 
+     * @param index (IN) Index of player to get (0 to N-1)
+     * @return Player* 
+     */
     Player *getPlayer(int index);
-    Board *getBoard() { return &this->board; }
+    /**
+     * @brief Get the Board object
+     * 
+     * @return Board* 
+     */
+    Board *getBoard();
 
     /* Methods */
     /**
@@ -86,6 +121,13 @@ public:
      * @note This function is called at the end of the game.
      */
     void displayResults();
+    /**
+     * @brief Get Robot on frame with (x,y) coordinates
+     * 
+     * @param x (IN) Coordinate X
+     * @param y (IN) Coordinate Y
+     * @return Robot* 
+     */
     Robot *getRobotOnFrame(int x, int y);
 };
 
