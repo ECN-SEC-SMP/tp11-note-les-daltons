@@ -1,6 +1,10 @@
 #include <stdexcept>
 #include <algorithm>
 
+#ifdef _WIN32
+#include <conio.h>
+#endif
+
 #include "GameManager.h"
 #include "Utils.h"
 
@@ -82,7 +86,7 @@ void GameManager::setWallsStyle(WallsStyle wallsStyle)
     default:
         throw std::invalid_argument("Invalid walls style");
     }
-} 
+}
 
 // void GameManager::setColorTheme(ColorTheme colorTheme)
 // {
@@ -120,9 +124,9 @@ std::string GameManager::computeNode(int x, int y)
     /*
                    XXXX¦                     ¦XXXX
         top_left:  ----+----   top:      ----+----
-                       ¦                     ¦    
+                       ¦                     ¦
 
-                       ¦                     ¦    
+                       ¦                     ¦
         left:      ----+----   current:  ----+----
                    XXXX¦                     ¦XXXX
     */
@@ -133,13 +137,13 @@ std::string GameManager::computeNode(int x, int y)
 
     /* Get the walls around the node */
     /*
-                  ║                   ¦    
+                  ║                   ¦
         top:  ----+----   bottom: ----+----
-                  ¦                   ║    
+                  ¦                   ║
 
-                  ¦                   ¦    
+                  ¦                   ¦
         left: ════+----   right:  ----+════
-                  ¦                   ¦    
+                  ¦                   ¦
     */
     bool left_wall;
     bool right_wall;
@@ -164,7 +168,7 @@ std::string GameManager::computeNode(int x, int y)
         right_wall = false;
         bottom_wall = left_frame.getWalls()[RIGHT];
     }
-    
+
     /* Inside the board */
     else
     {
@@ -195,13 +199,13 @@ std::string GameManager::computeNode(int x, int y)
             top_wall = top_frame.getWalls()[LEFT];
             right_wall = top_frame.getWalls()[DOWN];
         }
-        /* Left frame doesn't exist because y is outside the board. Thus, the 
+        /* Left frame doesn't exist because y is outside the board. Thus, the
         top left frame is used to get the left wall */
         left_wall = top_left_frame.getWalls()[DOWN];
         bottom_wall = false;
     }
 
-    /* Inside the board, except the right border because it has already been 
+    /* Inside the board, except the right border because it has already been
     set when checking the x coordinate */
     else if (x != BOARD_SIZE)
     {
@@ -227,11 +231,11 @@ std::string GameManager::computeNode(int x, int y)
         }
 
         /* Walls */
-        else if (left_wall && right_wall && !top_wall && !bottom_wall) 
+        else if (left_wall && right_wall && !top_wall && !bottom_wall)
         {
             node = this->boardTheme.node_horizontal;
         }
-        else if (top_wall && bottom_wall && !left_wall && !right_wall) 
+        else if (top_wall && bottom_wall && !left_wall && !right_wall)
         {
             node = this->boardTheme.node_vertical;
         }
@@ -253,7 +257,7 @@ std::string GameManager::computeNode(int x, int y)
         {
             node = this->boardTheme.node_bottom_left;
         }
-        
+
         /* Node with 3 walls */
         else if (left_wall && bottom_wall && right_wall && !top_wall)
         {
@@ -526,7 +530,6 @@ void GameManager::processPredictionsInputs()
     }
 }
 
-
 void GameManager::sortPlayersByPredictions()
 {
     std::sort(this->players.begin(), this->players.end(), [](Player *a, Player *b)
@@ -700,6 +703,36 @@ bool GameManager::playRound(int player_index)
             std::cout << "Press 'ENTER' to unselect." << std::endl;
             while (c != '\r' && !this->round_finished)
             {
+#ifdef _WIN32
+                c = _getch();
+                if (c == '\r' || c == 127) // enter or backspace
+                    break;
+                if (c == 224) // escape
+                {
+                    c = _getch();
+                    switch (c)
+                    {
+                    case 72: // up arrow
+                        if (this->processMovement(robot, UP, &move_count, m, player_index))
+                            c = '\r';
+                        break;
+                    case 80: // down arrow
+                        if (this->processMovement(robot, DOWN, &move_count, m, player_index))
+                            c = '\r';
+                        break;
+                    case 77: // right arrow
+                        if (this->processMovement(robot, RIGHT, &move_count, m, player_index))
+                            c = '\r';
+                        break;
+                    case 75: // left arrow
+                        if (this->processMovement(robot, LEFT, &move_count, m, player_index))
+                            c = '\r';
+                        break;
+                    default:
+                        break;
+                    }
+                }
+#else
                 c = getchar(); 
                 if (c == '\r' || c == 127) // enter or backspace
                     break;
@@ -732,6 +765,7 @@ bool GameManager::playRound(int player_index)
                         }
                     }
                 }
+#endif
             }
 
             // Reset Menu

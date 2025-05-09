@@ -83,13 +83,32 @@ int main(int argc, char const *argv[])
             } while (player_name.empty() && sel_pos == 1);
             if (sel_pos == 1)
             {
-                auto p = std::find_if(gm.getPlayers().begin(), gm.getPlayers().end(), [&](Player * p){ return p->getName() == player_name; });
+#ifdef _WIN32
+                // Windows sucks -> std::find_if NOT working ONLY on Windows !!!
+                bool found = false;
+                for (auto &&player : gm.getPlayers())
+                {
+                    std::cout << "player->getName(): " << player->getName() << std::endl;
+                    std::cout << "player_name: " << player_name << std::endl;
+                    if (player->getName() == player_name)
+                    {
+                        found = true;
+                        break;
+                    }
+                }
+
+                if (found) // Player name exists
+#else
+                auto p = std::find_if(gm.getPlayers().begin(), gm.getPlayers().end(), [&](Player *p)
+                                      { return p->getName() == player_name; });
                 if (p != gm.getPlayers().end()) // Player name exists
+#endif
                 {
                     std::cout << "This player name already exists! Retry." << std::endl;
                     CONTINUE_ON_ENTER_PROMPT
                 }
-                else gm.addPlayer(new Player(player_name));
+                else
+                    gm.addPlayer(new Player(player_name));
             }
         }
         else if (pos == 3) // Remove Player
@@ -140,13 +159,14 @@ int main(int argc, char const *argv[])
             std::cout << " again. The selected robot turns green, and you can now move " << std::endl;
             std::cout << " the menu cursor." << std::endl;
             std::cout << ANSI_BLUE;
-            std::cout << "                              [UP]"               << std::endl;
-            std::cout << "                     [LEFT] [ENTER] [RIGHT]"      << std::endl;
-            std::cout << "                             [DOWN]"              << std::endl;
+            std::cout << "                              [UP]" << std::endl;
+            std::cout << "                     [LEFT] [ENTER] [RIGHT]" << std::endl;
+            std::cout << "                             [DOWN]" << std::endl;
             std::cout << ANSI_RESET;
             std::cout << std::endl;
             std::cout << ANSI_UNDERLINE "Tile:" ANSI_RESET_UNDERLINE << std::endl;
-            std::cout << " Tiles are a combination of colors and shapes:" << std::endl << "   ";
+            std::cout << " Tiles are a combination of colors and shapes:" << std::endl
+                      << "   ";
             for (auto &&tile : Board::TILES)
                 std::cout << tile.getEmoji() << " ";
             std::cout << std::endl;
@@ -159,11 +179,10 @@ int main(int argc, char const *argv[])
     return 0;
 }
 
-
 std::string getPlayerList(std::vector<Player *> players)
 {
     std::string output = ANSI_BOLD ANSI_UNDERLINE "Players:" ANSI_RESET_BOLD ANSI_RESET_UNDERLINE "\n";
-    if (players.size() == 0) 
+    if (players.size() == 0)
     {
         output += ANSI_ITALIC "No players...\n" ANSI_RESET_ITALIC;
     }

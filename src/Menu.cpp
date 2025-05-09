@@ -6,6 +6,7 @@
 
 #ifdef _WIN32
 #include <windows.h>
+#include <conio.h>
 #else
 #include <fcntl.h>
 #endif
@@ -243,7 +244,11 @@ int Menu::run()
         }
         else
         {
+#ifdef _WIN32
+            c = _getch();
+#else
             c = getchar();
+#endif
         }
 
         if (cancel_timeout_on_key_press && mode == 1 && c != -1)
@@ -259,6 +264,26 @@ int Menu::run()
 
         switch (c)
         {
+#ifdef _WIN32
+        case 224:
+            if (prevent_deplacement)
+                break;
+            c = _getch();
+            switch (c)
+                {
+                case 72: // up arrow
+                    this->current_option--;
+                    if (this->current_option < 0)
+                        this->current_option = 0;
+                    break;
+                case 80: // down arrow
+                    this->current_option++;
+                    if (this->current_option > (int)options.size() - 1)
+                        this->current_option = (int)options.size() - 1;
+                    break;
+                }
+            break;
+#else
         case 27: // escape
             if (prevent_deplacement)
                 break;
@@ -281,6 +306,7 @@ int Menu::run()
                 }
             }
             break;
+#endif
         case 3: // CTRL+C
             is_running = false;
             break;
