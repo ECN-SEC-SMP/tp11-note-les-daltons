@@ -25,9 +25,11 @@ int main(int argc, char const *argv[])
                          .addOption("Play")
                          .addOption("Add Player")
                          .addOption("Remove Player")
-                         .addOption("Help")
                          .addOption("Regenerate Board", [&](int pos, Menu *m)
                                     { gm.generateBoard(); std::cout << "Done!" << std::endl; CONTINUE_ON_ENTER_PROMPT return true; })
+                         .addOption("Stats")    // Issue #22
+                         .addOption("Settings") // Issue #26
+                         .addOption("Help")
                          .addOption("Exit.", [&](int pos, Menu *m)
                                     { running = false; return false; })
                          .preventArguments();
@@ -70,11 +72,25 @@ int main(int argc, char const *argv[])
         {
             Menu player_menu(GAME_ASCII_BANNER ANSI_BOLD "Add Player\n" ANSI_ITALIC "(Set player name on first option)\n" ANSI_RESET, 0);
             player_menu.addOption("Player name: ").addOption("Cancel.");
-            int sel_pos = player_menu.run();
-            if (sel_pos != 1)
-                continue;
-            std::string player_name = player_menu.getOptionsArgs()[0];
-            gm.addPlayer(new Player(player_name));
+            std::string player_name;
+            int sel_pos;
+            do
+            {
+                sel_pos = player_menu.run();
+                if (sel_pos != 1)
+                    continue;
+                player_name = player_menu.getOptionsArgs()[0];
+            } while (player_name.empty() && sel_pos == 1);
+            if (sel_pos == 1)
+            {
+                auto p = std::find_if(gm.getPlayers().begin(), gm.getPlayers().end(), [&](Player * p){ return p->getName() == player_name; });
+                if (p != gm.getPlayers().end()) // Player name exists
+                {
+                    std::cout << "This player name already exists! Retry." << std::endl;
+                    CONTINUE_ON_ENTER_PROMPT
+                }
+                else gm.addPlayer(new Player(player_name));
+            }
         }
         else if (pos == 3) // Remove Player
         {
@@ -93,7 +109,7 @@ int main(int argc, char const *argv[])
                 CONTINUE_ON_ENTER_PROMPT
             }
         }
-        else if (pos == 4) // Help
+        else if (pos == 7) // Help
         {
             Menu::clear();
             std::cout << GAME_ASCII_BANNER;
