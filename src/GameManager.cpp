@@ -1,7 +1,6 @@
 #include <stdexcept>
 #include <algorithm>
 
-#include "typedef.h"
 #include "GameManager.h"
 #include "Utils.h"
 
@@ -285,7 +284,7 @@ std::string GameManager::computeNode(int x, int y)
 
 std::string GameManager::displayBoard()
 {
-    std::string output = "\n" RESET;
+    std::string output = GAME_ASCII_BANNER "\n" RESET;
     std::string temp_seperator = "";
     std::string temp_tiles = "";
 

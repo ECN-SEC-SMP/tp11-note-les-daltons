@@ -3,6 +3,7 @@
 #include <string>
 
 #include "typedef.h"
+#include "DisplayUtils.h"
 
 class Tile
 {
@@ -39,16 +40,16 @@ public:
         switch (this->color)
         {
         case RED:
-            emoji = "\033[31m" + shape_char + "\033[0m"; // Red
+            emoji = ANSI_RED + shape_char + ANSI_RESET; // Red
             break;
         case GREEN:
-            emoji = "\033[32m" + shape_char + "\033[0m"; // Green
+            emoji = ANSI_GREEN + shape_char + ANSI_RESET; // Green
             break;
         case BLUE:
-            emoji = "\033[34m" + shape_char + "\033[0m"; // Blue
+            emoji = ANSI_BLUE + shape_char + ANSI_RESET; // Blue
             break;
         case YELLOW:
-            emoji = "\033[33m" + shape_char + "\033[0m"; // Yellow
+            emoji = ANSI_BRIGHT_YELLOW + shape_char + ANSI_RESET; // Yellow
             break;
         case RAINBOW:
             emoji = "🌈";
