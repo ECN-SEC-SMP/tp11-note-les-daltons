@@ -1,12 +1,18 @@
 #include <iostream>
 
 #include "GameManager.h"
+#include "DisplayUtils.h"
 #include "Utils.h"
 
 #define CONTINUE_ON_ENTER_PROMPT                              \
     std::cin.clear();                                         \
     std::cout << "Press [ENTER] to continue..." << std::endl; \
     getchar();
+
+#define key(str) ANSI_BLUE str ANSI_RESET
+#define red_word(str) ANSI_RED str ANSI_RESET
+
+std::string getPlayerList(std::vector<Player *> players);
 
 int main(int argc, char const *argv[])
 {
@@ -19,6 +25,7 @@ int main(int argc, char const *argv[])
                          .addOption("Play")
                          .addOption("Add Player")
                          .addOption("Remove Player")
+                         .addOption("Help")
                          .addOption("Regenerate Board", [&](int pos, Menu *m)
                                     { gm.generateBoard(); std::cout << "Done!" << std::endl; CONTINUE_ON_ENTER_PROMPT return true; })
                          .addOption("Exit.", [&](int pos, Menu *m)
@@ -27,6 +34,7 @@ int main(int argc, char const *argv[])
 
     while (running)
     {
+        main_menu.setTitle(GAME_ASCII_BANNER ANSI_BOLD "Main Menu\n\n" ANSI_RESET + getPlayerList(gm.getPlayers()));
         Menu::clear();
         int pos = main_menu.run();
         if (!running)
@@ -85,6 +93,67 @@ int main(int argc, char const *argv[])
                 CONTINUE_ON_ENTER_PROMPT
             }
         }
+        else if (pos == 4) // Help
+        {
+            Menu::clear();
+            std::cout << ANSI_BOLD "Help Page" ANSI_RESET_BOLD << std::endl
+                      << std::endl;
+            std::cout << ANSI_UNDERLINE "Rules:" ANSI_RESET_UNDERLINE << std::endl;
+            std::cout << " 1. The aim is to get the robot with the right color onto the" << std::endl;
+            std::cout << "    tile corresponding to the tile in the center of the board." << std::endl;
+            std::cout << " 2. At the start of the game, you must find a way to solve the" << std::endl;
+            std::cout << "    puzzle with " ANSI_UNDERLINE "as few moves as possible." ANSI_RESET_UNDERLINE << std::endl;
+            std::cout << " 3. When someone has found their solution, they can press " << std::endl;
+            std::cout << "    " key("[ENTER]") " and the other players must find their solution " << std::endl;
+            std::cout << "    within " red_word("10 seconds") "." << std::endl;
+            std::cout << " 4. After this time, all players enter their prediction of " << std::endl;
+            std::cout << "    the number of moves." << std::endl;
+            std::cout << " 5. The player with the lowest prediction starts. If he solves" << std::endl;
+            std::cout << "    the puzzle with the correct prediction, he wins " red_word("2 points") ". If" << std::endl;
+            std::cout << "    he solves the puzzle with a lower number of moves than his " << std::endl;
+            std::cout << "    prediction, he earns only " red_word("1 point") "." << std::endl;
+            std::cout << " 6. But if this player exceeds his prediction without solving" << std::endl;
+            std::cout << "    the puzzle, the second player can play and continue from" << std::endl;
+            std::cout << "    the previous rule." << std::endl;
+            std::cout << std::endl;
+            std::cout << ANSI_UNDERLINE "Game commands:" ANSI_RESET_UNDERLINE << std::endl;
+            std::cout << " To select a robot, use the arrow keys and press " key("[ENTER]") ". The" << std::endl;
+            std::cout << " selected robot turns red. You can now use the arrow keys to" << std::endl;
+            std::cout << " move the selected robot. To deselect a robot, press " key("[ENTER]") "" << std::endl;
+            std::cout << " again. The selected robot turns green, and you can now move " << std::endl;
+            std::cout << " the menu cursor." << std::endl;
+            std::cout << ANSI_BLUE;
+            std::cout << "                              [UP]"               << std::endl;
+            std::cout << "                     [LEFT] [ENTER] [RIGHT]"      << std::endl;
+            std::cout << "                             [DOWN]"              << std::endl;
+            std::cout << ANSI_RESET;
+            std::cout << std::endl;
+            std::cout << ANSI_UNDERLINE "Tile:" ANSI_RESET_UNDERLINE << std::endl;
+            std::cout << " Tiles are a combination of colors and shapes:" << std::endl << "   ";
+            for (auto &&tile : Board::TILES)
+                std::cout << tile.getEmoji() << " ";
+            std::cout << std::endl;
+            std::cout << " - The rainbow lets all the robots come to him" << std::endl;
+            std::cout << "   to resole the puzzle." << std::endl;
+            std::cout << std::endl;
+            CONTINUE_ON_ENTER_PROMPT
+        }
     }
     return 0;
+}
+
+
+std::string getPlayerList(std::vector<Player *> players)
+{
+    std::string output = ANSI_BOLD ANSI_UNDERLINE "Players:" ANSI_RESET_BOLD ANSI_RESET_UNDERLINE "\n";
+    if (players.size() == 0) 
+    {
+        output += ANSI_ITALIC "No players...\n" ANSI_RESET_ITALIC;
+    }
+    for (auto &&player : players)
+    {
+        output += " > " + player->getName() + "\n";
+    }
+    output += ANSI_RESET;
+    return output;
 }
