@@ -3,9 +3,18 @@
 #include <thread>
 #include <future>
 #include <chrono>
+
+#ifdef _WIN32
+#include <windows.h>
+#else
 #include <fcntl.h>
+#endif
 
 #include "Menu.h"
+
+#ifdef _WIN32
+static DWORD originalMode;
+#endif
 
 Menu::Menu(std::string title, int mode)
     : title(title), colorSelection(32), mode(mode), timeout(10), reset_timeout_on_key_press(true),
@@ -127,32 +136,61 @@ void Menu::printMenu(int pos)
 void Menu::clear()
 {
     // std::cout << "\033[2J\033[1;1H";
+#ifdef _WIN32
+    system("cls");
+#else
     system("clear");
+#endif
 }
 
 void Menu::setTerminal()
 {
+#ifdef _WIN32
+    HANDLE hStdin = GetStdHandle(STD_INPUT_HANDLE);
+    GetConsoleMode(hStdin, &originalMode);
+
+    DWORD newMode = originalMode;
+    newMode &= ~(ENABLE_ECHO_INPUT | ENABLE_LINE_INPUT); // Disable echo and line input
+    SetConsoleMode(hStdin, newMode);
+#else
     // use system call to make terminal not echo keystrokes
     system("/bin/stty -echo");
     // use system call to make terminal send all keystrokes directly to stdin
     system("/bin/stty raw");
+#endif
 }
 
 void Menu::resetTerminal()
 {
+#ifdef _WIN32
+    HANDLE hStdin = GetStdHandle(STD_INPUT_HANDLE);
+    SetConsoleMode(hStdin, originalMode);
+#else
     // use system call to set terminal behaviour to more normal behaviour
     system("/bin/stty cooked");
     // use system call to make terminal echo keystrokes
     system("/bin/stty echo");
+#endif
 }
 
 void Menu::set_nonblocking(bool enable)
 {
+#ifdef _WIN32
+    HANDLE hStdin = GetStdHandle(STD_INPUT_HANDLE);
+    DWORD mode;
+    GetConsoleMode(hStdin, &mode);
+    if (enable)
+        mode &= ~ENABLE_LINE_INPUT; // disables line buffering (somewhat like non-blocking)
+    else
+        mode |= ENABLE_LINE_INPUT; // re-enable line buffering (blocking mode)
+    SetConsoleMode(hStdin, mode);
+#else
     int flags = fcntl(STDIN_FILENO, F_GETFL, 0);
     if (enable)
         fcntl(STDIN_FILENO, F_SETFL, flags | O_NONBLOCK);
     else
         fcntl(STDIN_FILENO, F_SETFL, flags & ~O_NONBLOCK);
+#endif
 }
 
 void Menu::displayMenu()

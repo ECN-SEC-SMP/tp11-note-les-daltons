@@ -96,6 +96,7 @@ int main(int argc, char const *argv[])
         else if (pos == 4) // Help
         {
             Menu::clear();
+            std::cout << GAME_ASCII_BANNER;
             std::cout << ANSI_BOLD "Help Page" ANSI_RESET_BOLD << std::endl
                       << std::endl;
             std::cout << ANSI_UNDERLINE "Rules:" ANSI_RESET_UNDERLINE << std::endl;
