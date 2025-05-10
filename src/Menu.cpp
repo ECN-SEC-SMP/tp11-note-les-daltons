@@ -153,6 +153,7 @@ void Menu::setTerminal()
     DWORD newMode = originalMode;
     newMode &= ~(ENABLE_ECHO_INPUT | ENABLE_LINE_INPUT); // Disable echo and line input
     SetConsoleMode(hStdin, newMode);
+    SetConsoleOutputCP(CP_UTF8);
 #else
     // use system call to make terminal not echo keystrokes
     system("/bin/stty -echo");

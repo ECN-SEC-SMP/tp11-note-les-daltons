@@ -31,7 +31,11 @@ public:
             shape_char = "▲ ";
             break;
         case Shape::STAR:
+#ifdef _WIN32
+            shape_char = "※ ";
+#else
             shape_char = "🟊 ";
+#endif
             break;
         default:
             break;
@@ -52,7 +56,7 @@ public:
             emoji = ANSI_BRIGHT_YELLOW + shape_char + ANSI_RESET; // Yellow
             break;
         case RAINBOW:
-            emoji = "🌈";
+            emoji = u8"🌈";
             break;
         default:
             emoji = "  "; // Empty tile

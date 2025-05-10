@@ -67,6 +67,7 @@ int main(int argc, char const *argv[])
                 }
                 CONTINUE_ON_ENTER_PROMPT
             } while (player_won == false);
+            CONTINUE_ON_ENTER_PROMPT
         }
         else if (pos == 2) // Add Player
         {

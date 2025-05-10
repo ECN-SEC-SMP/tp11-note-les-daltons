@@ -707,7 +707,7 @@ bool GameManager::playRound(int player_index)
                 c = _getch();
                 if (c == '\r' || c == 127) // enter or backspace
                     break;
-                if (c == 224) // escape
+                if (c == 224 || c == -32) // escape
                 {
                     c = _getch();
                     switch (c)

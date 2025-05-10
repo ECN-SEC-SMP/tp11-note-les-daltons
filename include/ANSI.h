@@ -1,4 +1,6 @@
 #pragma once
+
+#include <string>
 #include <cstdint>
 
 /* Font formatting with ANSI Escape Sequences */
