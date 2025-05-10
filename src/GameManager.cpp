@@ -1,7 +1,7 @@
 #include <stdexcept>
 #include <algorithm>
 
-#ifdef _WIN32
+#ifdef _WIN32 // Windows sucks
 #include <conio.h>
 #endif
 
@@ -642,7 +642,6 @@ bool GameManager::processMovement(Robot *robot, Direction direction, int *deplac
     if (this->board.getFrame(robot_X, robot_Y).getTile() == this->goal_tile &&
         (this->goal_tile->getColor() == robot->getColor() || this->goal_tile->getColor() == RAINBOW))
     {
-        std::cout << "\033[32m\033[1m You won !!\033[0m" << std::endl;
         this->round_finished = true;
         this->cur_player_won = true;
         return true;
@@ -703,7 +702,7 @@ bool GameManager::playRound(int player_index)
             std::cout << "Press 'ENTER' to unselect." << std::endl;
             while (c != '\r' && !this->round_finished)
             {
-#ifdef _WIN32
+#ifdef _WIN32 // Windows sucks
                 c = _getch();
                 if (c == '\r' || c == 127) // enter or backspace
                     break;

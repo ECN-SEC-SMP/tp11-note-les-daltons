@@ -4,7 +4,7 @@
 #include <future>
 #include <chrono>
 
-#ifdef _WIN32
+#ifdef _WIN32 // Windows sucks
 #include <windows.h>
 #include <conio.h>
 #else
@@ -13,7 +13,7 @@
 
 #include "Menu.h"
 
-#ifdef _WIN32
+#ifdef _WIN32 // Windows sucks
 static DWORD originalMode;
 #endif
 
@@ -144,7 +144,7 @@ void Menu::printMenu(int pos)
 void Menu::clear()
 {
     // std::cout << "\033[2J\033[1;1H";
-#ifdef _WIN32
+#ifdef _WIN32 // Windows sucks
     system("cls");
 #else
     system("clear");
@@ -153,7 +153,7 @@ void Menu::clear()
 
 void Menu::setTerminal()
 {
-#ifdef _WIN32
+#ifdef _WIN32 // Windows sucks
     HANDLE hStdin = GetStdHandle(STD_INPUT_HANDLE);
     GetConsoleMode(hStdin, &originalMode);
 
@@ -171,7 +171,7 @@ void Menu::setTerminal()
 
 void Menu::resetTerminal()
 {
-#ifdef _WIN32
+#ifdef _WIN32 // Windows sucks
     HANDLE hStdin = GetStdHandle(STD_INPUT_HANDLE);
     SetConsoleMode(hStdin, originalMode);
 #else
@@ -184,7 +184,7 @@ void Menu::resetTerminal()
 
 void Menu::set_nonblocking(bool enable)
 {
-#ifdef _WIN32
+#ifdef _WIN32 // Windows sucks
     HANDLE hStdin = GetStdHandle(STD_INPUT_HANDLE);
     DWORD mode;
     GetConsoleMode(hStdin, &mode);
@@ -252,7 +252,7 @@ int Menu::run()
         }
         else
         {
-#ifdef _WIN32
+#ifdef _WIN32 // Windows sucks
             c = _getch();
 #else
             c = getchar();
@@ -272,24 +272,24 @@ int Menu::run()
 
         switch (c)
         {
-#ifdef _WIN32
+#ifdef _WIN32 // Windows sucks
         case 224:
             if (prevent_deplacement)
                 break;
             c = _getch();
             switch (c)
-                {
-                case 72: // up arrow
-                    this->current_option--;
-                    if (this->current_option < 0)
-                        this->current_option = 0;
-                    break;
-                case 80: // down arrow
-                    this->current_option++;
-                    if (this->current_option > (int)options.size() - 1)
-                        this->current_option = (int)options.size() - 1;
-                    break;
-                }
+            {
+            case 72: // up arrow
+                this->current_option--;
+                if (this->current_option < 0)
+                    this->current_option = 0;
+                break;
+            case 80: // down arrow
+                this->current_option++;
+                if (this->current_option > (int)options.size() - 1)
+                    this->current_option = (int)options.size() - 1;
+                break;
+            }
             break;
 #else
         case 27: // escape

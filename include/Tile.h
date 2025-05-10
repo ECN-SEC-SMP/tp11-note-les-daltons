@@ -31,7 +31,7 @@ public:
             shape_char = "▲ ";
             break;
         case Shape::STAR:
-#ifdef _WIN32
+#ifdef _WIN32 // Windows sucks
             shape_char = "※ ";
 #else
             shape_char = "🟊 ";

@@ -86,7 +86,7 @@ public:
      * @brief Set the Color Selection object
      *
      * @param color (IN) Color of the selected option (default: 32)
-     * @note 32 = green, 31 = red, 33 = yellow, 34 = blue, 35 = magenta, 36 = cyan
+     * @note 31 = red, 32 = green, 33 = yellow, 34 = blue, 35 = magenta, 36 = cyan
      *
      * @return (Menu*) Pointer to the Menu object
      */
