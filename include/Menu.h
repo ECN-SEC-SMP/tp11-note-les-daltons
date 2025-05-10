@@ -16,6 +16,10 @@
 
 class Menu
 {
+public:
+    /// @brief Callback function type
+    typedef std::function<bool(int, Menu *)> MenuCallback_t;
+
 private:
     /// @brief Options of the menu
     std::vector<std::string> options;
@@ -44,8 +48,6 @@ private:
     /// @brief Quit key char
     /// @note 0 to disable the quit key
     char quitKey;
-    /// @brief Callback function type
-    typedef std::function<bool(int, Menu *)> MenuCallback_t;
     /// @brief Callback function for the selected option
     std::vector<MenuCallback_t> callbacks;
     /// @brief Current position of the selected option
@@ -185,6 +187,13 @@ public:
      * @return Menu*
      */
     Menu &setQuitKey(char key = 'q');
+    /**
+     * @brief Set the position of selected option
+     * 
+     * @param pos (IN) Position of selected option
+     * @return Menu& 
+     */
+    Menu &setOptionPos(int pos);
     /**
      * @brief Clear the screen
      *

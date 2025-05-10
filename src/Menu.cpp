@@ -19,7 +19,8 @@ static DWORD originalMode;
 
 Menu::Menu(std::string title, int mode)
     : title(title), colorSelection(32), mode(mode), timeout(10), reset_timeout_on_key_press(true),
-      cancel_timeout_on_key_press(true), prevent_deplacement(false), prevent_argument(false), quitKey(0) // default color green and timeout 10 seconds
+      cancel_timeout_on_key_press(true), prevent_deplacement(false), prevent_argument(false), quitKey(0), // default color green and timeout 10 seconds
+      current_option(0)
 {
 }
 
@@ -115,6 +116,12 @@ Menu &Menu::setMode(int mode)
 Menu &Menu::setQuitKey(char key)
 {
     this->quitKey = key;
+    return *this;
+}
+
+Menu &Menu::setOptionPos(int pos)
+{
+    this->current_option = pos - 1;
     return *this;
 }
 
@@ -217,7 +224,7 @@ int Menu::run()
     int c = 0;
     bool is_running = true;
     bool timeout_cancelled = false;
-    this->current_option = 0;
+    // this->current_option = 0;
 
     std::cout << "\033[?25l"; // hide cursor
     // std::cout << "\033[?1049h"; // switch to alternate screen buffer
@@ -315,7 +322,9 @@ int Menu::run()
             // is_running = false;
             if (this->current_option >= 0 && this->current_option < (int)this->options.size())
             {
+                Menu::resetTerminal();
                 is_running = this->callbacks[this->current_option](this->current_option, this); // call the callback function
+                Menu::setTerminal();
             }
             break;
         case 'q': // quit
