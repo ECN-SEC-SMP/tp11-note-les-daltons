@@ -3,13 +3,6 @@
 /* Constructors */
 QuarterBoard::QuarterBoard()
 {
-    // for (int i = 0; i < 8; i++)
-    // {
-    //     for (int j = 0; j < 8; j++)
-    //     {
-    //         this->frames[i][j] = Frame();
-    //     }
-    // }
 }
 
 QuarterBoard::QuarterBoard(Frame f[8][8])

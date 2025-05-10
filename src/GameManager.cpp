@@ -121,7 +121,7 @@ void GameManager::removePlayer(Player *player)
     this->players.erase(std::find(this->players.begin(), this->players.end(), player));
 }
 
-std::string GameManager::computeNode(int x, int y)
+std::string GameManager::computeNode(Board &_board, int x, int y)
 {
     /* Get the frames around to the node */
     /*
@@ -133,10 +133,10 @@ std::string GameManager::computeNode(int x, int y)
         left:      ----+----   current:  ----+----
                    XXXX¦                     ¦XXXX
     */
-    Frame current_frame = this->board.getFrame(x, y);
-    Frame left_frame = this->board.getFrame(x - 1, y);
-    Frame top_left_frame = this->board.getFrame(x - 1, y - 1);
-    Frame top_frame = this->board.getFrame(x, y - 1);
+    Frame current_frame = _board.getFrame(x, y);
+    Frame left_frame = _board.getFrame(x - 1, y);
+    Frame top_left_frame = _board.getFrame(x - 1, y - 1);
+    Frame top_frame = _board.getFrame(x, y - 1);
 
     /* Get the walls around the node */
     /*
@@ -222,9 +222,12 @@ std::string GameManager::computeNode(int x, int y)
     {
         if (this->goal_tile == nullptr)
         {
-            throw std::runtime_error("Goal tile is not set");
+            node += "  ";
         }
-        node += this->goal_tile->getEmoji();
+        else
+        {
+            node += this->goal_tile->getEmoji();
+        }
     }
     else
     {
@@ -292,8 +295,18 @@ std::string GameManager::computeNode(int x, int y)
     return node;
 }
 
-std::string GameManager::displayBoard()
+std::string GameManager::displayBoard(bool show_empty)
 {
+    /* Define board to display */
+    Board board_to_display = show_empty ? Board::createEmptyBoard() : this->board;
+
+    /* Disable goal tile if empty board displaying requested */
+    Tile *save_goal_tile = this->goal_tile;
+    if (show_empty)
+    {
+        this->goal_tile = nullptr;
+    }
+    
     std::string output = "\n" + this->boardTheme.reset_color;
     std::string temp_seperator = "";
     std::string temp_tiles = "";
@@ -304,12 +317,12 @@ std::string GameManager::displayBoard()
         temp_tiles = "";
         for (int x = 0; x < BOARD_SIZE; x++)
         {
-            Frame frame = this->board.getFrame(x, y);
+            Frame frame = board_to_display.getFrame(x, y);
             bool frame_is_tile = frame.getTile() != nullptr;
             Robot *robot_on_frame = getRobotOnFrame(x, y);
 
             /* Top left corner of the frame --------------------------------- */
-            temp_seperator += computeNode(x, y);
+            temp_seperator += computeNode(board_to_display, x, y);
 
             /* Top wall ----------------------------------------------------- */
 
@@ -340,7 +353,7 @@ std::string GameManager::displayBoard()
             /* Add right node if it's the last column */
             if (x == BOARD_SIZE - 1)
             {
-                temp_seperator += computeNode(x + 1, y);
+                temp_seperator += computeNode(board_to_display, x + 1, y);
             }
 
             /* Left wall ---------------------------------------------------- */
@@ -368,7 +381,7 @@ std::string GameManager::displayBoard()
             {
                 temp_tiles += EMPTY_FRAME;
             }
-            else if (frame_is_tile || robot_on_frame)
+            else if ((frame_is_tile || robot_on_frame) && !show_empty)
             {
                 /* Robot on the frame, and frame is a tile */
                 if (frame_is_tile && robot_on_frame)
@@ -418,9 +431,9 @@ std::string GameManager::displayBoard()
     temp_seperator = "";
     for (int x = 0; x < BOARD_SIZE; x++)
     {
-        Frame frame = this->board.getFrame(x, BOARD_SIZE - 1);
+        Frame frame = board_to_display.getFrame(x, BOARD_SIZE - 1);
         /* Node */
-        temp_seperator += computeNode(x, BOARD_SIZE);
+        temp_seperator += computeNode(board_to_display, x, BOARD_SIZE);
 
         /* Wall */
         if (frame.getWalls()[DOWN])
@@ -437,11 +450,22 @@ std::string GameManager::displayBoard()
     }
 
     /* Bottom right corner */
-    temp_seperator += computeNode(BOARD_SIZE, BOARD_SIZE);
+    temp_seperator += computeNode(board_to_display, BOARD_SIZE, BOARD_SIZE);
 
     output += temp_seperator + ANSI_RESET + "\n";
 
+    /* Restore goal tile */
+    if (show_empty)
+    {
+        this->goal_tile = save_goal_tile;
+    }
+
     return output;
+}
+
+std::string GameManager::displayEmptyBoard()
+{
+    return this->displayBoard(true);
 }
 
 Robot *GameManager::getRobotOnFrame(int x, int y)

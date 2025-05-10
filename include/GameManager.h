@@ -103,9 +103,15 @@ public:
      *
      * @return std::string
      */
-    std::string displayBoard();
+    std::string displayBoard(bool show_empty = false);
     /**
-     * @brief Generate or regenerate game board
+     * @brief Returns displayed empty board string
+     *
+     * @return std::string
+     */
+    std::string displayEmptyBoard();
+    /**
+     * @brief Generates a random board.
      */
     void generateBoard();
     /**
@@ -134,7 +140,7 @@ public:
      */
     void displayResults();
     Robot* getRobotOnFrame(int x, int y);
-    std::string computeNode(int x, int y);
+    std::string computeNode(Board &board, int x, int y);
 };
 
 #endif /* GAME_MANAGER_H */

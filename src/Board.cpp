@@ -26,8 +26,18 @@ std::vector<Tile> Board::TILES = {
 
 /* Constructors */
 Board::Board()
-    : quarterBoards{{QuarterBoard(0), QuarterBoard(1)}, {QuarterBoard(2), QuarterBoard(3)}}
 {
+}
+
+Board::Board(QuarterBoard quarterBoards[2][2])
+{
+    for (int i = 0; i < 2; i++)
+    {
+        for (int j = 0; j < 2; j++)
+        {
+            this->quarterBoards[i][j] = quarterBoards[i][j];
+        }
+    }
 }
 
 /* Getters */
@@ -210,7 +220,7 @@ QuarterBoard Board::generateQuarterBoard(bool top, bool left)
         }
     }
 
-    return QuarterBoard(frames, 0);
+    return QuarterBoard(frames);
 }
 
 void Board::generate()
@@ -219,4 +229,74 @@ void Board::generate()
     this->quarterBoards[0][1] = this->generateQuarterBoard(false, true);
     this->quarterBoards[1][0] = this->generateQuarterBoard(true, false);
     this->quarterBoards[1][1] = this->generateQuarterBoard(false, false);
+}
+
+QuarterBoard Board::createEmptyQuarterBoard(bool top, bool left)
+{
+    Frame frames[8][8];
+
+    // Génerer les bordures
+    for (int i = 0; i < 8; i++)
+    {
+        for (int j = 0; j < 8; j++)
+        {
+            // Contours du plateau
+            frames[i][j].setWall(top && j == 0, UP);
+            frames[i][j].setWall(!top && j == 7, DOWN);
+            frames[i][j].setWall(!left && i == 7, RIGHT);
+            frames[i][j].setWall(left && i == 0, LEFT);
+
+            // Carré du Centre
+            if (top && left && i == 7 && j == 7)
+                frames[i][j].setWall(1, UP);
+            if (top && left && i == 6 && j == 7)
+                frames[i][j].setWall(1, DOWN);
+            if (top && left && i == 7 && j == 7)
+                frames[i][j].setWall(1, LEFT);
+            if (top && left && i == 7 && j == 6)
+                frames[i][j].setWall(1, RIGHT);
+
+            if (!top && left && i == 7 && j == 0)
+                frames[i][j].setWall(1, LEFT);
+            if (!top && left && i == 6 && j == 0)
+                frames[i][j].setWall(1, RIGHT);
+            if (!top && left && i == 7 && j == 0)
+                frames[i][j].setWall(1, DOWN);
+            if (!top && left && i == 7 && j == 1)
+                frames[i][j].setWall(1, UP);
+
+            if (!top && !left && i == 0 && j == 0)
+                frames[i][j].setWall(1, DOWN);
+            if (!top && !left && i == 0 && j == 1)
+                frames[i][j].setWall(1, UP);
+            if (!top && !left && i == 0 && j == 0)
+                frames[i][j].setWall(1, RIGHT);
+            if (!top && !left && i == 1 && j == 0)
+                frames[i][j].setWall(1, LEFT);
+
+            if (top && !left && i == 0 && j == 7)
+                frames[i][j].setWall(1, UP);
+            if (top && !left && i == 0 && j == 6)
+                frames[i][j].setWall(1, DOWN);
+            if (top && !left && i == 0 && j == 7)
+                frames[i][j].setWall(1, RIGHT);
+            if (top && !left && i == 1 && j == 7)
+                frames[i][j].setWall(1, LEFT);
+        }
+    }
+
+    return QuarterBoard(frames);
+}
+
+
+
+Board Board::createEmptyBoard()
+{
+    QuarterBoard quarterBoards[2][2];
+    quarterBoards[0][0] = createEmptyQuarterBoard(true, true);
+    quarterBoards[0][1] = createEmptyQuarterBoard(false, true);
+    quarterBoards[1][0] = createEmptyQuarterBoard(true, false);
+    quarterBoards[1][1] = createEmptyQuarterBoard(false, false);
+
+    return Board(quarterBoards);
 }
