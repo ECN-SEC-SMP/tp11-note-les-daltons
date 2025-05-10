@@ -161,6 +161,18 @@ Menu::MenuCallback_t MainMenu::removePlayer_CBBuilder(GameManager &gm)
     return lambda_cb;
 }
 
+Menu::MenuCallback_t MainMenu::regenerateBoard_CBBuilder(GameManager &gm)
+{
+    auto lambda_cb = [&](int pos, Menu *m)
+    {
+        gm.generateBoard(); 
+        std::cout << "Done!" << std::endl; 
+        CONTINUE_ON_ENTER_PROMPT
+        return true;
+    };
+    return lambda_cb;
+}
+
 Menu::MenuCallback_t MainMenu::message_CBBuilder(std::string message)
 {
     auto lambda_cb = [&](int pos, Menu *m)

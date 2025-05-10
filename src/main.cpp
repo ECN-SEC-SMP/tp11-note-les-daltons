@@ -21,8 +21,7 @@ int main(int argc, char const *argv[])
                          .addOption("Play", MainMenu::play_CBBuilder(gm))
                          .addOption("Add Player", MainMenu::addPlayer_CBBuilder(gm))
                          .addOption("Remove Player", MainMenu::removePlayer_CBBuilder(gm))
-                         .addOption("Regenerate Board", [&](int pos, Menu *m)
-                                    { gm.generateBoard(); std::cout << "Done!" << std::endl; CONTINUE_ON_ENTER_PROMPT return true; })
+                         .addOption("Regenerate Board", MainMenu::regenerateBoard_CBBuilder(gm))
                          .addOption("Stats", MainMenu::message_CBBuilder("Not emplemented yet! (Issue #22)"))    // Issue #22
                          .addOption("Settings", MainMenu::message_CBBuilder("Not emplemented yet! (Issue #26)")) // Issue #26
                          .addOption("Help", MainMenu::CB_printHelp)
