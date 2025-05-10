@@ -78,11 +78,9 @@ Menu::MenuCallback_t MainMenu::play_CBBuilder(GameManager &gm)
                 {
                     std::cout << ANSI_RED ANSI_BOLD "You Lose!" ANSI_RESET << std::endl;
                     player_index++;
-                    if (player_index >= (int)gm.getPlayers().size())
-                        break;
                 }
                 CONTINUE_ON_ENTER_PROMPT
-            } while (player_won == false);
+            } while (player_won == false && player_index < (int)gm.getPlayers().size());
         }
 
         return false;
@@ -107,26 +105,16 @@ Menu::MenuCallback_t MainMenu::addPlayer_CBBuilder(GameManager &gm)
         } while (player_name.empty() && sel_pos == 1);
         if (sel_pos == 1)
         {
-#ifdef _WIN32 // Windows sucks
-            // Windows sucks -> std::find_if NOT working ONLY on Windows !!!
             bool found = false;
             for (auto &&player : gm.getPlayers())
             {
-                std::cout << "player->getName(): " << player->getName() << std::endl;
-                std::cout << "player_name: " << player_name << std::endl;
                 if (player->getName() == player_name)
                 {
                     found = true;
                     break;
                 }
             }
-
             if (found) // Player name exists
-#else
-            auto p = std::find_if(gm.getPlayers().begin(), gm.getPlayers().end(), [&](Player *p)
-                                  { return p->getName() == player_name; });
-            if (p != gm.getPlayers().end()) // Player name exists
-#endif
             {
                 std::cout << "This player name already exists! Retry." << std::endl;
                 CONTINUE_ON_ENTER_PROMPT
@@ -165,8 +153,8 @@ Menu::MenuCallback_t MainMenu::regenerateBoard_CBBuilder(GameManager &gm)
 {
     auto lambda_cb = [&](int pos, Menu *m)
     {
-        gm.generateBoard(); 
-        std::cout << "Done!" << std::endl; 
+        gm.generateBoard();
+        std::cout << "Done!" << std::endl;
         CONTINUE_ON_ENTER_PROMPT
         return true;
     };
