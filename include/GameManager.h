@@ -35,6 +35,7 @@ struct BoardTheme_t
     std::string background_color = ANSI_BG_WHITE;
     std::string grid_color = ANSI_LIGHT_GRAY;
     std::string wall_color = ANSI_BLACK;
+    std::string reset_color = ANSI_RESET + background_color;
 
     /* Grid */
     std::string node = NODE;
@@ -139,9 +140,15 @@ public:
      *
      * @return std::string
      */
-    std::string displayBoard();
+    std::string displayBoard(bool show_empty = false);
     /**
-     * @brief Generate or regenerate game board
+     * @brief Returns displayed empty board string
+     *
+     * @return std::string
+     */
+    std::string displayEmptyBoard();
+    /**
+     * @brief Generates a random board.
      */
     void generateBoard();
     /**
@@ -187,7 +194,7 @@ public:
      * @return Robot*
      */
     Robot *getRobotOnFrame(int x, int y);
-    std::string computeNode(int x, int y);
+    std::string computeNode(Board &board, int x, int y);
 };
 
 #endif /* GAME_MANAGER_H */

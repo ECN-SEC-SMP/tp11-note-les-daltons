@@ -5,16 +5,14 @@
 class QuarterBoard
 {
 private:
-    int id;
     Frame frames[8][8];
 
 public:
     /* Constructors */
-    QuarterBoard(int id);
-    QuarterBoard(Frame f[8][8], int id);
+    QuarterBoard();
+    QuarterBoard(Frame f[8][8]);
 
     /* Getters */
-    int getID();
     Frame getFrame(int x, int y) const;
 
     /* Methods */

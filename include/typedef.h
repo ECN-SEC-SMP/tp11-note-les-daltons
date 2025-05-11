@@ -5,9 +5,11 @@
 #define ANSI_GREEN              "\033[32m"
 #define ANSI_BLUE               "\033[34m"
 #define ANSI_YELLOW             "\033[33m"
-#define ANSI_LIGHT_GRAY         "\033[38;5;250m"
+#define ANSI_LIGHT_GRAY         "\033[38;5;253m"
+#define ANSI_DARK_GRAY          "\033[38;5;238m"
 #define ANSI_BLACK              "\033[30m"
 
+#define ANSI_BG_BLACK           "\033[40m"
 #define ANSI_BG_WHITE           "\033[48;5;231m"
 
 #define ANSI_BOLD               "\033[1m"

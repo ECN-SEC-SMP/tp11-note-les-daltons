@@ -15,7 +15,7 @@ Frame framesQuarter1[8][8] = {
     {Frame(nullptr, (bool[4]){false, true, false, false}), Frame(), Frame(), Frame(), Frame(new Tile(Color::BLUE, Shape::SQUARE), (bool[4]){true, false, false, true}), Frame(nullptr, (bool[4]){false, false, true, false}), Frame(), Frame()},
     {Frame(nullptr, (bool[4]){true, false, false, false}), Frame(), Frame(), Frame(), Frame(), Frame(), Frame(), Frame(nullptr, (bool[4]){true, true, true, true})}};
 
-const QuarterBoard Quarter1 = QuarterBoard(framesQuarter1, true);
+const QuarterBoard Quarter1 = QuarterBoard(framesQuarter1);
 
 Frame framesQuarter2[8][8] = {
     {Frame(), Frame(), Frame(), Frame(), Frame(), Frame(), Frame(), Frame()},
@@ -27,7 +27,7 @@ Frame framesQuarter2[8][8] = {
     {Frame(nullptr, (bool[4]){true, false, false, false}), Frame(), Frame(), Frame(new Tile(Color::RED, Shape::TRIANGLE), (bool[4]){false, true, false, true}), Frame(nullptr, (bool[4]){false, false, true, false}), Frame(), Frame(), Frame()},
     {Frame(), Frame(), Frame(), Frame(nullptr, (bool[4]){true, false, false, false}), Frame(), Frame(nullptr, (bool[4]){false, false, false, true}), Frame(nullptr, (bool[4]){false, false, true, false}), Frame()}};
 
-const QuarterBoard Quarter2 = QuarterBoard(framesQuarter2, 2);
+const QuarterBoard Quarter2 = QuarterBoard(framesQuarter2);
 
 Frame framesQuarter3[8][8] = {
     {Frame(), Frame(), Frame(), Frame(nullptr, (bool[4]){false, false, false, true}), Frame(nullptr, (bool[4]){false, false, true, false}), Frame(), Frame(), Frame()},
@@ -39,7 +39,7 @@ Frame framesQuarter3[8][8] = {
     {Frame(), Frame(), Frame(), Frame(), Frame(), Frame(), Frame(), Frame(nullptr, (bool[4]){false, true, false, false})},
     {Frame(), Frame(), Frame(), Frame(), Frame(), Frame(), Frame(), Frame()}};
 
-const QuarterBoard Quarter3 = QuarterBoard(framesQuarter3, 3);
+const QuarterBoard Quarter3 = QuarterBoard(framesQuarter3);
 
 Frame framesQuarter4[8][8] = {
     {Frame(), Frame(), Frame(), Frame(), Frame(), Frame(), Frame(), Frame()},
@@ -51,7 +51,7 @@ Frame framesQuarter4[8][8] = {
     {Frame(), Frame(), Frame(new Tile(Color::BLUE, Shape::CIRCLE), (bool[4]){true, false, false, true}), Frame(nullptr, (bool[4]){false, true, false, false}), Frame(), Frame(), Frame(), Frame()},
     {Frame(), Frame(), Frame(), Frame(), Frame(nullptr, (bool[4]){false, false, false, true}), Frame(nullptr, (bool[4]){false, false, true, false}), Frame(), Frame()}};
 
-const QuarterBoard Quarter4 = QuarterBoard(framesQuarter4, 4);
+const QuarterBoard Quarter4 = QuarterBoard(framesQuarter4);
 
 void printQuarter(const QuarterBoard &quarter)
 {
