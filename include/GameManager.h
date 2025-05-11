@@ -22,12 +22,48 @@ enum WallsStyle
     SIMPLE_WALLS,
     DOUBLE_WALLS,
 };
+inline std::string WallsStyle_toString(WallsStyle ws)
+{
+    std::string output = "";
+    switch (ws)
+    {
+    case SIMPLE_WALLS:
+        output = "SIMPLE_WALLS";
+        break;
+    case DOUBLE_WALLS:
+        output = "DOUBLE_WALLS";
+        break;
+    default:
+        break;
+    }
+    return output;
+}
 
 enum ColorTheme
 {
     LIGHT_THEME,
     DARK_THEME,
+    CUSTOM,
 };
+inline std::string ColorTheme_toString(ColorTheme ct)
+{
+    std::string output = "";
+    switch (ct)
+    {
+    case LIGHT_THEME:
+        output = "LIGHT_THEME";
+        break;
+    case DARK_THEME:
+        output = "DARK_THEME";
+        break;
+    case CUSTOM:
+        output = "CUSTOM";
+        break;
+    default:
+        break;
+    }
+    return output;
+}
 
 struct BoardTheme_t
 {
@@ -38,6 +74,8 @@ struct BoardTheme_t
     std::string reset_color = ANSI_RESET + background_color;
     std::string menu_selection_color = ANSI_GREEN;
     std::string menu_robot_selected_color = ANSI_RED;
+
+    ColorTheme color_theme;
 
     /* Grid */
     std::string node = NODE;
@@ -62,6 +100,8 @@ struct BoardTheme_t
     std::string node_top_right;
     std::string node_bottom_left;
     std::string node_bottom_right;
+
+    WallsStyle walls_style;
 };
 
 class GameManager

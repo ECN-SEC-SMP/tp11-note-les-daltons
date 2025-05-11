@@ -100,6 +100,7 @@ void GameManager::setWallsStyle(WallsStyle wallsStyle)
     default:
         throw std::invalid_argument("Invalid walls style");
     }
+    this->boardTheme.walls_style = wallsStyle;
 }
 
 void GameManager::setColorTheme(ColorTheme colorTheme)
@@ -113,9 +114,12 @@ void GameManager::setColorTheme(ColorTheme colorTheme)
         break;
 
     case DARK_THEME:
-        this->boardTheme.background_color = ANSI_BLACK;
-        this->boardTheme.grid_color = ANSI_LIGHT_GRAY;
-        this->boardTheme.wall_color = ANSI_BG_WHITE;
+        this->boardTheme.background_color = ANSI_BG_BLACK;
+        this->boardTheme.grid_color = ANSI_YELLOW;
+        this->boardTheme.wall_color = ANSI_MAGENTA;
+        break;
+
+    case CUSTOM:
         break;
 
     default:
@@ -124,6 +128,7 @@ void GameManager::setColorTheme(ColorTheme colorTheme)
     }
 
     this->boardTheme.reset_color = ANSI_RESET + this->boardTheme.background_color;
+    this->boardTheme.color_theme = colorTheme;
 }
 
 void GameManager::replaceRobotEachRound(bool replace_robot_each_round)

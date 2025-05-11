@@ -16,11 +16,17 @@ namespace SettingsMenu
     Menu::MenuCallback_t menuSelectionColor_CBBuilder(GameManager &gm);
     Menu::MenuCallback_t menuRobotSelectedColor_CBBuilder(GameManager &gm);
     Menu::MenuCallback_t robotReplacedEachRound_CBBuilder(GameManager &gm);
+    Menu::MenuCallback_t backgroundColor_CBBuilder(GameManager &gm);
+    Menu::MenuCallback_t wallsColor_CBBuilder(GameManager &gm);
+    Menu::MenuCallback_t gridColor_CBBuilder(GameManager &gm);
+    Menu::MenuCallback_t wallsStyle_CBBuilder(GameManager &gm);
+    Menu::MenuCallback_t colorTheme_CBBuilder(GameManager &gm);
 } // namespace SettingsMenu
 
 namespace MenuUtils
 {
     std::string getColorWithMenu(std::string title, std::string selectionColor = ANSI_GREEN);
+    std::string getBGColorWithMenu(std::string title, std::string selectionColor = ANSI_GREEN);
 } // namespace MenuUtils
 
 namespace MainMenu
