@@ -7,6 +7,7 @@
 
 #include "GameManager.h"
 #include "Utils.h"
+#include "ANSI.h"
 
 #define BOARD_SIZE 16
 
@@ -311,7 +312,7 @@ std::string GameManager::displayBoard(bool show_empty)
         this->goal_tile = nullptr;
     }
     
-    std::string output = GAME_ASCII_BANNER "\n" this->boardTheme.reset_color;
+    std::string output = GAME_ASCII_BANNER "\n" + this->boardTheme.reset_color;
     std::string temp_seperator = "";
     std::string temp_tiles = "";
 
