@@ -1,20 +1,11 @@
 #include "QuarterBoard.h"
 
 /* Constructors */
-QuarterBoard::QuarterBoard(int id)
-    : id(id)
+QuarterBoard::QuarterBoard()
 {
-    for (int i = 0; i < 8; i++)
-    {
-        for (int j = 0; j < 8; j++)
-        {
-            this->frames[i][j] = Frame();
-        }
-    }
 }
 
-QuarterBoard::QuarterBoard(Frame f[8][8], int id)
-    : id(id)
+QuarterBoard::QuarterBoard(Frame f[8][8])
 {
     for (int i = 0; i < 8; i++)
     {
@@ -26,10 +17,6 @@ QuarterBoard::QuarterBoard(Frame f[8][8], int id)
 }
 
 /* Getters */
-int QuarterBoard::getID()
-{
-    return this->id;
-}
 
 Frame QuarterBoard::getFrame(int x, int y) const
 {
@@ -54,5 +41,5 @@ QuarterBoard QuarterBoard::applySymmetry() const
             tmp[i][j] = Frame(frame_tmp.getTile(), walls);
         }
     }
-    return QuarterBoard(tmp, this->id + 100);
+    return QuarterBoard(tmp);
 }

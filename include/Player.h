@@ -23,7 +23,7 @@ public:
     void setPrediction(int prediction);
 
     /* Methods */
-    void incrementScore(int score);
+    void incrementScore(int points = 1);
 };
 
 #endif // PLAYER_H
