@@ -12,6 +12,11 @@ private:
     /// @brief The quarter boards of the board
     /// @note The quarter boards are stored in a 2D array, where the first index is the row (top or bottom) and the second index is the column (left or right)
     QuarterBoard quarterBoards[2][2];
+    /// @brief Index for tile selection
+    int tile_index = 0;
+    /// @brief Index of the quarter contains rainbow corner
+    /// @note 0: top/left, 1: top/right, 2: bottom/left, 3: bottom/right
+    int rainbow_corner_quarter = -1;
 
 private:
     /**

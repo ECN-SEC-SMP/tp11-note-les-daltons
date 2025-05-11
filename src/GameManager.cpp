@@ -2,8 +2,8 @@
 #include <algorithm>
 
 #include "typedef.h"
-#include "Utils.h"
 #include "GameManager.h"
+#include "Utils.h"
 
 #define BOARD_SIZE 16
 
@@ -13,7 +13,6 @@ GameManager::GameManager()
     : goal_tile(nullptr), board(Board()), players(std::vector<Player *>())
 {
     this->setWallsStyle(SIMPLE_WALLS);
-    this->setColorTheme(LIGHT_THEME);
 }
 
 /* Getters */
@@ -84,30 +83,25 @@ void GameManager::setWallsStyle(WallsStyle wallsStyle)
     default:
         throw std::invalid_argument("Invalid walls style");
     }
-}
+} 
 
-void GameManager::setColorTheme(ColorTheme colorTheme)
-{
-    switch (colorTheme)
-    {
-    case LIGHT_THEME:
-        this->boardTheme.background_color = ANSI_WHITE_BG;
-        this->boardTheme.grid_color = ANSI_LIGHT_GRAY;
-        this->boardTheme.wall_color = ANSI_BLACK;
-        break;
+// void GameManager::setColorTheme(ColorTheme colorTheme)
+// {
+//     switch (colorTheme)
+//     {
+//     case LIGHT_THEME:
+//         this->boardTheme.background_color = ANSI_BG_WHITE;
+//         this->boardTheme.grid_color = ANSI_LIGHT_GRAY;
+//         this->boardTheme.wall_color = ANSI_BLACK;
+//         break;
 
-    case DARK_THEME:
-        this->boardTheme.background_color = ANSI_BLACK_BG;
-        this->boardTheme.grid_color = ANSI_DARK_GRAY;
-        this->boardTheme.wall_color = ANSI_WHITE;
-        break;
-
-    default:
-        throw std::invalid_argument("Invalid color theme");
-    }
-
-    this->boardTheme.reset_color = ANSI_RESET + this->boardTheme.background_color;
-}
+//     case DARK_THEME:
+//         this->boardTheme.background_color = ANSI_BLACK;
+//         this->boardTheme.grid_color = ANSI_LIGHT_GRAY;
+//         this->boardTheme.wall_color = ANSI_BG_WHITE;
+//         break;
+//     }
+// }
 
 /* Methods */
 
@@ -485,40 +479,60 @@ void GameManager::generateBoard()
     this->board.generate();
 }
 
-void GameManager::setupRound()
+void GameManager::setupNewRound()
 {
     // Get the goal tile
     int goal_tile_index = rand() % Board::TILES.size();
     this->goal_tile = &Board::TILES[goal_tile_index];
 
     // Place randomly robots on the board
+    this->robots_coordinates.clear();
     for (int i = 0; i < 4; i++)
     {
-        int x = rand() % 16;
-        if (x == 8)
-            x += 1;
-        if (x == 7)
-            x -= 1;
+        int x, y;
+        do
+        {
+            x = rand() % 16;
+            if (x == 8)
+                x += 1;
+            if (x == 7)
+                x -= 1;
 
-        int y = rand() % 16;
-        if (y == 8)
-            x += 1;
-        if (y == 7)
-            x -= 1;
+            y = rand() % 16;
+            if (y == 8)
+                x += 1;
+            if (y == 7)
+                x -= 1;
+        } while (std::count(this->robots_coordinates.begin(), this->robots_coordinates.end(), std::make_pair(x, y))); // Vérifie si la position est déjà utilisée
 
+        // Add coordinate
+        this->robots_coordinates.push_back(std::make_pair(x, y));
+    }
+}
+
+void GameManager::setupRound()
+{
+    // Reset members
+    this->round_finished = false;
+    this->cur_player_won = false;
+    this->moves_str = "";
+
+    // Place robots on the board
+    if (this->robots_coordinates.size() < 4)
+        return;
+    this->robots.clear();
+    for (int i = 0; i < 4; i++)
+    {
+        int x = this->robots_coordinates[i].first;
+        int y = this->robots_coordinates[i].second;
         this->robots.push_back(new Robot(Color(i), x, y));
     }
 }
 
-bool is_number(const std::string &s)
-{
-    return !s.empty() && std::find_if(s.begin(),
-                                      s.end(), [](unsigned char c)
-                                      { return !std::isdigit(c); }) == s.end();
-}
-
 void GameManager::processPredictionsInputs()
 {
+    this->setupRound();
+
     Menu::clear();
     std::cout << this->displayBoard() << std::endl;
     std::cout << std::endl;
@@ -536,6 +550,7 @@ void GameManager::processPredictionsInputs()
 
     Menu::clear();
     std::cin.clear();
+    std::cout << GAME_ASCII_BANNER << std::endl;
 
     for (auto &&player : this->players)
     {
@@ -550,6 +565,7 @@ void GameManager::processPredictionsInputs()
         player->setPrediction(std::stoi(prediction_str));
     }
 }
+
 
 void GameManager::sortPlayersByPredictions()
 {
@@ -620,11 +636,48 @@ bool GameManager::processMovement(Robot *robot, Direction direction, int *deplac
     if (robot_X != previousRobotX || robot_Y != previousRobotY)
     {
         *deplacement += 1;
+        this->moves_str += ANSI_BOLD;
+        switch (robot->getColor())
+        {
+        case RED:
+            this->moves_str += ANSI_RED;
+            break;
+        case GREEN:
+            this->moves_str += ANSI_GREEN;
+            break;
+        case BLUE:
+            this->moves_str += ANSI_BLUE;
+            break;
+        case YELLOW:
+            this->moves_str += ANSI_YELLOW;
+            break;
+        default:
+            break;
+        }
+        switch (direction)
+        {
+        case UP:
+            this->moves_str += MOVE_ARROW_UP;
+            break;
+        case DOWN:
+            this->moves_str += MOVE_ARROW_DOWN;
+            break;
+        case LEFT:
+            this->moves_str += MOVE_ARROW_LEFT;
+            break;
+        case RIGHT:
+            this->moves_str += MOVE_ARROW_RIGHT;
+            break;
+        default:
+            break;
+        }
+        this->moves_str += ANSI_RESET;
     }
-    m->setTitle(displayBoard());
+    m->setTitle(displayBoard() + this->players[player_index]->getName() + "'s moves: " + this->moves_str + "\n");
     m->displayMenu();
 
-    if (this->board.getFrame(robot_X, robot_Y).getTile() == this->goal_tile && this->goal_tile->getColor() == robot->getColor())
+    if (this->board.getFrame(robot_X, robot_Y).getTile() == this->goal_tile &&
+        (this->goal_tile->getColor() == robot->getColor() || this->goal_tile->getColor() == RAINBOW))
     {
         std::cout << "\033[32m\033[1m You won !!\033[0m" << std::endl;
         this->round_finished = true;
@@ -644,10 +697,13 @@ bool GameManager::processMovement(Robot *robot, Direction direction, int *deplac
 
 bool GameManager::playRound(int player_index)
 {
+    // Reset values
     int move_count = 0;
-    Menu menu(displayBoard(), 0);
+    this->setupRound();
+
+    // Setup Menu
+    Menu menu(displayBoard() + this->players[player_index]->getName() + " round\n", 0);
     menu.preventArguments(true);
-    this->cur_player_won = false;
 
     for (auto &&robot : this->robots)
     {

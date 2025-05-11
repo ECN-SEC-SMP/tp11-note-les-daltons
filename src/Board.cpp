@@ -22,22 +22,12 @@ std::vector<Tile> Board::TILES = {
     Tile(YELLOW, CIRCLE),
     Tile(YELLOW, SQUARE),
     Tile(YELLOW, TRIANGLE),
-    Tile(YELLOW, STAR)};
+    Tile(YELLOW, STAR),
+    Tile(RAINBOW, STAR)};
 
 /* Constructors */
 Board::Board()
 {
-}
-
-Board::Board(QuarterBoard quarterBoards[2][2])
-{
-    for (int i = 0; i < 2; i++)
-    {
-        for (int j = 0; j < 2; j++)
-        {
-            this->quarterBoards[i][j] = quarterBoards[i][j];
-        }
-    }
 }
 
 /* Getters */
@@ -68,11 +58,11 @@ QuarterBoard Board::generateQuarterBoard(bool top, bool left)
             // Carré du Centre
             if (top && left && i == 7 && j == 7)
                 frames[i][j].setWall(1, UP);
-            if (top && left && i == 6 && j == 7)
+            if (top && left && i == 7 && j == 6)
                 frames[i][j].setWall(1, DOWN);
             if (top && left && i == 7 && j == 7)
                 frames[i][j].setWall(1, LEFT);
-            if (top && left && i == 7 && j == 6)
+            if (top && left && i == 6 && j == 7)
                 frames[i][j].setWall(1, RIGHT);
 
             if (!top && left && i == 7 && j == 0)
@@ -167,14 +157,24 @@ QuarterBoard Board::generateQuarterBoard(bool top, bool left)
         used_positions.push_back({7, i}); // Mur de droite
     }
 
-    for (int i = 0; i < 4; i++)
+    int max_corner = 4;
+    // Rainbow Corner
+    if ((this->rainbow_corner_quarter == 0 && top && left) ||
+        (this->rainbow_corner_quarter == 1 && top && !left) ||
+        (this->rainbow_corner_quarter == 2 && !top && left) ||
+        (this->rainbow_corner_quarter == 3 && !top && !left))
+    {
+        max_corner = 5;
+    }
+
+    for (int i = 0; i < max_corner; i++)
     {
         int x, y;
         do
         {
             x = getRandomNumber(7);
             y = getRandomNumber(7);
-        } while (std::count(used_positions.begin(), used_positions.end(), std::pair<int, int>(x, y))); // Vérifie si la position est déjà utilisée
+        } while (std::count(used_positions.begin(), used_positions.end(), std::make_pair(x, y))); // Vérifie si la position est déjà utilisée
 
         used_positions.push_back({x, y}); // Marque la position comme utilisée
         corners.push_back({x, y});        // Marque la position comme utilisée
@@ -218,6 +218,10 @@ QuarterBoard Board::generateQuarterBoard(bool top, bool left)
             frames[x + 1][y].setWall(1, LEFT);
             frames[x][y + 1].setWall(1, UP);
         }
+
+        // Setup Frame Tile
+        frames[x][y].setTile(&Board::TILES[this->tile_index]);
+        this->tile_index++;
     }
 
     return QuarterBoard(frames);
@@ -225,6 +229,16 @@ QuarterBoard Board::generateQuarterBoard(bool top, bool left)
 
 void Board::generate()
 {
+    // Reset Tile indexing
+    this->tile_index = 0;
+
+    // Randomize Tile selection
+    std::random_shuffle(Board::TILES.begin(), Board::TILES.end());
+
+    // Randomize Rainbow Corner positionnement
+    this->rainbow_corner_quarter = getRandomNumber(3);
+
+    // Generate all QuarterBoards
     this->quarterBoards[0][0] = this->generateQuarterBoard(true, true);
     this->quarterBoards[0][1] = this->generateQuarterBoard(false, true);
     this->quarterBoards[1][0] = this->generateQuarterBoard(true, false);
@@ -287,8 +301,6 @@ QuarterBoard Board::createEmptyQuarterBoard(bool top, bool left)
 
     return QuarterBoard(frames);
 }
-
-
 
 Board Board::createEmptyBoard()
 {

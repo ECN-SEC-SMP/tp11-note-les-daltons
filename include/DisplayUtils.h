@@ -1,5 +1,13 @@
 #pragma once
 
+/* Colors */
+#define BACKGROUND_COLOR ANSI_BG_WHITE
+#define GRID_COLOR ANSI_LIGHT_GRAY
+#define NODE GRID_COLOR "┼" RESET
+#define WALL_COLOR ANSI_BLACK
+
+#define RESET ANSI_RESET BACKGROUND_COLOR
+
 /* Grid */
 #define NODE "┼"
 #define HORIZONTAL_GRID "────"
@@ -45,4 +53,4 @@
 #define NODE_BOTTOM_LEFT_SIMPLE "└"
 #define NODE_BOTTOM_RIGHT_SIMPLE "┘"
 
-#define EMPTY_FRAME "    "
+#define EMPTY_FRAME RESET "    "
