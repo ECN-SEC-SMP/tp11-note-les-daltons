@@ -82,6 +82,7 @@ private:
     std::string moves_str = "";
     /// @brief Coordinate of robots
     std::vector<std::pair<int, int>> robots_coordinates;
+    /// @brief Board Theme Structure to store all colors and strings
     BoardTheme_t boardTheme;
 
 private:

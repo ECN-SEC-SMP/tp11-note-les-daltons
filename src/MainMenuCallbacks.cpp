@@ -171,7 +171,31 @@ bool MainMenu::CB_notImplementedYet(int pos, Menu *m)
     return false;
 }
 
-// Menu::MenuCallback_t function_CBBuilder(GameManager &gm)
+Menu::MenuCallback_t MainMenu::settings_CBBuilder(GameManager &gm)
+{
+    auto lambda_cb = [&](int pos, Menu *m)
+    {
+        Menu::clear();
+        int position = 1;
+        bool running = true;
+        Menu settings_menu = Menu(GAME_ASCII_BANNER "Settings Menu")
+                                 .preventArguments()
+                                 .addOption("A setting")
+                                 .addOption(ANSI_ITALIC "Default." ANSI_RESET_ITALIC)
+                                 .addOption(ANSI_ITALIC "Exit." ANSI_RESET_ITALIC, [&](int, Menu *)
+                                            {running=false; return false; });
+
+        while (running)
+        {
+            settings_menu.setOptionPos(position);
+            position = settings_menu.run();
+        }
+        return false;
+    };
+    return lambda_cb;
+}
+
+// Menu::MenuCallback_t MainMenu::function_CBBuilder(GameManager &gm)
 // {
 //     auto lambda_cb = [&](int pos, Menu *m)
 //     {
