@@ -28,7 +28,7 @@ private:
     /// @brief Title of the menu
     std::string title;
     /// @brief Color of the selected option
-    int colorSelection;
+    std::string colorSelection;
     /// @brief Color of the selected option
     /// @note 0 = 'q to quit', 1 = 'timeout'
     int mode;
@@ -90,7 +90,7 @@ public:
      *
      * @return (Menu*) Pointer to the Menu object
      */
-    Menu &setColorSelection(int color);
+    Menu &setColorSelection(std::string color);
 
     /**
      * @brief Executes the main logic of the menu.

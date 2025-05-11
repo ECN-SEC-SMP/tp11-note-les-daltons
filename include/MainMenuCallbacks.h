@@ -11,6 +11,17 @@
 #define key(str) ANSI_BLUE str ANSI_RESET
 #define red_word(str) ANSI_RED str ANSI_RESET
 
+namespace SettingsMenu
+{
+    Menu::MenuCallback_t menuSelectionColor_CBBuilder(GameManager &gm);
+    Menu::MenuCallback_t menuRobotSelectedColor_CBBuilder(GameManager &gm);
+} // namespace SettingsMenu
+
+namespace MenuUtils
+{
+    std::string getColorWithMenu(std::string title, std::string selectionColor = ANSI_GREEN);
+} // namespace MenuUtils
+
 namespace MainMenu
 {
     bool CB_printHelp(int pos, Menu *m);

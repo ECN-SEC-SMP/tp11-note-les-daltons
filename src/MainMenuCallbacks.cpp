@@ -93,6 +93,7 @@ Menu::MenuCallback_t MainMenu::addPlayer_CBBuilder(GameManager &gm)
     auto lambda_cb = [&](int pos, Menu *m)
     {
         Menu player_menu(GAME_ASCII_BANNER ANSI_BOLD "Add Player\n" ANSI_ITALIC "(Set player name on first option)\n" ANSI_RESET, 0);
+        player_menu.setColorSelection(gm.getBoardTheme().menu_selection_color);
         player_menu.addOption("Player name: ").addOption("Cancel.");
         std::string player_name;
         int sel_pos;
@@ -133,6 +134,7 @@ Menu::MenuCallback_t MainMenu::removePlayer_CBBuilder(GameManager &gm)
     auto lambda_cb = [&](int pos, Menu *m)
     {
         Menu player_menu(GAME_ASCII_BANNER ANSI_BOLD "Remove Player\n" ANSI_RESET, 0);
+        player_menu.setColorSelection(gm.getBoardTheme().menu_selection_color);
         player_menu.preventArguments();
         for (auto &&player : gm.getPlayers())
         {
@@ -180,7 +182,9 @@ Menu::MenuCallback_t MainMenu::settings_CBBuilder(GameManager &gm)
         bool running = true;
         Menu settings_menu = Menu(GAME_ASCII_BANNER "Settings Menu")
                                  .preventArguments()
-                                 .addOption("A setting")
+                                 .setColorSelection(gm.getBoardTheme().menu_selection_color)
+                                 .addOption("Menu: Selection Color " + gm.getBoardTheme().menu_selection_color + "■" ANSI_RESET, SettingsMenu::menuSelectionColor_CBBuilder(gm))
+                                 .addOption("Menu: Robot Selected Color " + gm.getBoardTheme().menu_robot_selected_color + "■" ANSI_RESET, SettingsMenu::menuRobotSelectedColor_CBBuilder(gm))
                                  .addOption(ANSI_ITALIC "Default." ANSI_RESET_ITALIC)
                                  .addOption(ANSI_ITALIC "Exit." ANSI_RESET_ITALIC, [&](int, Menu *)
                                             {running=false; return false; });
@@ -205,3 +209,49 @@ Menu::MenuCallback_t MainMenu::settings_CBBuilder(GameManager &gm)
 //     };
 //     return lambda_cb;
 // }
+
+std::string MenuUtils::getColorWithMenu(std::string title, std::string selectionColor)
+{
+    std::string color = "";
+    Menu colorMenu = Menu(title)
+                         .setColorSelection(selectionColor)
+                         .addOption("Black   " ANSI_BLACK "■" ANSI_RESET, [&](int, Menu *)
+                                    {color = ANSI_BLACK; return false; })
+                         .addOption("Red     " ANSI_RED "■" ANSI_RESET, [&](int, Menu *)
+                                    {color = ANSI_RED; return false; })
+                         .addOption("Green   " ANSI_GREEN "■" ANSI_RESET, [&](int, Menu *)
+                                    {color = ANSI_GREEN; return false; })
+                         .addOption("Yellow  " ANSI_YELLOW "■" ANSI_RESET, [&](int, Menu *)
+                                    {color = ANSI_YELLOW; return false; })
+                         .addOption("Blue    " ANSI_BLUE "■" ANSI_RESET, [&](int, Menu *)
+                                    {color = ANSI_BLUE; return false; })
+                         .addOption("Magenta " ANSI_MAGENTA "■" ANSI_RESET, [&](int, Menu *)
+                                    {color = ANSI_MAGENTA; return false; })
+                         .addOption("Cyan    " ANSI_CYAN "■" ANSI_RESET, [&](int, Menu *)
+                                    {color = ANSI_CYAN; return false; })
+                         .addOption("White   " ANSI_WHITE "■" ANSI_RESET, [&](int, Menu *)
+                                    {color = ANSI_WHITE; return false; });
+    colorMenu.run();
+    return color;
+}
+
+Menu::MenuCallback_t SettingsMenu::menuSelectionColor_CBBuilder(GameManager &gm)
+{
+    auto lambda_cb = [&](int pos, Menu *m)
+    {
+        gm.getBoardTheme().menu_selection_color = MenuUtils::getColorWithMenu(GAME_ASCII_BANNER "Menu Selection Color", gm.getBoardTheme().menu_selection_color);
+        m->setColorSelection(gm.getBoardTheme().menu_selection_color);
+        return false;
+    };
+    return lambda_cb;
+}
+
+Menu::MenuCallback_t SettingsMenu::menuRobotSelectedColor_CBBuilder(GameManager &gm)
+{
+    auto lambda_cb = [&](int pos, Menu *m)
+    {
+        gm.getBoardTheme().menu_robot_selected_color = MenuUtils::getColorWithMenu(GAME_ASCII_BANNER "Menu Robot Selected Color", gm.getBoardTheme().menu_selection_color);
+        return false;
+    };
+    return lambda_cb;
+}

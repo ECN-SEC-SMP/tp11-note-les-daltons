@@ -36,6 +36,8 @@ struct BoardTheme_t
     std::string grid_color = ANSI_LIGHT_GRAY;
     std::string wall_color = ANSI_BLACK;
     std::string reset_color = ANSI_RESET + background_color;
+    std::string menu_selection_color = ANSI_GREEN;
+    std::string menu_robot_selected_color = ANSI_RED;
 
     /* Grid */
     std::string node = NODE;
@@ -115,9 +117,15 @@ public:
     /**
      * @brief Get the Board object
      *
-     * @return Board*
+     * @return Board&
      */
-    Board *getBoard();
+    Board &getBoard();
+    /**
+     * @brief Get the board theme structure
+     * 
+     * @return BoardTheme_t&
+     */
+    BoardTheme_t &getBoardTheme();
 
     /* Setters */
     /**

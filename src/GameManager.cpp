@@ -39,6 +39,15 @@ Player *GameManager::getPlayer(int index)
     }
     return players[index];
 }
+Board &GameManager::getBoard()
+{
+    return this->board;
+}
+
+BoardTheme_t &GameManager::getBoardTheme()
+{
+    return this->boardTheme;
+}
 
 /* Setters */
 void GameManager::setWallsStyle(WallsStyle wallsStyle)
@@ -768,7 +777,7 @@ bool GameManager::playRound(int player_index)
 
             // Setup Menu
             m->preventDeplacement(true);
-            m->setColorSelection(31);
+            m->setColorSelection(this->boardTheme.menu_robot_selected_color);
             m->displayMenu();
 
             // Process movements
@@ -844,7 +853,7 @@ bool GameManager::playRound(int player_index)
             // Reset Menu
             m->preventDeplacement(false);
             m->preventArguments(false);
-            m->setColorSelection(32);
+            m->setColorSelection(this->boardTheme.menu_selection_color);
 
             return !this->round_finished; });
     }
