@@ -1,5 +1,6 @@
 #include <stdexcept>
 #include <algorithm>
+#include <numeric>
 
 #include "typedef.h"
 #include "GameManager.h"
@@ -840,17 +841,16 @@ std::string GameManager::displayRoundResults()
 std::string GameManager::displayScoreboard()
 {
     const std::string SPACE_BETWEEN_COLUMNS = "   ";
-    int nb_columns = 5;
-    std::string column_names[nb_columns] = {"Rank", "Player", "Rounds played", "Score", "Success Rate"};
+
+    std::vector<std::string> column_names = {"Rank", "Player", "Rounds played", "Score", "Success Rate"};
+    int nb_columns = column_names.size();
 
     /*  Compute column widths depending on column names */
-    int column_widths[nb_columns] = {0, 0, 0, 0};
+    std::vector<int> column_widths = {0, 0, 0, 0, 0};
     for (int i = 0; i < nb_columns; i++)
     {
         column_widths[i] = column_names[i].length();
     }
-    std::string output;
-    output += "\n";
 
     /* Get the max length of the player names column */
     for (auto &&player : this->players)
@@ -864,7 +864,24 @@ std::string GameManager::displayScoreboard()
     /* Sort players by score before displaying */
     sortPlayersByScore();
 
+    /* Display top border of the frame -------------------------------------- */
+    std::string output = "\n";
+    
+    /* Compute length of horizontal boarder */
+    int scoreboard_width = std::accumulate(column_widths.begin(), column_widths.end(), 0);
+    scoreboard_width += SPACE_BETWEEN_COLUMNS.length() * (nb_columns);
+    std::string horizontal_border = "";
+    for (int i = 0; i < (scoreboard_width); i++)
+    {
+        horizontal_border += HORIZONTAL_BORDER;
+    }
+
+    output += TOP_LEFT_CORNER;
+    output += horizontal_border;
+    output += TOP_RIGHT_CORNER "\n";
+
     /* Display first row ---------------------------------------------------- */
+    output += VERTICAL_BORDER " ";
     output += ANSI_BOLD;
     for (int i = 0; i < nb_columns; i++)
     {
@@ -872,8 +889,11 @@ std::string GameManager::displayScoreboard()
         output += SPACE_BETWEEN_COLUMNS;
         output += std::string(column_widths[i] - column_names[i].length(), ' ');
     }
+    /* Remove SPACE_BETWEEN_COLUMN for the last column */
+    output.pop_back();
+    output.pop_back();
     output += ANSI_RESET;
-    output += "\n";
+    output += " " VERTICAL_BORDER "\n";
 
     /* Display others rows -------------------------------------------------- */
     for (auto &&player : this->players)
@@ -897,6 +917,9 @@ std::string GameManager::displayScoreboard()
         std::string player_rounds = std::to_string(player->getRoundsPlayed());
         std::string player_score = std::to_string(player->getScore());
         std::string player_success_rate = std::to_string((int)((float)(player->getScore()) / (float)(player->getRoundsPlayed()) * 100)) + "%";
+
+        /* Left border of frame */
+        output += VERTICAL_BORDER " ";
 
         /* Player rank */
         output += player_rank;
@@ -929,10 +952,15 @@ std::string GameManager::displayScoreboard()
         /* Player success rate  */
         output += player_success_rate;
         output += std::string(column_widths[SUCCESS_COLUMN] - player_success_rate.length(), ' ');
-        output += SPACE_BETWEEN_COLUMNS;
 
-        output += "\n";
+        /* Right border of frame */
+        output += "  " VERTICAL_BORDER "\n";
     }
+
+    /* Display bottom border of the frame ----------------------------------- */
+    output += BOTTOM_LEFT_CORNER;
+    output += horizontal_border;
+    output += BOTTOM_RIGHT_CORNER;
 
     return output;
 }
