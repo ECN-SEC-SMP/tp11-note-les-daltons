@@ -13,6 +13,7 @@ GameManager::GameManager()
     : goal_tile(nullptr), board(Board()), players(std::vector<Player *>())
 {
     this->setWallsStyle(SIMPLE_WALLS);
+    this->setColorTheme(LIGHT_THEME);
 }
 
 /* Getters */
@@ -85,23 +86,29 @@ void GameManager::setWallsStyle(WallsStyle wallsStyle)
     }
 } 
 
-// void GameManager::setColorTheme(ColorTheme colorTheme)
-// {
-//     switch (colorTheme)
-//     {
-//     case LIGHT_THEME:
-//         this->boardTheme.background_color = ANSI_BG_WHITE;
-//         this->boardTheme.grid_color = ANSI_LIGHT_GRAY;
-//         this->boardTheme.wall_color = ANSI_BLACK;
-//         break;
+void GameManager::setColorTheme(ColorTheme colorTheme)
+{
+    switch (colorTheme)
+    {
+    case LIGHT_THEME:
+        this->boardTheme.background_color = ANSI_BG_WHITE;
+        this->boardTheme.grid_color = ANSI_LIGHT_GRAY;
+        this->boardTheme.wall_color = ANSI_BLACK;
+        break;
 
-//     case DARK_THEME:
-//         this->boardTheme.background_color = ANSI_BLACK;
-//         this->boardTheme.grid_color = ANSI_LIGHT_GRAY;
-//         this->boardTheme.wall_color = ANSI_BG_WHITE;
-//         break;
-//     }
-// }
+    case DARK_THEME:
+        this->boardTheme.background_color = ANSI_BLACK;
+        this->boardTheme.grid_color = ANSI_LIGHT_GRAY;
+        this->boardTheme.wall_color = ANSI_BG_WHITE;
+        break;
+
+    default:
+        throw std::invalid_argument("Invalid color theme");
+        break;
+    }
+
+    this->boardTheme.reset_color = ANSI_RESET + this->boardTheme.background_color;
+}
 
 /* Methods */
 
@@ -380,19 +387,23 @@ std::string GameManager::displayBoard(bool show_empty)
                 /* Robot on the frame, and frame is a tile */
                 if (frame_is_tile && robot_on_frame)
                 {
-                    temp_tiles += frame.getTile()->getEmoji() + robot_on_frame->getEmoji();
+                    temp_tiles += frame.getTile()->getEmoji();
+                    temp_tiles += this->boardTheme.reset_color;
+                    temp_tiles += robot_on_frame->getEmoji();
                 }
 
                 /* Robot on the frame */
                 else if (robot_on_frame)
                 {
-                    temp_tiles += " " + robot_on_frame->getEmoji() + " ";
+                    temp_tiles += " " + robot_on_frame->getEmoji();
+                    temp_tiles += this->boardTheme.reset_color + " ";
                 }
 
                 /* Frame is a tile */
                 else if (frame_is_tile)
                 {
-                    temp_tiles += " " + frame.getTile()->getEmoji() + " ";
+                    temp_tiles += " " + frame.getTile()->getEmoji();
+                    temp_tiles += this->boardTheme.reset_color + " ";
                 }
             }
             else
