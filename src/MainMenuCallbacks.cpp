@@ -180,15 +180,16 @@ Menu::MenuCallback_t MainMenu::settings_CBBuilder(GameManager &gm)
         Menu::clear();
         int position = 1;
         bool running = true;
+        std::string temp = (gm.robotIsReplacedEachRound() ? "true" : "false");
         Menu settings_menu = Menu(GAME_ASCII_BANNER "Settings Menu")
                                  .preventArguments()
                                  .setColorSelection(gm.getBoardTheme().menu_selection_color)
                                  .addOption("Menu: Selection Color " + gm.getBoardTheme().menu_selection_color + "■" ANSI_RESET, SettingsMenu::menuSelectionColor_CBBuilder(gm))
                                  .addOption("Menu: Robot Selected Color " + gm.getBoardTheme().menu_robot_selected_color + "■" ANSI_RESET, SettingsMenu::menuRobotSelectedColor_CBBuilder(gm))
-                                 .addOption(ANSI_ITALIC "Default." ANSI_RESET_ITALIC)
+                                 .addOption("Robot randomly replaced each round (" + temp + ")", SettingsMenu::robotReplacedEachRound_CBBuilder(gm))
+                                //  .addOption(ANSI_ITALIC "Default." ANSI_RESET_ITALIC) // Not implemented yet
                                  .addOption(ANSI_ITALIC "Exit." ANSI_RESET_ITALIC, [&](int, Menu *)
                                             {running=false; return false; });
-
         while (running)
         {
             settings_menu.setOptionPos(position);
@@ -251,6 +252,18 @@ Menu::MenuCallback_t SettingsMenu::menuRobotSelectedColor_CBBuilder(GameManager 
     auto lambda_cb = [&](int pos, Menu *m)
     {
         gm.getBoardTheme().menu_robot_selected_color = MenuUtils::getColorWithMenu(GAME_ASCII_BANNER "Menu Robot Selected Color", gm.getBoardTheme().menu_selection_color);
+        return false;
+    };
+    return lambda_cb;
+}
+
+Menu::MenuCallback_t SettingsMenu::robotReplacedEachRound_CBBuilder(GameManager &gm)
+{
+    auto lambda_cb = [&](int pos, Menu *m)
+    {
+        gm.replaceRobotEachRound(!gm.robotIsReplacedEachRound());
+        std::string temp = (gm.robotIsReplacedEachRound() ? "true" : "false");
+        m->getOptions()[pos-1] = "Robot randomly replaced each round (" + temp + ")";
         return false;
     };
     return lambda_cb;

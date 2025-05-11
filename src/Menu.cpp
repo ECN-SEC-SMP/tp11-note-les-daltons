@@ -322,7 +322,7 @@ int Menu::run()
             if (this->current_option >= 0 && this->current_option < (int)this->options.size())
             {
                 Menu::resetTerminal();
-                is_running = this->callbacks[this->current_option](this->current_option, this); // call the callback function
+                is_running = this->callbacks[this->current_option](this->current_option+1, this); // call the callback function
                 Menu::setTerminal();
             }
             break;

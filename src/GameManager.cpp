@@ -49,6 +49,11 @@ BoardTheme_t &GameManager::getBoardTheme()
     return this->boardTheme;
 }
 
+bool GameManager::robotIsReplacedEachRound() const
+{
+    return this->replace_robot_each_round;
+}
+
 /* Setters */
 void GameManager::setWallsStyle(WallsStyle wallsStyle)
 {
@@ -119,6 +124,11 @@ void GameManager::setColorTheme(ColorTheme colorTheme)
     }
 
     this->boardTheme.reset_color = ANSI_RESET + this->boardTheme.background_color;
+}
+
+void GameManager::replaceRobotEachRound(bool replace_robot_each_round)
+{
+    this->replace_robot_each_round = replace_robot_each_round;
 }
 
 /* Methods */
@@ -500,25 +510,26 @@ void GameManager::generateBoard()
 {
     this->board.generate();
 
-#ifndef ROBOT_REPLACED_EACH_ROUND
-    // Place randomly robots on the board
-    this->robots_coordinates.clear();
-    for (int i = 0; i < 4; i++)
+    if (!replace_robot_each_round)
     {
-        int x, y;
-        bool condition;
-        do
+        // Place randomly robots on the board
+        this->robots_coordinates.clear();
+        for (int i = 0; i < 4; i++)
         {
-            x = rand() % 16;
-            y = rand() % 16;
-            condition = std::count(this->robots_coordinates.begin(), this->robots_coordinates.end(), std::make_pair(x, y)); // Coordinates already used
-            condition |= this->board.getFrame(x, y).getTile() == nullptr;                                                   // Frame not a tile
-        } while (condition); // Vérifie si la position est déjà utilisée
+            int x, y;
+            bool condition;
+            do
+            {
+                x = rand() % 16;
+                y = rand() % 16;
+                condition = std::count(this->robots_coordinates.begin(), this->robots_coordinates.end(), std::make_pair(x, y)); // Coordinates already used
+                condition |= this->board.getFrame(x, y).getTile() == nullptr;                                                   // Frame not a tile
+            } while (condition); // Vérifie si la position est déjà utilisée
 
-        // Add coordinate
-        this->robots_coordinates.push_back(std::make_pair(x, y));
+            // Add coordinate
+            this->robots_coordinates.push_back(std::make_pair(x, y));
+        }
     }
-#endif
 }
 
 void GameManager::setupRound()
@@ -532,25 +543,26 @@ void GameManager::setupRound()
     int goal_tile_index = rand() % Board::TILES.size();
     this->goal_tile = &Board::TILES[goal_tile_index];
 
-#ifdef ROBOT_REPLACED_EACH_ROUND
-    // Place randomly robots on the board
-    this->robots_coordinates.clear();
-    for (int i = 0; i < 4; i++)
+    if (replace_robot_each_round)
     {
-        int x, y;
-        bool condition;
-        do
+        // Place randomly robots on the board
+        this->robots_coordinates.clear();
+        for (int i = 0; i < 4; i++)
         {
-            x = rand() % 16;
-            y = rand() % 16;
-            condition = std::count(this->robots_coordinates.begin(), this->robots_coordinates.end(), std::make_pair(x, y)); // Coordinates already used
-            condition |= this->board.getFrame(x, y).getTile() == nullptr;                                                   // Frame not a tile
-        } while (condition); // Vérifie si la position est déjà utilisée
+            int x, y;
+            bool condition;
+            do
+            {
+                x = rand() % 16;
+                y = rand() % 16;
+                condition = std::count(this->robots_coordinates.begin(), this->robots_coordinates.end(), std::make_pair(x, y)); // Coordinates already used
+                condition |= this->board.getFrame(x, y).getTile() == nullptr;                                                   // Frame not a tile
+            } while (condition); // Vérifie si la position est déjà utilisée
 
-        // Add coordinate
-        this->robots_coordinates.push_back(std::make_pair(x, y));
+            // Add coordinate
+            this->robots_coordinates.push_back(std::make_pair(x, y));
+        }
     }
-#endif
 }
 
 void GameManager::resetRound()

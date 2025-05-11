@@ -15,6 +15,7 @@ namespace SettingsMenu
 {
     Menu::MenuCallback_t menuSelectionColor_CBBuilder(GameManager &gm);
     Menu::MenuCallback_t menuRobotSelectedColor_CBBuilder(GameManager &gm);
+    Menu::MenuCallback_t robotReplacedEachRound_CBBuilder(GameManager &gm);
 } // namespace SettingsMenu
 
 namespace MenuUtils
