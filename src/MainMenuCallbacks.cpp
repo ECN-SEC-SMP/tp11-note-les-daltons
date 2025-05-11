@@ -161,16 +161,14 @@ Menu::MenuCallback_t MainMenu::regenerateBoard_CBBuilder(GameManager &gm)
     return lambda_cb;
 }
 
-Menu::MenuCallback_t MainMenu::message_CBBuilder(std::string message)
+bool MainMenu::CB_notImplementedYet(int pos, Menu *m)
 {
-    auto lambda_cb = [&](int pos, Menu *m)
-    {
-        std::cout << message << std::endl;
-        CONTINUE_ON_ENTER_PROMPT
+    Menu::clear();
+    std::cout << GAME_ASCII_BANNER << std::endl;
+    std::cout << "Not emplemented yet! " << std::endl;
+    CONTINUE_ON_ENTER_PROMPT
 
-        return false;
-    };
-    return lambda_cb;
+    return false;
 }
 
 // Menu::MenuCallback_t function_CBBuilder(GameManager &gm)

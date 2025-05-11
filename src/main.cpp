@@ -22,8 +22,8 @@ int main(int argc, char const *argv[])
                          .addOption("Add Player", MainMenu::addPlayer_CBBuilder(gm))
                          .addOption("Remove Player", MainMenu::removePlayer_CBBuilder(gm))
                          .addOption("Regenerate Board", MainMenu::regenerateBoard_CBBuilder(gm))
-                         .addOption("Stats", MainMenu::message_CBBuilder("Not emplemented yet! (Issue #22)"))    // Issue #22
-                         .addOption("Settings", MainMenu::message_CBBuilder("Not emplemented yet! (Issue #26)")) // Issue #26
+                         .addOption("Stats", MainMenu::CB_notImplementedYet)    // Issue #22
+                         .addOption("Settings", MainMenu::CB_notImplementedYet) // Issue #26
                          .addOption("Help", MainMenu::CB_printHelp)
                          .addOption("Exit.", [&](int pos, Menu *m)
                                     { running = false; return false; })

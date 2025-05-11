@@ -18,5 +18,5 @@ namespace MainMenu
     Menu::MenuCallback_t addPlayer_CBBuilder(GameManager &gm);
     Menu::MenuCallback_t removePlayer_CBBuilder(GameManager &gm);
     Menu::MenuCallback_t regenerateBoard_CBBuilder(GameManager &gm);
-    Menu::MenuCallback_t message_CBBuilder(std::string message);
+    bool CB_notImplementedYet(int pos, Menu *m);
 } // namespace MainMenu
