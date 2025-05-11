@@ -30,6 +30,14 @@ Board::Board()
 {
 }
 
+Board::Board(QuarterBoard quarterBoards[2][2])
+{
+    this->quarterBoards[0][0] = quarterBoards[0][0];
+    this->quarterBoards[0][1] = quarterBoards[0][1];
+    this->quarterBoards[1][0] = quarterBoards[1][0];
+    this->quarterBoards[1][1] = quarterBoards[1][1];
+}
+
 /* Getters */
 Frame Board::getFrame(int x, int y)
 {
