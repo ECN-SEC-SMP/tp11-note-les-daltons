@@ -38,6 +38,10 @@ Player *GameManager::getPlayer(int index)
 }
 
 /* Setters */
+void GameManager::setWinner(Player *player)
+{
+    this->winner = player;
+}
 
 void GameManager::setWallsStyle(WallsStyle wallsStyle)
 {
@@ -803,6 +807,34 @@ bool GameManager::playRound(int player_index)
     menu.run();
 
     return this->cur_player_won;
+}
+
+std::string GameManager::displayRoundResults()
+{
+    std::string output = "\n";
+
+    for (Player *player : this->players)
+    {
+        /* Get player info */
+        std::string player_name = player->getName();
+        std::string player_prediction = std::to_string(player->getPrediction());
+        std::string player_moves = std::to_string(player->getNbMoves());
+        std::string player_result;
+        if (player == this->winner)
+        {
+            player_result = "won with " + player_moves + "!";
+        }
+        else
+        {
+            player_result = "lost";
+        }
+
+        /* Add player recap to output */
+        output += "Player " + player_name + " announced " + player_prediction + " moves and " + player_result;
+        output +=  "\n";
+    }
+
+    return output;
 }
 
 std::string GameManager::displayScoreboard()
