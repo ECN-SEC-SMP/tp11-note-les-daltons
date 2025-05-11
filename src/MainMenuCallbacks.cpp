@@ -21,8 +21,8 @@ bool MainMenu::CB_printHelp(int pos, Menu *m)
     std::cout << " 4. After this time, all players enter their prediction of " << std::endl;
     std::cout << "    the number of moves." << std::endl;
     std::cout << " 5. The player with the lowest prediction starts. If he solves" << std::endl;
-    std::cout << "    the puzzle with the correct prediction, he wins " red_word("2 points") ". If" << std::endl;
-    std::cout << "    he solves the puzzle with a lower number of moves than his " << std::endl;
+    std::cout << "    the puzzle with the correct prediction, he wins " red_word("2 points") "." << std::endl;
+    std::cout << "    If he solves the puzzle with a lower number of moves than his " << std::endl;
     std::cout << "    prediction, he earns only " red_word("1 point") "." << std::endl;
     std::cout << " 6. But if this player exceeds his prediction without solving" << std::endl;
     std::cout << "    the puzzle, the second player can play and continue from" << std::endl;

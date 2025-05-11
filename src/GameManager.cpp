@@ -644,6 +644,10 @@ bool GameManager::processMovement(Robot *robot, Direction direction, int *deplac
     {
         this->round_finished = true;
         this->cur_player_won = true;
+        if (players[player_index]->getPrediction() == *deplacement)
+            players[player_index]->incrementScore(2);
+        else
+            players[player_index]->incrementScore(1);
         return true;
     }
 
