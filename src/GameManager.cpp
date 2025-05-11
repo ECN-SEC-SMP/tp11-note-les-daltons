@@ -84,7 +84,7 @@ void GameManager::setWallsStyle(WallsStyle wallsStyle)
     default:
         throw std::invalid_argument("Invalid walls style");
     }
-} 
+}
 
 void GameManager::setColorTheme(ColorTheme colorTheme)
 {
@@ -217,7 +217,8 @@ std::string GameManager::computeNode(Board &_board, int x, int y)
         bottom_wall = current_frame.getWalls()[LEFT];
     }
 
-    std::string node = "";;
+    std::string node = "";
+    ;
     /* Goal tile displayed in the center of the board */
     if (x == 8 && y == 8)
     {
@@ -307,7 +308,7 @@ std::string GameManager::displayBoard(bool show_empty)
     {
         this->goal_tile = nullptr;
     }
-    
+
     std::string output = "\n" + this->boardTheme.reset_color;
     std::string temp_seperator = "";
     std::string temp_tiles = "";
@@ -577,11 +578,17 @@ void GameManager::processPredictionsInputs()
     }
 }
 
-
 void GameManager::sortPlayersByPredictions()
 {
     std::sort(this->players.begin(), this->players.end(), [](Player *a, Player *b)
               { return a->getPrediction() < b->getPrediction(); });
+}
+
+void GameManager::sortPlayersByScore()
+{
+    std::sort(this->players.begin(), this->players.end(),
+              [](Player *a, Player *b)
+              { return a->getScore() > b->getScore(); });
 }
 
 bool GameManager::processMovement(Robot *robot, Direction direction, int *deplacement, Menu *m, int player_index)
@@ -796,4 +803,104 @@ bool GameManager::playRound(int player_index)
     menu.run();
 
     return this->cur_player_won;
+}
+
+std::string GameManager::displayScoreboard()
+{
+    const std::string SPACE_BETWEEN_COLUMNS = "   ";
+    int nb_columns = 5;
+    std::string column_names[nb_columns] = {"Rank", "Player", "Rounds played", "Score", "Success Rate"};
+
+    /*  Compute column widths depending on column names */
+    int column_widths[nb_columns] = {0, 0, 0, 0};
+    for (int i = 0; i < nb_columns; i++)
+    {
+        column_widths[i] = column_names[i].length();
+    }
+    std::string output;
+    output += "\n";
+
+    /* Get the max length of the player names column */
+    for (auto &&player : this->players)
+    {
+        if (((int)player->getName().length()) > column_widths[NAME_COLUMN])
+        {
+            column_widths[NAME_COLUMN] = player->getName().length();
+        }
+    }
+
+    /* Sort players by score before displaying */
+    sortPlayersByScore();
+
+    /* Display first row ---------------------------------------------------- */
+    output += ANSI_BOLD;
+    for (int i = 0; i < nb_columns; i++)
+    {
+        output += column_names[i];
+        output += SPACE_BETWEEN_COLUMNS;
+        output += std::string(column_widths[i] - column_names[i].length(), ' ');
+    }
+    output += ANSI_RESET;
+    output += "\n";
+
+    /* Display others rows -------------------------------------------------- */
+    for (auto &&player : this->players)
+    {
+        /* Get player info */
+        std::string player_rank;
+        bool winner = player == this->players[0];
+        if (winner)
+        {
+            player_rank = "🏆";
+        }
+        else
+        {
+            player_rank = " ";
+            player_rank += std::to_string(std::find(this->players.begin(),
+                                                    this->players.end(),
+                                                    player) -
+                                          this->players.begin() + 1);
+        }
+        std::string player_name = player->getName();
+        std::string player_rounds = std::to_string(player->getRoundsPlayed());
+        std::string player_score = std::to_string(player->getScore());
+        std::string player_success_rate = std::to_string((int)((float)(player->getScore()) / (float)(player->getRoundsPlayed()) * 100)) + "%";
+
+        /* Player rank */
+        output += player_rank;
+        if (winner)
+        {
+            /* std::string.lenght() throws error if string contains emoji  */
+            output += std::string(column_widths[RANK_COLUMN] - 2, ' ');
+        }
+        else
+        {
+            output += std::string(column_widths[RANK_COLUMN] - player_rank.length(), ' ');
+        }
+        output += SPACE_BETWEEN_COLUMNS;
+
+        /* Player name */
+        output += player_name;
+        output += std::string(column_widths[NAME_COLUMN] - player_name.length(), ' ');
+        output += SPACE_BETWEEN_COLUMNS;
+
+        /* Player rounds */
+        output += player_rounds;
+        output += std::string(column_widths[ROUNDS_COLUMN] - player_rounds.length(), ' ');
+        output += SPACE_BETWEEN_COLUMNS;
+
+        /* Player score  */
+        output += player_score;
+        output += std::string(column_widths[SCORE_COLUMN] - player_score.length(), ' ');
+        output += SPACE_BETWEEN_COLUMNS;
+
+        /* Player success rate  */
+        output += player_success_rate;
+        output += std::string(column_widths[SUCCESS_COLUMN] - player_success_rate.length(), ' ');
+        output += SPACE_BETWEEN_COLUMNS;
+
+        output += "\n";
+    }
+
+    return output;
 }

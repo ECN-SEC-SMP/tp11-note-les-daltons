@@ -29,6 +29,15 @@ enum ColorTheme
     DARK_THEME,
 };
 
+enum ScoreboardColumns
+{
+    RANK_COLUMN,
+    NAME_COLUMN,
+    ROUNDS_COLUMN,
+    SCORE_COLUMN,
+    SUCCESS_COLUMN
+};
+
 struct BoardTheme_t
 {
     /* Colors */
@@ -173,6 +182,11 @@ public:
      */
     void sortPlayersByPredictions();
     /**
+     * @brief Sorts players according to their score in descending order
+     * @note This function is called when displaying results of a round.
+     */
+    void sortPlayersByScore();
+    /**
      * @brief Plays a round of the game.
      * @note This function is called to play a round of the game.
      *
@@ -182,10 +196,15 @@ public:
      */
     bool playRound(int player_index);
     /**
-     * @brief Displays the results of the game.
-     * @note This function is called at the end of the game.
+     * @brief Displays the results of the round.
+     * @note This function is called at the end of each round.
      */
-    void displayResults();
+    std::string displayRoundResults();
+    /**
+     * @brief Displays the scoreboard.
+     * @note This function is called in the sub menu "Stats".
+     */
+    std::string displayScoreboard();
     /**
      * @brief Get Robot on frame with (x,y) coordinates
      *
