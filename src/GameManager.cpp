@@ -605,7 +605,7 @@ void GameManager::processPredictionsInputs()
 
     Menu::clear();
     std::cin.clear();
-    std::cout << GAME_ASCII_BANNER << std::endl;
+    std::cout << this->displayEmptyBoard() << std::endl;
 
     for (auto &&player : this->players)
     {

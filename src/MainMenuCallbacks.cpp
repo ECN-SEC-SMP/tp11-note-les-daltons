@@ -155,10 +155,18 @@ Menu::MenuCallback_t MainMenu::regenerateBoard_CBBuilder(GameManager &gm)
 {
     auto lambda_cb = [&](int pos, Menu *m)
     {
-        gm.generateBoard();
-        std::cout << "Done!" << std::endl;
-        CONTINUE_ON_ENTER_PROMPT
-        return true;
+        gm.resetRound();
+        Menu menu = Menu(gm.displayBoard()).addOption("Regenerate").addOption("Exit.");
+        int _pos = 1;
+        while (_pos != 2)
+        {
+            _pos = menu.run();
+            gm.generateBoard();
+            if (!gm.robotIsReplacedEachRound())
+                gm.resetRound();
+            menu.setTitle(gm.displayBoard());
+        }
+        return false;
     };
     return lambda_cb;
 }
