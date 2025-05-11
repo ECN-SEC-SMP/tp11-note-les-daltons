@@ -16,6 +16,7 @@ GameManager::GameManager()
     : goal_tile(nullptr), board(Board()), players(std::vector<Player *>())
 {
     this->setWallsStyle(SIMPLE_WALLS);
+    this->setColorTheme(LIGHT_THEME);
 }
 
 /* Getters */
@@ -88,23 +89,29 @@ void GameManager::setWallsStyle(WallsStyle wallsStyle)
     }
 }
 
-// void GameManager::setColorTheme(ColorTheme colorTheme)
-// {
-//     switch (colorTheme)
-//     {
-//     case LIGHT_THEME:
-//         this->boardTheme.background_color = ANSI_BG_WHITE;
-//         this->boardTheme.grid_color = ANSI_LIGHT_GRAY;
-//         this->boardTheme.wall_color = ANSI_BLACK;
-//         break;
+void GameManager::setColorTheme(ColorTheme colorTheme)
+{
+    switch (colorTheme)
+    {
+    case LIGHT_THEME:
+        this->boardTheme.background_color = ANSI_BG_WHITE;
+        this->boardTheme.grid_color = ANSI_LIGHT_GRAY;
+        this->boardTheme.wall_color = ANSI_BLACK;
+        break;
 
-//     case DARK_THEME:
-//         this->boardTheme.background_color = ANSI_BLACK;
-//         this->boardTheme.grid_color = ANSI_LIGHT_GRAY;
-//         this->boardTheme.wall_color = ANSI_BG_WHITE;
-//         break;
-//     }
-// }
+    case DARK_THEME:
+        this->boardTheme.background_color = ANSI_BLACK;
+        this->boardTheme.grid_color = ANSI_LIGHT_GRAY;
+        this->boardTheme.wall_color = ANSI_BG_WHITE;
+        break;
+
+    default:
+        throw std::invalid_argument("Invalid color theme");
+        break;
+    }
+
+    this->boardTheme.reset_color = ANSI_RESET + this->boardTheme.background_color;
+}
 
 /* Methods */
 
@@ -118,7 +125,7 @@ void GameManager::removePlayer(Player *player)
     this->players.erase(std::find(this->players.begin(), this->players.end(), player));
 }
 
-std::string GameManager::computeNode(int x, int y)
+std::string GameManager::computeNode(Board &_board, int x, int y)
 {
     /* Get the frames around to the node */
     /*
@@ -130,10 +137,10 @@ std::string GameManager::computeNode(int x, int y)
         left:      ----+----   current:  ----+----
                    XXXX¦                     ¦XXXX
     */
-    Frame current_frame = this->board.getFrame(x, y);
-    Frame left_frame = this->board.getFrame(x - 1, y);
-    Frame top_left_frame = this->board.getFrame(x - 1, y - 1);
-    Frame top_frame = this->board.getFrame(x, y - 1);
+    Frame current_frame = _board.getFrame(x, y);
+    Frame left_frame = _board.getFrame(x - 1, y);
+    Frame top_left_frame = _board.getFrame(x - 1, y - 1);
+    Frame top_frame = _board.getFrame(x, y - 1);
 
     /* Get the walls around the node */
     /*
@@ -213,82 +220,98 @@ std::string GameManager::computeNode(int x, int y)
         bottom_wall = current_frame.getWalls()[LEFT];
     }
 
-    std::string node;
+    std::string node = "";;
     /* Goal tile displayed in the center of the board */
     if (x == 8 && y == 8)
     {
         if (this->goal_tile == nullptr)
         {
-            throw std::runtime_error("Goal tile is not set");
+            node += "  ";
         }
-        node = this->goal_tile->getEmoji();
+        else
+        {
+            node += this->goal_tile->getEmoji();
+        }
     }
     else
     {
+        node += this->boardTheme.wall_color;
         if (top_wall && left_wall && bottom_wall && right_wall)
         {
-            node = this->boardTheme.node_middle;
+            node += this->boardTheme.node_middle;
         }
 
         /* Walls */
         else if (left_wall && right_wall && !top_wall && !bottom_wall)
         {
-            node = this->boardTheme.node_horizontal;
+            node += this->boardTheme.node_horizontal;
         }
         else if (top_wall && bottom_wall && !left_wall && !right_wall)
         {
-            node = this->boardTheme.node_vertical;
+            node += this->boardTheme.node_vertical;
         }
 
         /* Corners */
         else if (bottom_wall && right_wall && !top_wall && !left_wall)
         {
-            node = this->boardTheme.node_top_left;
+            node += this->boardTheme.node_top_left;
         }
         else if (left_wall && bottom_wall && !top_wall && !right_wall)
         {
-            node = this->boardTheme.node_top_right;
+            node += this->boardTheme.node_top_right;
         }
         else if (top_wall && left_wall && !bottom_wall && !right_wall)
         {
-            node = this->boardTheme.node_bottom_right;
+            node += this->boardTheme.node_bottom_right;
         }
         else if (top_wall && right_wall && !bottom_wall && !left_wall)
         {
-            node = this->boardTheme.node_bottom_left;
+            node += this->boardTheme.node_bottom_left;
         }
 
         /* Node with 3 walls */
         else if (left_wall && bottom_wall && right_wall && !top_wall)
         {
-            node = this->boardTheme.node_top;
+            node += this->boardTheme.node_top;
         }
         else if (left_wall && top_wall && right_wall && !bottom_wall)
         {
-            node = this->boardTheme.node_bottom;
+            node += this->boardTheme.node_bottom;
         }
         else if (top_wall && right_wall && bottom_wall && !left_wall)
         {
-            node = this->boardTheme.node_left;
+            node += this->boardTheme.node_left;
         }
         else if (top_wall && left_wall && bottom_wall && !right_wall)
         {
-            node = this->boardTheme.node_right;
+            node += this->boardTheme.node_right;
         }
 
         /* Grid node */
         else
         {
+            node += this->boardTheme.grid_color;
             node += this->boardTheme.node;
         }
     }
+    node += this->boardTheme.reset_color;
 
     return node;
 }
 
-std::string GameManager::displayBoard()
+std::string GameManager::displayBoard(bool show_empty)
 {
-    std::string output = GAME_ASCII_BANNER "\n" RESET;
+    /* Define board to display */
+    Board board_to_display = show_empty ? Board::createEmptyBoard() : this->board;
+
+    /* Disable goal tile if empty board displaying requested */
+    Tile *save_goal_tile = this->goal_tile;
+    if (show_empty)
+    {
+        this->goal_tile = nullptr;
+    }
+    
+    std::string output = GAME_ASCII_BANNER "\n" this->boardTheme.reset_color;
     std::string temp_seperator = "";
     std::string temp_tiles = "";
 
@@ -298,17 +321,17 @@ std::string GameManager::displayBoard()
         temp_tiles = "";
         for (int x = 0; x < BOARD_SIZE; x++)
         {
-            Frame frame = this->board.getFrame(x, y);
+            Frame frame = board_to_display.getFrame(x, y);
             bool frame_is_tile = frame.getTile() != nullptr;
             Robot *robot_on_frame = getRobotOnFrame(x, y);
 
             /* Top left corner of the frame --------------------------------- */
-            temp_seperator += computeNode(x, y);
+            temp_seperator += computeNode(board_to_display, x, y);
 
             /* Top wall ----------------------------------------------------- */
 
             /* No wall if it's the disabled frames in the middle */
-            temp_seperator += RESET;
+            temp_seperator += this->boardTheme.reset_color;
             if (x == 7 && y == 8)
             {
                 temp_seperator += "    ";
@@ -320,18 +343,21 @@ std::string GameManager::displayBoard()
             /* Classic wall */
             else if (frame.getWalls()[UP])
             {
+                temp_seperator += this->boardTheme.wall_color;
                 temp_seperator += this->boardTheme.horizontal_wall;
             }
             /* No wall */
             else
             {
+                temp_seperator += this->boardTheme.grid_color;
                 temp_seperator += this->boardTheme.horizontal_grid;
             }
+            temp_seperator += this->boardTheme.reset_color;
 
             /* Add right node if it's the last column */
             if (x == BOARD_SIZE - 1)
             {
-                temp_seperator += computeNode(x + 1, y);
+                temp_seperator += computeNode(board_to_display, x + 1, y);
             }
 
             /* Left wall ---------------------------------------------------- */
@@ -342,12 +368,15 @@ std::string GameManager::displayBoard()
             }
             else if (frame.getWalls()[LEFT])
             {
+                temp_tiles += this->boardTheme.wall_color;
                 temp_tiles += this->boardTheme.vertical_wall;
             }
             else
             {
+                temp_tiles += this->boardTheme.grid_color;
                 temp_tiles += this->boardTheme.vertical_grid;
             }
+            temp_seperator += this->boardTheme.reset_color;
 
             /* Tile content ------------------------------------------------- */
 
@@ -356,24 +385,28 @@ std::string GameManager::displayBoard()
             {
                 temp_tiles += EMPTY_FRAME;
             }
-            else if (frame_is_tile || robot_on_frame)
+            else if ((frame_is_tile || robot_on_frame) && !show_empty)
             {
                 /* Robot on the frame, and frame is a tile */
                 if (frame_is_tile && robot_on_frame)
                 {
-                    temp_tiles += frame.getTile()->getEmoji() + RESET + robot_on_frame->getEmoji() + RESET;
+                    temp_tiles += frame.getTile()->getEmoji();
+                    temp_tiles += this->boardTheme.reset_color;
+                    temp_tiles += robot_on_frame->getEmoji();
                 }
 
                 /* Robot on the frame */
                 else if (robot_on_frame)
                 {
-                    temp_tiles += " " + robot_on_frame->getEmoji() + RESET " ";
+                    temp_tiles += " " + robot_on_frame->getEmoji();
+                    temp_tiles += this->boardTheme.reset_color + " ";
                 }
 
                 /* Frame is a tile */
                 else if (frame_is_tile)
                 {
-                    temp_tiles += " " + frame.getTile()->getEmoji() + RESET " ";
+                    temp_tiles += " " + frame.getTile()->getEmoji();
+                    temp_tiles += this->boardTheme.reset_color + " ";
                 }
             }
             else
@@ -387,43 +420,60 @@ std::string GameManager::displayBoard()
             {
                 if (frame.getWalls()[RIGHT])
                 {
+                    temp_tiles += this->boardTheme.wall_color;
                     temp_tiles += this->boardTheme.vertical_wall;
                 }
                 else
                 {
+                    temp_tiles += this->boardTheme.grid_color;
                     temp_tiles += this->boardTheme.vertical_grid;
                 }
+                temp_seperator += this->boardTheme.reset_color;
             }
         }
-        output += temp_seperator + ANSI_RESET + "\n" + RESET;
-        output += temp_tiles + ANSI_RESET + "\n" + RESET;
+        output += temp_seperator + ANSI_RESET + "\n" + this->boardTheme.reset_color;
+        output += temp_tiles + ANSI_RESET + "\n" + this->boardTheme.reset_color;
     }
 
     /* Bottom border of the board */
     temp_seperator = "";
     for (int x = 0; x < BOARD_SIZE; x++)
     {
-        Frame frame = this->board.getFrame(x, BOARD_SIZE - 1);
+        Frame frame = board_to_display.getFrame(x, BOARD_SIZE - 1);
         /* Node */
-        temp_seperator += computeNode(x, BOARD_SIZE);
+        temp_seperator += computeNode(board_to_display, x, BOARD_SIZE);
 
         /* Wall */
         if (frame.getWalls()[DOWN])
         {
+            temp_seperator += this->boardTheme.wall_color;
             temp_seperator += this->boardTheme.horizontal_wall;
         }
         else
         {
+            temp_seperator += this->boardTheme.grid_color;
             temp_seperator += this->boardTheme.horizontal_grid;
         }
+        temp_seperator += this->boardTheme.reset_color;
     }
 
     /* Bottom right corner */
-    temp_seperator += computeNode(BOARD_SIZE, BOARD_SIZE);
+    temp_seperator += computeNode(board_to_display, BOARD_SIZE, BOARD_SIZE);
 
     output += temp_seperator + ANSI_RESET + "\n";
 
+    /* Restore goal tile */
+    if (show_empty)
+    {
+        this->goal_tile = save_goal_tile;
+    }
+
     return output;
+}
+
+std::string GameManager::displayEmptyBoard()
+{
+    return this->displayBoard(true);
 }
 
 Robot *GameManager::getRobotOnFrame(int x, int y)

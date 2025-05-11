@@ -31,7 +31,7 @@ void Player::setPrediction(int prediction)
 }
 
 /* Methods */
-void Player::incrementScore(int point = 1)
+void Player::incrementScore(int points)
 {
-    this->score += point;
+    this->score += points;
 }
