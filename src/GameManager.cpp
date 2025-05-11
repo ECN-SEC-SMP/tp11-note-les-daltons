@@ -832,7 +832,7 @@ std::string GameManager::displayRoundResults()
 
         /* Add player recap to output */
         output += "Player " + player_name + " announced " + player_prediction + " moves and " + player_result;
-        output +=  "\n";
+        output += "\n";
     }
 
     return output;
@@ -866,7 +866,7 @@ std::string GameManager::displayScoreboard()
 
     /* Display top border of the frame -------------------------------------- */
     std::string output = "\n";
-    
+
     /* Compute length of horizontal boarder */
     int scoreboard_width = std::accumulate(column_widths.begin(), column_widths.end(), 0);
     scoreboard_width += SPACE_BETWEEN_COLUMNS.length() * (nb_columns);
@@ -896,14 +896,27 @@ std::string GameManager::displayScoreboard()
     output += " " VERTICAL_BORDER "\n";
 
     /* Display others rows -------------------------------------------------- */
+    bool show_podium = this->players.size() > 3;
     for (auto &&player : this->players)
     {
         /* Get player info */
         std::string player_rank;
         bool winner = player == this->players[0];
-        if (winner)
+        if (winner && !show_podium)
         {
             player_rank = "🏆";
+        }
+        else if (winner && show_podium)
+        {
+            player_rank = "🥇";
+        }
+        else if (player == this->players[1] && show_podium)
+        {
+            player_rank = "🥈";
+        }
+        else if (player == this->players[2] && show_podium)
+        {
+            player_rank = "🥉";
         }
         else
         {
@@ -916,14 +929,22 @@ std::string GameManager::displayScoreboard()
         std::string player_name = player->getName();
         std::string player_rounds = std::to_string(player->getRoundsPlayed());
         std::string player_score = std::to_string(player->getScore());
-        std::string player_success_rate = std::to_string((int)((float)(player->getScore()) / (float)(player->getRoundsPlayed()) * 100)) + "%";
+        std::string player_success_rate;
+        if (player->getRoundsPlayed() == 0)
+        {
+            player_success_rate = "--";
+        }
+        else
+        {
+            player_success_rate = std::to_string((int)((float)(player->getScore()) / (float)(player->getRoundsPlayed()) * 100)) + "%";
+        }
 
         /* Left border of frame */
         output += VERTICAL_BORDER " ";
 
         /* Player rank */
         output += player_rank;
-        if (winner)
+        if (winner || show_podium)
         {
             /* std::string.lenght() throws error if string contains emoji  */
             output += std::string(column_widths[RANK_COLUMN] - 2, ' ');
