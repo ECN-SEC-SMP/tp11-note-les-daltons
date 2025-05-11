@@ -1,9 +1,13 @@
 #include <stdexcept>
 #include <algorithm>
 
-#include "typedef.h"
+#ifdef _WIN32 // Windows sucks
+#include <conio.h>
+#endif
+
 #include "GameManager.h"
 #include "Utils.h"
+#include "ANSI.h"
 
 #define BOARD_SIZE 16
 
@@ -84,7 +88,7 @@ void GameManager::setWallsStyle(WallsStyle wallsStyle)
     default:
         throw std::invalid_argument("Invalid walls style");
     }
-} 
+}
 
 void GameManager::setColorTheme(ColorTheme colorTheme)
 {
@@ -308,7 +312,7 @@ std::string GameManager::displayBoard(bool show_empty)
         this->goal_tile = nullptr;
     }
     
-    std::string output = "\n" + this->boardTheme.reset_color;
+    std::string output = GAME_ASCII_BANNER "\n" + this->boardTheme.reset_color;
     std::string temp_seperator = "";
     std::string temp_tiles = "";
 
@@ -577,7 +581,6 @@ void GameManager::processPredictionsInputs()
     }
 }
 
-
 void GameManager::sortPlayersByPredictions()
 {
     std::sort(this->players.begin(), this->players.end(), [](Player *a, Player *b)
@@ -690,9 +693,12 @@ bool GameManager::processMovement(Robot *robot, Direction direction, int *deplac
     if (this->board.getFrame(robot_X, robot_Y).getTile() == this->goal_tile &&
         (this->goal_tile->getColor() == robot->getColor() || this->goal_tile->getColor() == RAINBOW))
     {
-        std::cout << "\033[32m\033[1m You won !!\033[0m" << std::endl;
         this->round_finished = true;
         this->cur_player_won = true;
+        if (players[player_index]->getPrediction() == *deplacement)
+            players[player_index]->incrementScore(2);
+        else
+            players[player_index]->incrementScore(1);
         return true;
     }
 
@@ -751,6 +757,36 @@ bool GameManager::playRound(int player_index)
             std::cout << "Press 'ENTER' to unselect." << std::endl;
             while (c != '\r' && !this->round_finished)
             {
+#ifdef _WIN32 // Windows sucks
+                c = _getch();
+                if (c == '\r' || c == 127) // enter or backspace
+                    break;
+                if (c == 224 || c == -32) // escape
+                {
+                    c = _getch();
+                    switch (c)
+                    {
+                    case 72: // up arrow
+                        if (this->processMovement(robot, UP, &move_count, m, player_index))
+                            c = '\r';
+                        break;
+                    case 80: // down arrow
+                        if (this->processMovement(robot, DOWN, &move_count, m, player_index))
+                            c = '\r';
+                        break;
+                    case 77: // right arrow
+                        if (this->processMovement(robot, RIGHT, &move_count, m, player_index))
+                            c = '\r';
+                        break;
+                    case 75: // left arrow
+                        if (this->processMovement(robot, LEFT, &move_count, m, player_index))
+                            c = '\r';
+                        break;
+                    default:
+                        break;
+                    }
+                }
+#else
                 c = getchar(); 
                 if (c == '\r' || c == 127) // enter or backspace
                     break;
@@ -783,6 +819,7 @@ bool GameManager::playRound(int player_index)
                         }
                     }
                 }
+#endif
             }
 
             // Reset Menu

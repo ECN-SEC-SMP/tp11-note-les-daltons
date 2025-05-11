@@ -1,5 +1,15 @@
 #pragma once
 
+#include "ANSI.h"
+
+/// @brief Game banner to display above each windows
+#define GAME_ASCII_BANNER ANSI_BOLD ANSI_BLUE " ____  _                _          _     ____       _           _   \n\
+|  _ \\(_) ___ ___   ___| |__   ___| |_  |  _ \\ ___ | |__   ___ | |_ \n\
+| |_) | |/ __/ _ \\ / __| '_ \\ / _ \\ __| | |_) / _ \\| '_ \\ / _ \\| __|\n\
+|  _ <| | (_| (_) | (__| | | |  __/ |_  |  _ < (_) | |_) | (_) | |_ \n\
+|_| \\_\\_|\\___\\___/ \\___|_| |_|\\___|\\__| |_| \\_\\___/|_.__/ \\___/ \\__|\n\
+" ANSI_RESET_BOLD ANSI_ITALIC ANSI_UNDERLINE "By Les Daltons\n\n" ANSI_RESET
+
 /* Grid */
 #define NODE "┼"
 #define HORIZONTAL_GRID "────"
