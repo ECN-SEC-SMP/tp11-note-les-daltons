@@ -24,8 +24,6 @@ Menu::Menu(std::string title, int mode)
 {
 }
 
-Menu::~Menu() {}
-
 Menu &Menu::addOption(const std::string &option, MenuCallback_t func)
 {
     this->options.push_back(option);

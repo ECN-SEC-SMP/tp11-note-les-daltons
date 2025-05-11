@@ -65,7 +65,7 @@ Menu::MenuCallback_t MainMenu::play_CBBuilder(GameManager &gm)
         }
         else
         {
-            gm.setupNewRound();
+            gm.setupRound();
             gm.processPredictionsInputs();
             gm.sortPlayersByPredictions();
             int player_index = 0;

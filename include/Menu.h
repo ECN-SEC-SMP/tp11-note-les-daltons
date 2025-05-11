@@ -73,7 +73,7 @@ public:
      * @note Mode: 0 = 'q to quit', 1 = 'timeout'
      */
     Menu(std::string title = "Menu", int mode = 0);
-    ~Menu();
+    ~Menu() = default;
     /**
      * @brief Add an option to the menu
      *

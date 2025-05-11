@@ -119,7 +119,17 @@ public:
     Board *getBoard();
 
     /* Setters */
+    /**
+     * @brief Set the walls style
+     * 
+     * @param wallsStyle (IN) New Walls Style
+     */
     void setWallsStyle(WallsStyle wallsStyle);
+    /**
+     * @brief Set the color theme
+     * 
+     * @param colorTheme (IN) New Color Theme
+     */
     void setColorTheme(ColorTheme colorTheme);
 
     /* Methods */
@@ -156,12 +166,12 @@ public:
      * @note This function is called at the beginning of each game.
      * @note This function picks up randomly a Goal Tile and setup randomly robots coordinates.
      */
-    void setupNewRound();
+    void setupRound();
     /**
      * @brief Sets up the game for a round with last values.
      * @note This function is called at the beginning of each round.
      */
-    void setupRound();
+    void resetRound();
     /**
      * @brief Processes the inputs for the predictions of each player.
      * @note This function is called when the players have to made their predictions.
@@ -189,11 +199,19 @@ public:
     /**
      * @brief Get Robot on frame with (x,y) coordinates
      *
-     * @param x (IN) Coordinate X
-     * @param y (IN) Coordinate Y
+     * @param x (IN) X coordinates
+     * @param y (IN) Y coordinates
      * @return Robot*
      */
     Robot *getRobotOnFrame(int x, int y);
+    /**
+     * @brief Get node string after computing it by walls around
+     * 
+     * @param board (IN) Board Reference
+     * @param x (IN) X coordinates of the bottom-right frame
+     * @param y (IN) Y coordinates of the bottom-right frame
+     * @return std::string 
+     */
     std::string computeNode(Board &board, int x, int y);
 };
 
