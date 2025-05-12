@@ -10,7 +10,6 @@
 #include "ANSI.h"
 
 #define BOARD_SIZE 16
-// #define ROBOT_REPLACED_EACH_ROUND
 
 /* Constructors */
 GameManager::GameManager()
@@ -49,9 +48,9 @@ BoardTheme_t &GameManager::getBoardTheme()
     return this->boardTheme;
 }
 
-bool GameManager::robotIsReplacedEachRound() const
+bool GameManager::robotsAreReplacedEachRound() const
 {
-    return this->replace_robot_each_round;
+    return this->replace_robots_each_round;
 }
 
 /* Setters */
@@ -115,8 +114,8 @@ void GameManager::setColorTheme(ColorTheme colorTheme)
 
     case DARK_THEME:
         this->boardTheme.background_color = ANSI_BG_BLACK;
-        this->boardTheme.grid_color = ANSI_YELLOW;
-        this->boardTheme.wall_color = ANSI_MAGENTA;
+        this->boardTheme.grid_color = ANSI_DARK_GRAY;
+        this->boardTheme.wall_color = ANSI_ORANGE;
         break;
 
     case CUSTOM:
@@ -131,9 +130,9 @@ void GameManager::setColorTheme(ColorTheme colorTheme)
     this->boardTheme.color_theme = colorTheme;
 }
 
-void GameManager::replaceRobotEachRound(bool replace_robot_each_round)
+void GameManager::replaceRobotsEachRound(bool replace_robots_each_round)
 {
-    this->replace_robot_each_round = replace_robot_each_round;
+    this->replace_robots_each_round = replace_robots_each_round;
 }
 
 /* Methods */
@@ -515,7 +514,7 @@ void GameManager::generateBoard()
 {
     this->board.generate();
 
-    if (!replace_robot_each_round)
+    if (!replace_robots_each_round)
     {
         // Place randomly robots on the board
         this->robots_coordinates.clear();
@@ -548,7 +547,7 @@ void GameManager::setupRound()
     int goal_tile_index = rand() % Board::TILES.size();
     this->goal_tile = &Board::TILES[goal_tile_index];
 
-    if (replace_robot_each_round)
+    if (replace_robots_each_round)
     {
         // Place randomly robots on the board
         this->robots_coordinates.clear();

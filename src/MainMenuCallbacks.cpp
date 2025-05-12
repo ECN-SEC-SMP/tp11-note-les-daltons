@@ -3,6 +3,9 @@
 #include "MainMenuCallbacks.h"
 #include "DisplayUtils.h"
 
+#define COLOR_DEMONSTRATION_CHAR "■"
+#define BG_COLOR_DEMONSTRATION_CHAR "  "
+
 bool MainMenu::CB_printHelp(int pos, Menu *m)
 {
     Menu::clear();
@@ -162,7 +165,7 @@ Menu::MenuCallback_t MainMenu::regenerateBoard_CBBuilder(GameManager &gm)
         {
             _pos = menu.run();
             gm.generateBoard();
-            if (!gm.robotIsReplacedEachRound())
+            if (!gm.robotsAreReplacedEachRound())
                 gm.resetRound();
             menu.setTitle(gm.displayBoard());
         }
@@ -181,17 +184,17 @@ bool MainMenu::CB_notImplementedYet(int pos, Menu *m)
     return false;
 }
 
-void SettingMenu_reloadAllOptions(Menu * m, GameManager& gm)
+void SettingsMenu_reloadAllOptions(Menu * m, GameManager& gm)
 {
     std::vector<std::string> & options = m->getOptions();
-    options[0] = "Menu: Selection Color      " + gm.getBoardTheme().menu_selection_color + "■" ANSI_RESET;
-    options[1] = "Menu: Robot Selected Color " + gm.getBoardTheme().menu_robot_selected_color + "■" ANSI_RESET;
-    options[2] = "Board Color: Background    " + gm.getBoardTheme().background_color + "  " ANSI_RESET;
-    options[3] = "Board Color: Grid          " + gm.getBoardTheme().grid_color + "■" ANSI_RESET;
-    options[4] = "Board Color: Walls         " + gm.getBoardTheme().wall_color + "■" ANSI_RESET;
+    options[0] = "Menu: Selection Color      " + gm.getBoardTheme().menu_selection_color + COLOR_DEMONSTRATION_CHAR ANSI_RESET;
+    options[1] = "Menu: Robot Selected Color " + gm.getBoardTheme().menu_robot_selected_color + COLOR_DEMONSTRATION_CHAR ANSI_RESET;
+    options[2] = "Board Color: Background    " + gm.getBoardTheme().background_color + BG_COLOR_DEMONSTRATION_CHAR ANSI_RESET;
+    options[3] = "Board Color: Grid          " + gm.getBoardTheme().grid_color + COLOR_DEMONSTRATION_CHAR ANSI_RESET;
+    options[4] = "Board Color: Walls         " + gm.getBoardTheme().wall_color + COLOR_DEMONSTRATION_CHAR ANSI_RESET;
     options[5] = "Theme: Color (" + ColorTheme_toString(gm.getBoardTheme().color_theme) + ")";
     options[6] = "Theme: Walls (" + WallsStyle_toString(gm.getBoardTheme().walls_style) + ")";
-    options[7] = "Robot randomly replaced each round (" + std::string(gm.robotIsReplacedEachRound() ? "true" : "false") + ")";
+    options[7] = "Robot randomly replaced each round (" + std::string(gm.robotsAreReplacedEachRound() ? "true" : "false") + ")";
 }
 
 Menu::MenuCallback_t MainMenu::settings_CBBuilder(GameManager &gm)
@@ -215,7 +218,7 @@ Menu::MenuCallback_t MainMenu::settings_CBBuilder(GameManager &gm)
                                  //  .addOption(ANSI_ITALIC "Default." ANSI_RESET_ITALIC) // Not implemented yet
                                  .addOption(ANSI_ITALIC "Exit." ANSI_RESET_ITALIC, [&](int, Menu *)
                                             {running=false; return false; });
-        SettingMenu_reloadAllOptions(&settings_menu, gm);
+        SettingsMenu_reloadAllOptions(&settings_menu, gm);
         while (running)
         {
             settings_menu.setOptionPos(position);
@@ -242,39 +245,41 @@ std::string MenuUtils::getColorWithMenu(std::string title, std::string selection
     std::string color = "";
     Menu colorMenu = Menu(title)
                          .setColorSelection(selectionColor)
-                         .addOption(" Black          " ANSI_BLACK "■" ANSI_RESET, [&](int, Menu *)
+                         .addOption(" Black          " ANSI_BLACK COLOR_DEMONSTRATION_CHAR ANSI_RESET, [&](int, Menu *)
                                     {color = ANSI_BLACK; return false; })
-                         .addOption(" Red            " ANSI_RED "■" ANSI_RESET, [&](int, Menu *)
+                         .addOption(" Red            " ANSI_RED COLOR_DEMONSTRATION_CHAR ANSI_RESET, [&](int, Menu *)
                                     {color = ANSI_RED; return false; })
-                         .addOption(" Green          " ANSI_GREEN "■" ANSI_RESET, [&](int, Menu *)
+                         .addOption(" Green          " ANSI_GREEN COLOR_DEMONSTRATION_CHAR ANSI_RESET, [&](int, Menu *)
                                     {color = ANSI_GREEN; return false; })
-                         .addOption(" Yellow         " ANSI_YELLOW "■" ANSI_RESET, [&](int, Menu *)
+                         .addOption(" Yellow         " ANSI_YELLOW COLOR_DEMONSTRATION_CHAR ANSI_RESET, [&](int, Menu *)
                                     {color = ANSI_YELLOW; return false; })
-                         .addOption(" Blue           " ANSI_BLUE "■" ANSI_RESET, [&](int, Menu *)
+                         .addOption(" Blue           " ANSI_BLUE COLOR_DEMONSTRATION_CHAR ANSI_RESET, [&](int, Menu *)
                                     {color = ANSI_BLUE; return false; })
-                         .addOption(" Magenta        " ANSI_MAGENTA "■" ANSI_RESET, [&](int, Menu *)
+                         .addOption(" Magenta        " ANSI_MAGENTA COLOR_DEMONSTRATION_CHAR ANSI_RESET, [&](int, Menu *)
                                     {color = ANSI_MAGENTA; return false; })
-                         .addOption(" Cyan           " ANSI_CYAN "■" ANSI_RESET, [&](int, Menu *)
+                         .addOption(" Cyan           " ANSI_CYAN COLOR_DEMONSTRATION_CHAR ANSI_RESET, [&](int, Menu *)
                                     {color = ANSI_CYAN; return false; })
-                         .addOption(" White          " ANSI_WHITE "■" ANSI_RESET, [&](int, Menu *)
+                         .addOption(" White          " ANSI_WHITE COLOR_DEMONSTRATION_CHAR ANSI_RESET, [&](int, Menu *)
                                     {color = ANSI_WHITE; return false; })
-                         .addOption(" Light Gray     " ANSI_LIGHT_GRAY "■" ANSI_RESET, [&](int, Menu *)
+                         .addOption(" Light Gray     " ANSI_LIGHT_GRAY COLOR_DEMONSTRATION_CHAR ANSI_RESET, [&](int, Menu *)
                                     {color = ANSI_LIGHT_GRAY; return false; })
-                         .addOption("Bright Black   " ANSI_BRIGHT_BLACK "■" ANSI_RESET, [&](int, Menu *)
+                         .addOption(" Light Gray     " ANSI_LIGHT_GRAY COLOR_DEMONSTRATION_CHAR ANSI_RESET, [&](int, Menu *)
+                                    {color = ANSI_LIGHT_GRAY; return false; })
+                         .addOption("Bright Black   " ANSI_BRIGHT_BLACK COLOR_DEMONSTRATION_CHAR ANSI_RESET, [&](int, Menu *)
                                     {color = ANSI_BRIGHT_BLACK; return false; })
-                         .addOption("Bright Red     " ANSI_BRIGHT_RED "■" ANSI_RESET, [&](int, Menu *)
+                         .addOption("Bright Red     " ANSI_BRIGHT_RED COLOR_DEMONSTRATION_CHAR ANSI_RESET, [&](int, Menu *)
                                     {color = ANSI_BRIGHT_RED; return false; })
-                         .addOption("Bright Green   " ANSI_BRIGHT_GREEN "■" ANSI_RESET, [&](int, Menu *)
+                         .addOption("Bright Green   " ANSI_BRIGHT_GREEN COLOR_DEMONSTRATION_CHAR ANSI_RESET, [&](int, Menu *)
                                     {color = ANSI_BRIGHT_GREEN; return false; })
-                         .addOption("Bright Yellow  " ANSI_BRIGHT_YELLOW "■" ANSI_RESET, [&](int, Menu *)
+                         .addOption("Bright Yellow  " ANSI_BRIGHT_YELLOW COLOR_DEMONSTRATION_CHAR ANSI_RESET, [&](int, Menu *)
                                     {color = ANSI_BRIGHT_YELLOW; return false; })
-                         .addOption("Bright Blue    " ANSI_BRIGHT_BLUE "■" ANSI_RESET, [&](int, Menu *)
+                         .addOption("Bright Blue    " ANSI_BRIGHT_BLUE COLOR_DEMONSTRATION_CHAR ANSI_RESET, [&](int, Menu *)
                                     {color = ANSI_BRIGHT_BLUE; return false; })
-                         .addOption("Bright Magenta " ANSI_BRIGHT_MAGENTA "■" ANSI_RESET, [&](int, Menu *)
+                         .addOption("Bright Magenta " ANSI_BRIGHT_MAGENTA COLOR_DEMONSTRATION_CHAR ANSI_RESET, [&](int, Menu *)
                                     {color = ANSI_BRIGHT_MAGENTA; return false; })
-                         .addOption("Bright Cyan    " ANSI_BRIGHT_CYAN "■" ANSI_RESET, [&](int, Menu *)
+                         .addOption("Bright Cyan    " ANSI_BRIGHT_CYAN COLOR_DEMONSTRATION_CHAR ANSI_RESET, [&](int, Menu *)
                                     {color = ANSI_BRIGHT_CYAN; return false; })
-                         .addOption("Bright White   " ANSI_BRIGHT_WHITE "■" ANSI_RESET, [&](int, Menu *)
+                         .addOption("Bright White   " ANSI_BRIGHT_WHITE COLOR_DEMONSTRATION_CHAR ANSI_RESET, [&](int, Menu *)
                                     {color = ANSI_BRIGHT_WHITE; return false; });
     colorMenu.run();
     return color;
@@ -284,37 +289,37 @@ std::string MenuUtils::getBGColorWithMenu(std::string title, std::string selecti
     std::string color = "";
     Menu colorMenu = Menu(title)
                          .setColorSelection(selectionColor)
-                         .addOption(" Black          " ANSI_BG_BLACK "  " ANSI_RESET, [&](int, Menu *)
+                         .addOption(" Black          " ANSI_BG_BLACK BG_COLOR_DEMONSTRATION_CHAR ANSI_RESET, [&](int, Menu *)
                                     {color = ANSI_BG_BLACK; return false; })
-                         .addOption(" Red            " ANSI_BG_RED "  " ANSI_RESET, [&](int, Menu *)
+                         .addOption(" Red            " ANSI_BG_RED BG_COLOR_DEMONSTRATION_CHAR ANSI_RESET, [&](int, Menu *)
                                     {color = ANSI_BG_RED; return false; })
-                         .addOption(" Green          " ANSI_BG_GREEN "  " ANSI_RESET, [&](int, Menu *)
+                         .addOption(" Green          " ANSI_BG_GREEN BG_COLOR_DEMONSTRATION_CHAR ANSI_RESET, [&](int, Menu *)
                                     {color = ANSI_BG_GREEN; return false; })
-                         .addOption(" Yellow         " ANSI_BG_YELLOW "  " ANSI_RESET, [&](int, Menu *)
+                         .addOption(" Yellow         " ANSI_BG_YELLOW BG_COLOR_DEMONSTRATION_CHAR ANSI_RESET, [&](int, Menu *)
                                     {color = ANSI_BG_YELLOW; return false; })
-                         .addOption(" Blue           " ANSI_BG_BLUE "  " ANSI_RESET, [&](int, Menu *)
+                         .addOption(" Blue           " ANSI_BG_BLUE BG_COLOR_DEMONSTRATION_CHAR ANSI_RESET, [&](int, Menu *)
                                     {color = ANSI_BG_BLUE; return false; })
-                         .addOption(" Magenta        " ANSI_BG_MAGENTA "  " ANSI_RESET, [&](int, Menu *)
+                         .addOption(" Magenta        " ANSI_BG_MAGENTA BG_COLOR_DEMONSTRATION_CHAR ANSI_RESET, [&](int, Menu *)
                                     {color = ANSI_BG_MAGENTA; return false; })
-                         .addOption(" Cyan           " ANSI_BG_CYAN "  " ANSI_RESET, [&](int, Menu *)
+                         .addOption(" Cyan           " ANSI_BG_CYAN BG_COLOR_DEMONSTRATION_CHAR ANSI_RESET, [&](int, Menu *)
                                     {color = ANSI_BG_CYAN; return false; })
-                         .addOption(" White          " ANSI_BG_WHITE "  " ANSI_RESET, [&](int, Menu *)
+                         .addOption(" White          " ANSI_BG_WHITE BG_COLOR_DEMONSTRATION_CHAR ANSI_RESET, [&](int, Menu *)
                                     {color = ANSI_BG_WHITE; return false; })
-                         .addOption(" Bright Black   " ANSI_BG_BRIGHT_BLACK "  " ANSI_RESET, [&](int, Menu *)
+                         .addOption(" Bright Black   " ANSI_BG_BRIGHT_BLACK BG_COLOR_DEMONSTRATION_CHAR ANSI_RESET, [&](int, Menu *)
                                     {color = ANSI_BG_BRIGHT_BLACK; return false; })
-                         .addOption("Bright Red     " ANSI_BG_BRIGHT_RED "  " ANSI_RESET, [&](int, Menu *)
+                         .addOption("Bright Red     " ANSI_BG_BRIGHT_RED BG_COLOR_DEMONSTRATION_CHAR ANSI_RESET, [&](int, Menu *)
                                     {color = ANSI_BG_BRIGHT_RED; return false; })
-                         .addOption("Bright Green   " ANSI_BG_BRIGHT_GREEN "  " ANSI_RESET, [&](int, Menu *)
+                         .addOption("Bright Green   " ANSI_BG_BRIGHT_GREEN BG_COLOR_DEMONSTRATION_CHAR ANSI_RESET, [&](int, Menu *)
                                     {color = ANSI_BG_BRIGHT_GREEN; return false; })
-                         .addOption("Bright Yellow  " ANSI_BG_BRIGHT_YELLOW "  " ANSI_RESET, [&](int, Menu *)
+                         .addOption("Bright Yellow  " ANSI_BG_BRIGHT_YELLOW BG_COLOR_DEMONSTRATION_CHAR ANSI_RESET, [&](int, Menu *)
                                     {color = ANSI_BG_BRIGHT_YELLOW; return false; })
-                         .addOption("Bright Blue    " ANSI_BG_BRIGHT_BLUE "  " ANSI_RESET, [&](int, Menu *)
+                         .addOption("Bright Blue    " ANSI_BG_BRIGHT_BLUE BG_COLOR_DEMONSTRATION_CHAR ANSI_RESET, [&](int, Menu *)
                                     {color = ANSI_BG_BRIGHT_BLUE; return false; })
-                         .addOption("Bright Magenta " ANSI_BG_BRIGHT_MAGENTA "  " ANSI_RESET, [&](int, Menu *)
+                         .addOption("Bright Magenta " ANSI_BG_BRIGHT_MAGENTA BG_COLOR_DEMONSTRATION_CHAR ANSI_RESET, [&](int, Menu *)
                                     {color = ANSI_BG_BRIGHT_MAGENTA; return false; })
-                         .addOption("Bright Cyan    " ANSI_BG_BRIGHT_CYAN "  " ANSI_RESET, [&](int, Menu *)
+                         .addOption("Bright Cyan    " ANSI_BG_BRIGHT_CYAN BG_COLOR_DEMONSTRATION_CHAR ANSI_RESET, [&](int, Menu *)
                                     {color = ANSI_BG_BRIGHT_CYAN; return false; })
-                         .addOption("Bright White   " ANSI_BG_BRIGHT_WHITE "  " ANSI_RESET, [&](int, Menu *)
+                         .addOption("Bright White   " ANSI_BG_BRIGHT_WHITE BG_COLOR_DEMONSTRATION_CHAR ANSI_RESET, [&](int, Menu *)
                                     {color = ANSI_BG_BRIGHT_WHITE; return false; });
     colorMenu.run();
     return color;
@@ -328,7 +333,7 @@ Menu::MenuCallback_t SettingsMenu::menuSelectionColor_CBBuilder(GameManager &gm)
         gm.getBoardTheme().menu_selection_color = MenuUtils::getColorWithMenu(GAME_ASCII_BANNER "Menu Selection Color", gm.getBoardTheme().menu_selection_color);
         m->setColorSelection(gm.getBoardTheme().menu_selection_color);
         gm.setColorTheme(ColorTheme::CUSTOM);
-        SettingMenu_reloadAllOptions(m, gm);
+        SettingsMenu_reloadAllOptions(m, gm);
         return false;
     };
     return lambda_cb;
@@ -340,7 +345,7 @@ Menu::MenuCallback_t SettingsMenu::menuRobotSelectedColor_CBBuilder(GameManager 
     {
         gm.getBoardTheme().menu_robot_selected_color = MenuUtils::getColorWithMenu(GAME_ASCII_BANNER "Menu Robot Selected Color", gm.getBoardTheme().menu_selection_color);
         gm.setColorTheme(ColorTheme::CUSTOM);
-        SettingMenu_reloadAllOptions(m, gm);
+        SettingsMenu_reloadAllOptions(m, gm);
         return false;
     };
     return lambda_cb;
@@ -352,7 +357,7 @@ Menu::MenuCallback_t SettingsMenu::backgroundColor_CBBuilder(GameManager &gm)
     {
         gm.getBoardTheme().background_color = MenuUtils::getBGColorWithMenu(GAME_ASCII_BANNER "Background Color", gm.getBoardTheme().menu_selection_color);
         gm.setColorTheme(ColorTheme::CUSTOM);
-        SettingMenu_reloadAllOptions(m, gm);
+        SettingsMenu_reloadAllOptions(m, gm);
         return false;
     };
     return lambda_cb;
@@ -364,7 +369,7 @@ Menu::MenuCallback_t SettingsMenu::gridColor_CBBuilder(GameManager &gm)
     {
         gm.getBoardTheme().grid_color = MenuUtils::getColorWithMenu(GAME_ASCII_BANNER "Grid Color", gm.getBoardTheme().menu_selection_color);
         gm.setColorTheme(ColorTheme::CUSTOM);
-        SettingMenu_reloadAllOptions(m, gm);
+        SettingsMenu_reloadAllOptions(m, gm);
         return false;
     };
     return lambda_cb;
@@ -376,7 +381,7 @@ Menu::MenuCallback_t SettingsMenu::wallsColor_CBBuilder(GameManager &gm)
     {
         gm.getBoardTheme().wall_color = MenuUtils::getColorWithMenu(GAME_ASCII_BANNER "Walls Color", gm.getBoardTheme().menu_selection_color);
         gm.setColorTheme(ColorTheme::CUSTOM);
-        SettingMenu_reloadAllOptions(m, gm);
+        SettingsMenu_reloadAllOptions(m, gm);
         return false;
     };
     return lambda_cb;
@@ -391,7 +396,7 @@ Menu::MenuCallback_t SettingsMenu::wallsStyle_CBBuilder(GameManager &gm)
         if (index != 3)
         {
             gm.setWallsStyle(WallsStyle(index-1));
-            SettingMenu_reloadAllOptions(m, gm);
+            SettingsMenu_reloadAllOptions(m, gm);
         }
         return false;
     };
@@ -408,7 +413,7 @@ Menu::MenuCallback_t SettingsMenu::colorTheme_CBBuilder(GameManager &gm)
         if (index != 4)
         {
             gm.setColorTheme(ColorTheme(index-1));
-            SettingMenu_reloadAllOptions(m, gm);
+            SettingsMenu_reloadAllOptions(m, gm);
         }
         return false;
     };
@@ -419,8 +424,8 @@ Menu::MenuCallback_t SettingsMenu::robotReplacedEachRound_CBBuilder(GameManager 
 {
     auto lambda_cb = [&](int pos, Menu *m)
     {
-        gm.replaceRobotEachRound(!gm.robotIsReplacedEachRound());
-        std::string temp = (gm.robotIsReplacedEachRound() ? "true" : "false");
+        gm.replaceRobotsEachRound(!gm.robotsAreReplacedEachRound());
+        std::string temp = (gm.robotsAreReplacedEachRound() ? "true" : "false");
         m->getOptions()[pos - 1] = "Robot randomly replaced each round (" + temp + ")";
         return false;
     };

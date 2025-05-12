@@ -126,7 +126,7 @@ private:
     std::vector<std::pair<int, int>> robots_coordinates;
     /// @brief Board Theme Structure to store all colors and strings
     BoardTheme_t boardTheme;
-    bool replace_robot_each_round = false;
+    bool replace_robots_each_round = false;
 
 private:
     bool processMovement(Robot *robot, Direction direction, int *deplacement, Menu *m, int player_index);
@@ -172,7 +172,7 @@ public:
      * 
      * @return bool
      */
-    bool robotIsReplacedEachRound() const;
+    bool robotsAreReplacedEachRound() const;
 
     /* Setters */
     /**
@@ -190,9 +190,9 @@ public:
     /**
      * @brief Set if robots must be replaced each round
      * 
-     * @param replace_robot_each_round 
+     * @param replace_robots_each_round 
      */
-    void replaceRobotEachRound(bool replace_robot_each_round);
+    void replaceRobotsEachRound(bool replace_robots_each_round);
 
     /* Methods */
     /**
