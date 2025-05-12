@@ -56,4 +56,8 @@ void Player::incrementRoundsPlayed()
 void Player::incrementScore(int points)
 {
     this->score += points;
+    if (this->score < 0)
+    {
+        this->score = 0;
+    }
 }
