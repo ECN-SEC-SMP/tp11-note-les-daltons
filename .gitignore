@@ -1,7 +1,5 @@
 out/
-
 .DS_store
-
 build/
-
 .vscode/
+Testing/

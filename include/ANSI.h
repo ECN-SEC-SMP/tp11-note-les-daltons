@@ -20,7 +20,9 @@
 #define ANSI_BRIGHT_MAGENTA     "\033[95m"
 #define ANSI_BRIGHT_CYAN        "\033[96m"
 #define ANSI_BRIGHT_WHITE       "\033[97m"
-#define ANSI_LIGHT_GRAY         "\033[38;5;250m"
+#define ANSI_ORANGE             "\033[38;5;214m"
+#define ANSI_LIGHT_GRAY         "\033[38;5;253m"
+#define ANSI_DARK_GRAY          "\033[38;5;238m"
 
 #define ANSI_BG_BLACK           "\033[40m"
 #define ANSI_BG_RED             "\033[41m"
