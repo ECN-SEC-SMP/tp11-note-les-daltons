@@ -1,90 +1,66 @@
 #include <iostream>
 
 #include "GameManager.h"
+#include "DisplayUtils.h"
 #include "Utils.h"
+#include "MainMenuCallbacks.h"
 
-#define CONTINUE_ON_ENTER_PROMPT                              \
-    std::cin.clear();                                         \
-    std::cout << "Press [ENTER] to continue..." << std::endl; \
-    getchar();
+/* Prototypes*/
+std::string getPlayerList(std::vector<Player *> players);
 
+/***************************************************************************
+ *                              Main Function                              *
+ ***************************************************************************/
 int main(int argc, char const *argv[])
 {
     bool running = true;
     GameManager gm;
-
     newRandomSeed();
     gm.generateBoard();
     Menu main_menu = Menu(GAME_ASCII_BANNER ANSI_BOLD "Main Menu" ANSI_RESET, 0)
-                         .addOption("Play")
-                         .addOption("Add Player")
-                         .addOption("Remove Player")
-                         .addOption("Regenerate Board", [&](int pos, Menu *m)
-                                    { gm.generateBoard(); std::cout << "Done!" << std::endl; CONTINUE_ON_ENTER_PROMPT return true; })
+                         .setColorSelection(gm.getBoardTheme().menu_selection_color)
+                         .addOption("Play", MainMenu::play_CBBuilder(gm))
+                         .addOption("Add Player", MainMenu::addPlayer_CBBuilder(gm))
+                         .addOption("Remove Player", MainMenu::removePlayer_CBBuilder(gm))
+                         .addOption("Regenerate Board", MainMenu::regenerateBoard_CBBuilder(gm))
+                         .addOption("Stats", MainMenu::CB_notImplementedYet)    // Issue #22
+                         .addOption("Settings", MainMenu::settings_CBBuilder(gm))
+                         .addOption("Help", MainMenu::CB_printHelp)
                          .addOption("Exit.", [&](int pos, Menu *m)
                                     { running = false; return false; })
                          .preventArguments();
 
+    int pos = 1;
     while (running)
     {
-        Menu::clear();
-        int pos = main_menu.run();
-        if (!running)
-            break;
-        if (pos == 1) // Play
-        {
-            if (gm.getPlayers().size() == 0)
-            {
-                std::cout << "No players added!" << std::endl;
-                CONTINUE_ON_ENTER_PROMPT
-                continue;
-            }
-            gm.setupNewRound();
-            gm.processPredictionsInputs();
-            gm.sortPlayersByPredictions();
-            int player_index = 0;
-            bool player_won = false;
-            do
-            {
-                if ((player_won = gm.playRound(player_index)) == true)
-                    std::cout << ANSI_GREEN ANSI_BOLD "You WON!!" ANSI_RESET << std::endl;
-                else
-                {
-                    std::cout << ANSI_RED ANSI_BOLD "You Lose!" ANSI_RESET << std::endl;
-                    player_index++;
-                    if (player_index >= (int)gm.getPlayers().size())
-                        break;
-                }
-                CONTINUE_ON_ENTER_PROMPT
-            } while (player_won == false);
-        }
-        else if (pos == 2) // Add Player
-        {
-            Menu player_menu(GAME_ASCII_BANNER ANSI_BOLD "Add Player\n" ANSI_ITALIC "(Set player name on first option)\n" ANSI_RESET, 0);
-            player_menu.addOption("Player name: ").addOption("Cancel.");
-            int sel_pos = player_menu.run();
-            if (sel_pos != 1)
-                continue;
-            std::string player_name = player_menu.getOptionsArgs()[0];
-            gm.addPlayer(new Player(player_name));
-        }
-        else if (pos == 3) // Remove Player
-        {
-            Menu player_menu(GAME_ASCII_BANNER ANSI_BOLD "Remove Player\n" ANSI_RESET, 0);
-            player_menu.preventArguments();
-            for (auto &&player : gm.getPlayers())
-            {
-                player_menu.addOption(player->getName());
-            }
-            player_menu.addOption("Cancel.");
-            int player_pos = player_menu.run();
-            if (player_pos > 0 && player_pos <= (int)gm.getPlayers().size())
-            {
-                gm.removePlayer(gm.getPlayers()[player_pos - 1]);
-                std::cout << "Done!" << std::endl;
-                CONTINUE_ON_ENTER_PROMPT
-            }
-        }
+        main_menu.setTitle(GAME_ASCII_BANNER ANSI_BOLD "Main Menu\n\n" ANSI_RESET + getPlayerList(gm.getPlayers())); // Actualize title
+        main_menu.setOptionPos(pos);                                                                                 // Keep last position
+        main_menu.setColorSelection(gm.getBoardTheme().menu_selection_color);                                        // Update section color
+        pos = main_menu.run();
     }
     return 0;
+}
+
+/***************************************************************************
+ *                          Additional Functions                           *
+ ***************************************************************************/
+/**
+ * @brief Get the Player List for display
+ *
+ * @param players
+ * @return std::string
+ */
+std::string getPlayerList(std::vector<Player *> players)
+{
+    std::string output = ANSI_BOLD ANSI_UNDERLINE "Players:" ANSI_RESET_BOLD ANSI_RESET_UNDERLINE "\n";
+    if (players.size() == 0)
+    {
+        output += ANSI_ITALIC "No players...\n" ANSI_RESET_ITALIC;
+    }
+    for (auto &&player : players)
+    {
+        output += " > " + player->getName() + "\n";
+    }
+    output += ANSI_RESET;
+    return output;
 }

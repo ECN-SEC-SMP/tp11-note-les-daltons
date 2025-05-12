@@ -2,14 +2,17 @@
 #include <algorithm>
 #include <numeric>
 
-#include "typedef.h"
+#ifdef _WIN32 // Windows sucks
+#include <conio.h>
+#endif
+
 #include "GameManager.h"
 #include "Utils.h"
+#include "ANSI.h"
 
 #define BOARD_SIZE 16
 
 /* Constructors */
-
 GameManager::GameManager()
     : goal_tile(nullptr), board(Board()), players(std::vector<Player *>())
 {
@@ -18,7 +21,6 @@ GameManager::GameManager()
 }
 
 /* Getters */
-
 Tile *GameManager::getGoalTile()
 {
     return this->goal_tile;
@@ -37,11 +39,25 @@ Player *GameManager::getPlayer(int index)
     }
     return players[index];
 }
+Board &GameManager::getBoard()
+{
+    return this->board;
+}
 
 /* Setters */
 void GameManager::setWinner(Player *player)
 {
     this->winner = player;
+}
+
+BoardTheme_t &GameManager::getBoardTheme()
+{
+    return this->boardTheme;
+}
+
+bool GameManager::robotsAreReplacedEachRound() const
+{
+    return this->replace_robots_each_round;
 }
 
 void GameManager::setWallsStyle(WallsStyle wallsStyle)
@@ -89,6 +105,7 @@ void GameManager::setWallsStyle(WallsStyle wallsStyle)
     default:
         throw std::invalid_argument("Invalid walls style");
     }
+    this->boardTheme.walls_style = wallsStyle;
 }
 
 void GameManager::setColorTheme(ColorTheme colorTheme)
@@ -102,9 +119,12 @@ void GameManager::setColorTheme(ColorTheme colorTheme)
         break;
 
     case DARK_THEME:
-        this->boardTheme.background_color = ANSI_BLACK;
-        this->boardTheme.grid_color = ANSI_LIGHT_GRAY;
-        this->boardTheme.wall_color = ANSI_BG_WHITE;
+        this->boardTheme.background_color = ANSI_BG_BLACK;
+        this->boardTheme.grid_color = ANSI_DARK_GRAY;
+        this->boardTheme.wall_color = ANSI_ORANGE;
+        break;
+
+    case CUSTOM:
         break;
 
     default:
@@ -113,10 +133,15 @@ void GameManager::setColorTheme(ColorTheme colorTheme)
     }
 
     this->boardTheme.reset_color = ANSI_RESET + this->boardTheme.background_color;
+    this->boardTheme.color_theme = colorTheme;
+}
+
+void GameManager::replaceRobotsEachRound(bool replace_robots_each_round)
+{
+    this->replace_robots_each_round = replace_robots_each_round;
 }
 
 /* Methods */
-
 void GameManager::addPlayer(Player *player)
 {
     this->players.push_back(player);
@@ -314,7 +339,7 @@ std::string GameManager::displayBoard(bool show_empty)
         this->goal_tile = nullptr;
     }
 
-    std::string output = "\n" + this->boardTheme.reset_color;
+    std::string output = GAME_ASCII_BANNER "\n" + this->boardTheme.reset_color;
     std::string temp_seperator = "";
     std::string temp_tiles = "";
 
@@ -494,40 +519,63 @@ Robot *GameManager::getRobotOnFrame(int x, int y)
 void GameManager::generateBoard()
 {
     this->board.generate();
-}
 
-void GameManager::setupNewRound()
-{
-    // Get the goal tile
-    int goal_tile_index = rand() % Board::TILES.size();
-    this->goal_tile = &Board::TILES[goal_tile_index];
-
-    // Place randomly robots on the board
-    this->robots_coordinates.clear();
-    for (int i = 0; i < 4; i++)
+    if (!replace_robots_each_round)
     {
-        int x, y;
-        do
+        // Place randomly robots on the board
+        this->robots_coordinates.clear();
+        for (int i = 0; i < 4; i++)
         {
-            x = rand() % 16;
-            if (x == 8)
-                x += 1;
-            if (x == 7)
-                x -= 1;
+            int x, y;
+            bool condition;
+            do
+            {
+                x = rand() % 16;
+                y = rand() % 16;
+                condition = std::count(this->robots_coordinates.begin(), this->robots_coordinates.end(), std::make_pair(x, y)); // Coordinates already used
+                // condition |= this->board.getFrame(x, y).getTile() == nullptr;                                                   // Frame not a tile
+            } while (condition); // Vérifie si la position est déjà utilisée
 
-            y = rand() % 16;
-            if (y == 8)
-                x += 1;
-            if (y == 7)
-                x -= 1;
-        } while (std::count(this->robots_coordinates.begin(), this->robots_coordinates.end(), std::make_pair(x, y))); // Vérifie si la position est déjà utilisée
-
-        // Add coordinate
-        this->robots_coordinates.push_back(std::make_pair(x, y));
+            // Add coordinate
+            this->robots_coordinates.push_back(std::make_pair(x, y));
+        }
     }
 }
 
 void GameManager::setupRound()
+{
+    // Reset members
+    this->round_finished = false;
+    this->cur_player_won = false;
+    this->moves_str = "";
+
+    // Get the goal tile
+    int goal_tile_index = rand() % Board::TILES.size();
+    this->goal_tile = &Board::TILES[goal_tile_index];
+
+    if (replace_robots_each_round)
+    {
+        // Place randomly robots on the board
+        this->robots_coordinates.clear();
+        for (int i = 0; i < 4; i++)
+        {
+            int x, y;
+            bool condition;
+            do
+            {
+                x = rand() % 16;
+                y = rand() % 16;
+                condition = std::count(this->robots_coordinates.begin(), this->robots_coordinates.end(), std::make_pair(x, y)); // Coordinates already used
+                // condition |= this->board.getFrame(x, y).getTile() == nullptr;                                                   // Frame not a tile
+            } while (condition); // Vérifie si la position est déjà utilisée
+
+            // Add coordinate
+            this->robots_coordinates.push_back(std::make_pair(x, y));
+        }
+    }
+}
+
+void GameManager::resetRound()
 {
     // Reset members
     this->round_finished = false;
@@ -548,7 +596,7 @@ void GameManager::setupRound()
 
 void GameManager::processPredictionsInputs()
 {
-    this->setupRound();
+    this->resetRound();
 
     Menu::clear();
     std::cout << this->displayBoard() << std::endl;
@@ -567,7 +615,7 @@ void GameManager::processPredictionsInputs()
 
     Menu::clear();
     std::cin.clear();
-    std::cout << GAME_ASCII_BANNER << std::endl;
+    std::cout << this->displayEmptyBoard() << std::endl;
 
     for (auto &&player : this->players)
     {
@@ -702,9 +750,12 @@ bool GameManager::processMovement(Robot *robot, Direction direction, int *deplac
     if (this->board.getFrame(robot_X, robot_Y).getTile() == this->goal_tile &&
         (this->goal_tile->getColor() == robot->getColor() || this->goal_tile->getColor() == RAINBOW))
     {
-        std::cout << "\033[32m\033[1m You won !!\033[0m" << std::endl;
         this->round_finished = true;
         this->cur_player_won = true;
+        if (players[player_index]->getPrediction() == *deplacement)
+            players[player_index]->incrementScore(2);
+        else
+            players[player_index]->incrementScore(1);
         return true;
     }
 
@@ -722,7 +773,7 @@ bool GameManager::playRound(int player_index)
 {
     // Reset values
     int move_count = 0;
-    this->setupRound();
+    this->resetRound();
 
     // Setup Menu
     Menu menu(displayBoard() + this->players[player_index]->getName() + " round\n", 0);
@@ -755,7 +806,7 @@ bool GameManager::playRound(int player_index)
 
             // Setup Menu
             m->preventDeplacement(true);
-            m->setColorSelection(31);
+            m->setColorSelection(this->boardTheme.menu_robot_selected_color);
             m->displayMenu();
 
             // Process movements
@@ -763,6 +814,36 @@ bool GameManager::playRound(int player_index)
             std::cout << "Press 'ENTER' to unselect." << std::endl;
             while (c != '\r' && !this->round_finished)
             {
+#ifdef _WIN32 // Windows sucks
+                c = _getch();
+                if (c == '\r' || c == 127) // enter or backspace
+                    break;
+                if (c == 224 || c == -32) // escape
+                {
+                    c = _getch();
+                    switch (c)
+                    {
+                    case 72: // up arrow
+                        if (this->processMovement(robot, UP, &move_count, m, player_index))
+                            c = '\r';
+                        break;
+                    case 80: // down arrow
+                        if (this->processMovement(robot, DOWN, &move_count, m, player_index))
+                            c = '\r';
+                        break;
+                    case 77: // right arrow
+                        if (this->processMovement(robot, RIGHT, &move_count, m, player_index))
+                            c = '\r';
+                        break;
+                    case 75: // left arrow
+                        if (this->processMovement(robot, LEFT, &move_count, m, player_index))
+                            c = '\r';
+                        break;
+                    default:
+                        break;
+                    }
+                }
+#else
                 c = getchar(); 
                 if (c == '\r' || c == 127) // enter or backspace
                     break;
@@ -795,12 +876,13 @@ bool GameManager::playRound(int player_index)
                         }
                     }
                 }
+#endif
             }
 
             // Reset Menu
             m->preventDeplacement(false);
             m->preventArguments(false);
-            m->setColorSelection(32);
+            m->setColorSelection(this->boardTheme.menu_selection_color);
 
             return !this->round_finished; });
     }
