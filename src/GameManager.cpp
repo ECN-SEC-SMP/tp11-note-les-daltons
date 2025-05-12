@@ -9,6 +9,7 @@
 #include "GameManager.h"
 #include "Utils.h"
 #include "ANSI.h"
+#include "DisplayUtils.h"
 
 #define BOARD_SIZE 16
 
@@ -45,10 +46,6 @@ Board &GameManager::getBoard()
 }
 
 /* Setters */
-void GameManager::setWinner(Player *player)
-{
-    this->winner = player;
-}
 
 BoardTheme_t &GameManager::getBoardTheme()
 {
@@ -756,6 +753,7 @@ bool GameManager::processMovement(Robot *robot, Direction direction, int *deplac
             players[player_index]->incrementScore(2);
         else
             players[player_index]->incrementScore(1);
+        this->winner = this->players[player_index];
         return true;
     }
 

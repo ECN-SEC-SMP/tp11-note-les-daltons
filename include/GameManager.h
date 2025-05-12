@@ -115,7 +115,7 @@ struct BoardTheme_t
 
 class GameManager
 {
-private:
+protected:
     /// @brief Tile to go on
     Tile *goal_tile;
     /// @brief Game board
@@ -186,7 +186,6 @@ public:
     bool robotsAreReplacedEachRound() const;
 
     /* Setters */
-    void setWinner(Player *player);
     /**
      * @brief Set the walls style
      * 
