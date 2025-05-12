@@ -528,7 +528,7 @@ void GameManager::generateBoard()
                 x = rand() % 16;
                 y = rand() % 16;
                 condition = std::count(this->robots_coordinates.begin(), this->robots_coordinates.end(), std::make_pair(x, y)); // Coordinates already used
-                condition |= this->board.getFrame(x, y).getTile() == nullptr;                                                   // Frame not a tile
+                // condition |= this->board.getFrame(x, y).getTile() == nullptr;                                                   // Frame not a tile
             } while (condition); // Vérifie si la position est déjà utilisée
 
             // Add coordinate
@@ -561,7 +561,7 @@ void GameManager::setupRound()
                 x = rand() % 16;
                 y = rand() % 16;
                 condition = std::count(this->robots_coordinates.begin(), this->robots_coordinates.end(), std::make_pair(x, y)); // Coordinates already used
-                condition |= this->board.getFrame(x, y).getTile() == nullptr;                                                   // Frame not a tile
+                // condition |= this->board.getFrame(x, y).getTile() == nullptr;                                                   // Frame not a tile
             } while (condition); // Vérifie si la position est déjà utilisée
 
             // Add coordinate
