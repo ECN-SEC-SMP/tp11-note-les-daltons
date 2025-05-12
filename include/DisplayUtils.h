@@ -10,6 +10,7 @@
 |_| \\_\\_|\\___\\___/ \\___|_| |_|\\___|\\__| |_| \\_\\___/|_.__/ \\___/ \\__|___/\n\
 " ANSI_RESET_BOLD ANSI_ITALIC ANSI_UNDERLINE "By Les Daltons\n\n" ANSI_RESET
 
+/* Board ==================================================================== */
 /* Grid */
 #define NODE "┼"
 #define HORIZONTAL_GRID "────"
@@ -56,3 +57,11 @@
 #define NODE_BOTTOM_RIGHT_SIMPLE "┘"
 
 #define EMPTY_FRAME "    "
+
+/* Scoreboard =============================================================== */
+#define TOP_LEFT_CORNER "┌"
+#define TOP_RIGHT_CORNER "┐"
+#define BOTTOM_LEFT_CORNER "└"
+#define BOTTOM_RIGHT_CORNER "┘"
+#define HORIZONTAL_BORDER "─"
+#define VERTICAL_BORDER "│"
