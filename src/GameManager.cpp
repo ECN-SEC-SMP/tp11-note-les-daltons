@@ -1015,6 +1015,10 @@ std::string GameManager::displayScoreboard()
         {
             player_success_rate = "--";
         }
+        else if (player->getRoundsPlayed() < player->getScore())
+        {
+            player_success_rate = "100%";
+        }
         else
         {
             player_success_rate = std::to_string((int)((float)(player->getScore()) / (float)(player->getRoundsPlayed()) * 100)) + "%";
