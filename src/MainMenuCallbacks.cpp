@@ -2,6 +2,7 @@
 
 #include "MainMenuCallbacks.h"
 #include "DisplayUtils.h"
+#include "Utils.h"
 
 #define COLOR_DEMONSTRATION_CHAR "■"
 #define BG_COLOR_DEMONSTRATION_CHAR "  "
@@ -109,6 +110,7 @@ Menu::MenuCallback_t MainMenu::addPlayer_CBBuilder(GameManager &gm)
             if (sel_pos != 1)
                 continue;
             player_name = player_menu.getOptionsArgs()[0];
+            player_name = reduce(player_name, "_");
         } while (player_name.empty() && sel_pos == 1);
         if (sel_pos == 1)
         {
