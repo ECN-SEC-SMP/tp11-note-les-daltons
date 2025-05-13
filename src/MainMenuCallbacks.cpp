@@ -84,6 +84,7 @@ Menu::MenuCallback_t MainMenu::play_CBBuilder(GameManager &gm)
                 }
                 CONTINUE_ON_ENTER_PROMPT
             } while (player_won == false && player_index < (int)gm.getPlayers().size());
+            gm.displayRoundResults();
         }
 
         return false;
@@ -178,10 +179,34 @@ bool MainMenu::CB_notImplementedYet(int pos, Menu *m)
 {
     Menu::clear();
     std::cout << GAME_ASCII_BANNER << std::endl;
-    std::cout << "Not emplemented yet! " << std::endl;
+    std::cout << "Not implemented yet! " << std::endl;
     CONTINUE_ON_ENTER_PROMPT
 
     return false;
+}
+
+Menu::MenuCallback_t MainMenu::stats_CBBuilder(GameManager &gm)
+{
+    auto lambda_cb = [&](int pos, Menu *m)
+    {
+        Menu stats_menu = Menu(GAME_ASCII_BANNER + gm.displayScoreboard()).addOption("Reset all").addOption("Exit.").preventArguments();
+        int index = stats_menu.run();
+        if (index == 1)
+        {
+            Menu confirmation_menu = Menu(GAME_ASCII_BANNER + gm.displayScoreboard() + "\nAre you sure?").addOption("yes").addOption("no").preventArguments();
+            int yn = confirmation_menu.run();
+            if (yn == 1) 
+            {
+                for (auto &&p : gm.getPlayers())
+                {
+                    p->reset();
+                }
+            }
+        }
+
+        return false;
+    };
+    return lambda_cb;
 }
 
 void SettingsMenu_reloadAllOptions(Menu * m, GameManager& gm)

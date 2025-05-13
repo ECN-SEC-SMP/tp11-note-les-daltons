@@ -61,3 +61,11 @@ void Player::incrementScore(int points)
         this->score = 0;
     }
 }
+
+void Player::reset()
+{
+    this->nbMoves = 0;
+    this->nbRoundsPlayed = 0;
+    this->prediction = 0;
+    this->score = 0;
+}
