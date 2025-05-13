@@ -632,7 +632,14 @@ void GameManager::processPredictionsInputs()
         int prediction = std::stoi(prediction_str);
         while (prediction < 2)
         {
-            std::cout << "Your prediction must be greater than 1 ! New prediction: " << std::flush;
+            Menu::clear();
+            std::cout << GAME_ASCII_BANNER << this->displayEmptyBoard() << std::endl;
+            std::cout << "Your prediction must be greater than 1 ! " << std::endl;
+            std::cout << ANSI_ITALIC ANSI_BLUE 
+                         "Rules: \"If, after selecting a new objective tile, it turns out that the" << std::endl;
+            std::cout << "        solution can be reached in a single move, players must ignore this" << std::endl;
+            std::cout << "        solution and try to find another one.\"" ANSI_RESET << std::endl;
+            std::cout << "New prediction: " << std::flush;
             std::cin >> prediction_str;
             while (!is_number(prediction_str))
             {
