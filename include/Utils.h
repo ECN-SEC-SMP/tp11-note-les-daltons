@@ -34,6 +34,7 @@ bool is_number(const std::string &s);
 
 /**
  * @brief Trim a string
+ * @note This function remove leading and trailing spaces
  * 
  * @param str (IN) Input string 
  * @param whitespace (IN) Space to remove
@@ -43,6 +44,7 @@ std::string trim(const std::string &str, const std::string &whitespace = " \t");
 
 /**
  * @brief Reduce a string
+ * @note This function remove leading and trailing spaces and replace spaces in string by content of fill argument
  * 
  * @param str (IN) Input string 
  * @param fill (IN) String to replace whitespace in middle of input string
