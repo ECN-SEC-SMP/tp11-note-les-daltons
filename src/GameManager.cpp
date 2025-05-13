@@ -981,8 +981,9 @@ std::string GameManager::displayScoreboard()
     {
         /* Get player info */
         std::string player_rank;
+        bool more_than_one_player = this->players.size() > 1;
         bool winner = player == this->players[0];
-        if (winner && !show_podium)
+        if (winner && more_than_one_player && !show_podium)
         {
             player_rank = "🏆";
         }
