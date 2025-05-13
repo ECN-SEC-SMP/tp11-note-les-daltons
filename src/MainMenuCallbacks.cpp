@@ -7,6 +7,8 @@
 #define COLOR_DEMONSTRATION_CHAR "■"
 #define BG_COLOR_DEMONSTRATION_CHAR "  "
 
+void moiCestPo();
+
 bool MainMenu::CB_printHelp(int pos, Menu *m)
 {
     Menu::clear();
@@ -132,7 +134,10 @@ Menu::MenuCallback_t MainMenu::addPlayer_CBBuilder(GameManager &gm)
                 CONTINUE_ON_ENTER_PROMPT
             }
             else
+            {
+                if (player_name == "Pô") moiCestPo();
                 gm.addPlayer(new Player(player_name));
+            }
         }
 
         return false;
@@ -462,4 +467,19 @@ Menu::MenuCallback_t SettingsMenu::robotReplacedEachRound_CBBuilder(GameManager 
         return false;
     };
     return lambda_cb;
+}
+
+void moiCestPo()
+{
+    Menu::clear();
+    for (int i = 0; i < 20; i++)
+    {
+        std::cout << MOI_C_PO << std::endl;
+        std::cout << std::endl;
+        std::cout << PO << std::endl;
+        sleep(100);
+        Menu::clear();
+        sleep(100);
+    }
+    
 }

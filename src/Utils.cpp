@@ -16,9 +16,9 @@ int getRandomNumber(int max)
     return rand() % (max + 1);
 }
 
-void sleep(int seconds)
+void sleep(int milliseconds)
 {
-    std::this_thread::sleep_for(std::chrono::seconds(seconds));
+    std::this_thread::sleep_for(std::chrono::milliseconds(milliseconds));
 }
 
 bool is_number(const std::string &s)

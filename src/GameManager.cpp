@@ -612,7 +612,7 @@ void GameManager::processPredictionsInputs()
         std::cout << this->displayBoard() << std::endl;
         std::cout << std::endl;
         std::cout << "\033[1mYou have \033[31m" << i << "\033[0m\033[1m seconds to find your solution prediction...\033[0m" << std::endl;
-        sleep(1);
+        sleep(1000);
     }
 
     Menu::clear();
