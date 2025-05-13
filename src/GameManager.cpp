@@ -629,7 +629,18 @@ void GameManager::processPredictionsInputs()
             std::cout << "Prediction invalid! New prediction: " << std::flush;
             std::cin >> prediction_str;
         }
-        player->setPrediction(std::stoi(prediction_str));
+        int prediction = std::stoi(prediction_str);
+        while (prediction < 2)
+        {
+            std::cout << "Your prediction must be greater than 1 ! New prediction: " << std::flush;
+            std::cin >> prediction_str;
+            while (!is_number(prediction_str))
+            {
+                std::cout << "Prediction invalid! New prediction: " << std::flush;
+                std::cin >> prediction_str;
+            }
+        }
+        player->setPrediction(prediction);
     }
 }
 
