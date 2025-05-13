@@ -17,11 +17,11 @@ void newRandomSeed();
 int getRandomNumber(int max);
 
 /**
- * @brief Sleep for X seconds
+ * @brief Sleep for X milliseconds
  *
- * @param seconds (IN) Sleeping duration in seconds
+ * @param milliseconds (IN) Sleeping duration in milliseconds
  */
-void sleep(int seconds);
+void sleep(int milliseconds);
 
 /**
  * @brief Test if a string is a number
