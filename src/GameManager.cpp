@@ -545,6 +545,11 @@ void GameManager::setupRound()
     this->round_finished = false;
     this->cur_player_won = false;
     this->moves_str = "";
+    for (auto &&p : this->players)
+    {
+        p->resetMoves();
+        p->incrementRoundsPlayed();
+    }
 
     // Get the goal tile
     int goal_tile_index = rand() % Board::TILES.size();
@@ -606,7 +611,7 @@ void GameManager::processPredictionsInputs()
         Menu::clear();
         std::cout << this->displayBoard() << std::endl;
         std::cout << std::endl;
-        std::cout << "\033[1mYou have \033[31m" << i << "\033[0m\033[1m seconds to find your solution prdiction...\033[0m" << std::endl;
+        std::cout << "\033[1mYou have \033[31m" << i << "\033[0m\033[1m seconds to find your solution prediction...\033[0m" << std::endl;
         sleep(1);
     }
 
@@ -624,7 +629,25 @@ void GameManager::processPredictionsInputs()
             std::cout << "Prediction invalid! New prediction: " << std::flush;
             std::cin >> prediction_str;
         }
-        player->setPrediction(std::stoi(prediction_str));
+        int prediction = std::stoi(prediction_str);
+        while (prediction < 2)
+        {
+            Menu::clear();
+            std::cout << GAME_ASCII_BANNER << this->displayEmptyBoard() << std::endl;
+            std::cout << "Your prediction must be greater than 1 ! " << std::endl;
+            std::cout << ANSI_ITALIC ANSI_BLUE 
+                         "Rules: \"If, after selecting a new objective tile, it turns out that the" << std::endl;
+            std::cout << "        solution can be reached in a single move, players must ignore this" << std::endl;
+            std::cout << "        solution and try to find another one.\"" ANSI_RESET << std::endl;
+            std::cout << "New prediction: " << std::flush;
+            std::cin >> prediction_str;
+            while (!is_number(prediction_str))
+            {
+                std::cout << "Prediction invalid! New prediction: " << std::flush;
+                std::cin >> prediction_str;
+            }
+        }
+        player->setPrediction(prediction);
     }
 }
 
@@ -704,6 +727,7 @@ bool GameManager::processMovement(Robot *robot, Direction direction, int *deplac
     if (robot_X != previousRobotX || robot_Y != previousRobotY)
     {
         *deplacement += 1;
+        this->players[player_index]->incrementMoves();
         this->moves_str += ANSI_BOLD;
         switch (robot->getColor())
         {
@@ -903,15 +927,15 @@ std::string GameManager::displayRoundResults()
         std::string player_result;
         if (player == this->winner)
         {
-            player_result = "won with " + player_moves + "!";
+            player_result = ANSI_GREEN "won" ANSI_RESET " with " + player_moves + "!";
         }
         else
         {
-            player_result = "lost";
+            player_result = ANSI_RED "lost" ANSI_RESET;
         }
 
         /* Add player recap to output */
-        output += "Player " + player_name + " announced " + player_prediction + " moves and " + player_result;
+        output += "Player " ANSI_BOLD + player_name + ANSI_RESET_BOLD " announced " + player_prediction + " moves and " + player_result;
         output += "\n";
     }
 

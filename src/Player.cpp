@@ -40,6 +40,8 @@ int Player::getScore()
 void Player::setPrediction(int prediction)
 {
     this->prediction = prediction;
+    if (this->prediction < 0)
+        this->prediction = 0;
 }
 
 /* Methods */
@@ -60,4 +62,17 @@ void Player::incrementScore(int points)
     {
         this->score = 0;
     }
+}
+
+void Player::resetMoves()
+{
+    this->nbMoves = 0;
+}
+
+void Player::reset()
+{
+    this->nbMoves = 0;
+    this->nbRoundsPlayed = 0;
+    this->prediction = 0;
+    this->score = 0;
 }

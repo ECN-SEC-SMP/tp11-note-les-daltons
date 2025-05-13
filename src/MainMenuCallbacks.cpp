@@ -2,6 +2,7 @@
 
 #include "MainMenuCallbacks.h"
 #include "DisplayUtils.h"
+#include "Utils.h"
 
 #define COLOR_DEMONSTRATION_CHAR "■"
 #define BG_COLOR_DEMONSTRATION_CHAR "  "
@@ -23,11 +24,14 @@ bool MainMenu::CB_printHelp(int pos, Menu *m)
     std::cout << "    within " red_word("10 seconds") "." << std::endl;
     std::cout << " 4. After this time, all players enter their prediction of " << std::endl;
     std::cout << "    the number of moves." << std::endl;
-    std::cout << " 5. The player with the lowest prediction starts. If he solves" << std::endl;
+    std::cout << " 5. If, after selecting a new objective tile, it turns out that" << std::endl;
+    std::cout << "    the solution can be reached in a single move, players must" << std::endl;
+    std::cout << "    ignore this solution and try to find another one.\"" ANSI_RESET << std::endl;
+    std::cout << " 6. The player with the lowest prediction starts. If he solves" << std::endl;
     std::cout << "    the puzzle with the correct prediction, he wins " red_word("2 points") "." << std::endl;
     std::cout << "    If he solves the puzzle with a lower number of moves than his " << std::endl;
     std::cout << "    prediction, he earns only " red_word("1 point") "." << std::endl;
-    std::cout << " 6. But if this player exceeds his prediction without solving" << std::endl;
+    std::cout << " 7. But if this player exceeds his prediction without solving" << std::endl;
     std::cout << "    the puzzle, the second player can play and continue from" << std::endl;
     std::cout << "    the previous rule." << std::endl;
     std::cout << std::endl;
@@ -84,6 +88,9 @@ Menu::MenuCallback_t MainMenu::play_CBBuilder(GameManager &gm)
                 }
                 CONTINUE_ON_ENTER_PROMPT
             } while (player_won == false && player_index < (int)gm.getPlayers().size());
+            Menu::clear();
+            std::cout << gm.displayBoard() << gm.displayRoundResults() << std::endl;
+            CONTINUE_ON_ENTER_PROMPT
         }
 
         return false;
@@ -106,6 +113,7 @@ Menu::MenuCallback_t MainMenu::addPlayer_CBBuilder(GameManager &gm)
             if (sel_pos != 1)
                 continue;
             player_name = player_menu.getOptionsArgs()[0];
+            player_name = reduce(player_name, "_");
         } while (player_name.empty() && sel_pos == 1);
         if (sel_pos == 1)
         {
@@ -178,10 +186,34 @@ bool MainMenu::CB_notImplementedYet(int pos, Menu *m)
 {
     Menu::clear();
     std::cout << GAME_ASCII_BANNER << std::endl;
-    std::cout << "Not emplemented yet! " << std::endl;
+    std::cout << "Not implemented yet! " << std::endl;
     CONTINUE_ON_ENTER_PROMPT
 
     return false;
+}
+
+Menu::MenuCallback_t MainMenu::stats_CBBuilder(GameManager &gm)
+{
+    auto lambda_cb = [&](int pos, Menu *m)
+    {
+        Menu stats_menu = Menu(GAME_ASCII_BANNER + gm.displayScoreboard()).addOption("Reset all").addOption("Exit.").preventArguments();
+        int index = stats_menu.run();
+        if (index == 1)
+        {
+            Menu confirmation_menu = Menu(GAME_ASCII_BANNER + gm.displayScoreboard() + "\nAre you sure?").addOption("yes").addOption("no").preventArguments();
+            int yn = confirmation_menu.run();
+            if (yn == 1) 
+            {
+                for (auto &&p : gm.getPlayers())
+                {
+                    p->reset();
+                }
+            }
+        }
+
+        return false;
+    };
+    return lambda_cb;
 }
 
 void SettingsMenu_reloadAllOptions(Menu * m, GameManager& gm)
