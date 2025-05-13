@@ -84,7 +84,9 @@ Menu::MenuCallback_t MainMenu::play_CBBuilder(GameManager &gm)
                 }
                 CONTINUE_ON_ENTER_PROMPT
             } while (player_won == false && player_index < (int)gm.getPlayers().size());
-            gm.displayRoundResults();
+            Menu::clear();
+            std::cout << gm.displayBoard() << gm.displayRoundResults() << std::endl;
+            CONTINUE_ON_ENTER_PROMPT
         }
 
         return false;

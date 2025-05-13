@@ -545,6 +545,11 @@ void GameManager::setupRound()
     this->round_finished = false;
     this->cur_player_won = false;
     this->moves_str = "";
+    for (auto &&p : this->players)
+    {
+        p->resetMoves();
+        p->incrementRoundsPlayed();
+    }
 
     // Get the goal tile
     int goal_tile_index = rand() % Board::TILES.size();
@@ -704,6 +709,7 @@ bool GameManager::processMovement(Robot *robot, Direction direction, int *deplac
     if (robot_X != previousRobotX || robot_Y != previousRobotY)
     {
         *deplacement += 1;
+        this->players[player_index]->incrementMoves();
         this->moves_str += ANSI_BOLD;
         switch (robot->getColor())
         {
@@ -903,15 +909,15 @@ std::string GameManager::displayRoundResults()
         std::string player_result;
         if (player == this->winner)
         {
-            player_result = "won with " + player_moves + "!";
+            player_result = ANSI_GREEN "won" ANSI_RESET " with " + player_moves + "!";
         }
         else
         {
-            player_result = "lost";
+            player_result = ANSI_RED "lost" ANSI_RESET;
         }
 
         /* Add player recap to output */
-        output += "Player " + player_name + " announced " + player_prediction + " moves and " + player_result;
+        output += "Player " ANSI_BOLD + player_name + ANSI_RESET_BOLD " announced " + player_prediction + " moves and " + player_result;
         output += "\n";
     }
 

@@ -7,7 +7,8 @@
 #define CONTINUE_ON_ENTER_PROMPT                              \
     std::cin.clear();                                         \
     std::cout << "Press [ENTER] to continue..." << std::endl; \
-    getchar();
+    std::cin.ignore(100, '\n');
+    // getchar();
 #define key(str) ANSI_BLUE str ANSI_RESET
 #define red_word(str) ANSI_RED str ANSI_RESET
 

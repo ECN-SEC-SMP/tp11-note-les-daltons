@@ -62,6 +62,11 @@ void Player::incrementScore(int points)
     }
 }
 
+void Player::resetMoves()
+{
+    this->nbMoves = 0;
+}
+
 void Player::reset()
 {
     this->nbMoves = 0;
