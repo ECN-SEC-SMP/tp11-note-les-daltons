@@ -40,6 +40,8 @@ int Player::getScore()
 void Player::setPrediction(int prediction)
 {
     this->prediction = prediction;
+    if (this->prediction < 0)
+        this->prediction = 0;
 }
 
 /* Methods */
