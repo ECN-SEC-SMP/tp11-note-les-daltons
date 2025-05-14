@@ -8,7 +8,6 @@
 #include "TestUtils.h"
 #include "Utils.h"
 
-#define EXPECTED_FOLDER "./test/expected/"
 // #define GENERATE_EXPECTED
 
 TEST(displayScoreboard, NoPlayers)

@@ -82,5 +82,5 @@ foreach(TEST_FILE ${TEST_FILES})
     $<$<CONFIG:Debug>:-g ${DEBUG_COMPILE_OPTIONS}>
     $<$<CONFIG:Release>:${RELEASE_COMPILE_OPTIONS}>
   )
-  add_test(NAME test_${TEST_NAME} COMMAND test_${TEST_NAME})
+  add_test(NAME test_${TEST_NAME} COMMAND test_${TEST_NAME} --gtest_color=yes)
 endforeach()
