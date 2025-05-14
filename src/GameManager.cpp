@@ -777,7 +777,7 @@ bool GameManager::processMovement(Robot *robot, Direction direction, int *deplac
             players[player_index]->incrementScore(2);
         else
             players[player_index]->incrementScore(1);
-        this->winner = this->players[player_index];
+        this->roundWinner = this->players[player_index];
         return true;
     }
 
@@ -925,7 +925,7 @@ std::string GameManager::displayRoundResults()
         std::string player_prediction = std::to_string(player->getPrediction());
         std::string player_moves = std::to_string(player->getNbMoves());
         std::string player_result;
-        if (player == this->winner)
+        if (player == this->roundWinner)
         {
             player_result = ANSI_GREEN "won" ANSI_RESET " with " + player_moves + "!";
         }
@@ -1006,15 +1006,16 @@ std::string GameManager::displayScoreboard()
         /* Get player info */
         std::string player_rank;
         bool more_than_one_player = this->players.size() > 1;
-        bool winner = player == this->players[0];
-        if (winner && more_than_one_player && !show_podium)
+        bool is_winner = (player == this->players[0]) && (this->players[0]->getScore() > 0);
+        if (is_winner && more_than_one_player && !show_podium)
         {
             player_rank = "🏆";
         }
-        else if (winner && show_podium)
+        else if (is_winner && show_podium)
         {
             player_rank = "🥇";
         }
+        
         else if (player == this->players[1] && show_podium)
         {
             player_rank = "🥈";
@@ -1054,7 +1055,7 @@ std::string GameManager::displayScoreboard()
 
         /* Player rank */
         output += player_rank;
-        if (winner || show_podium)
+        if (is_winner || show_podium)
         {
             /* std::string.lenght() throws error if string contains emoji  */
             output += std::string(column_widths[RANK_COLUMN] - 2, ' ');
@@ -1092,6 +1093,7 @@ std::string GameManager::displayScoreboard()
     output += BOTTOM_LEFT_CORNER;
     output += horizontal_border;
     output += BOTTOM_RIGHT_CORNER;
+    output += "\n";
 
     return output;
 }

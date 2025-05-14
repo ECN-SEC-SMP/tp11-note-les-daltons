@@ -5,44 +5,11 @@
 
 #include "TestGameManager.h"
 #include "TestPlayer.h"
+#include "TestUtils.h"
 #include "Utils.h"
 
 #define EXPECTED_FOLDER "./test/expected/"
 // #define GENERATE_EXPECTED
-
-TestGameManager initTestGameManager()
-{
-    TestGameManager gm;
-    newRandomSeed();
-    gm.generateBoard();
-
-    return gm;
-}
-
-void writeInFile(std::string filename, std::string content)
-{
-    std::ofstream file;
-    file.open(EXPECTED_FOLDER + filename);
-    file << content;
-    file.close();
-}
-
-std::string readFile(std::string filename)
-{
-    std::ifstream file { EXPECTED_FOLDER + filename };
-    std::string content = "";
-    std::string line;
-    while ( std::getline (file,line) )
-    {
-      content += line + '\n';
-    }
-
-    /* Remove last '\n' */
-    content.pop_back();
-
-    file.close();
-    return content;
-}
 
 TEST(displayScoreboard, NoPlayers)
 {
@@ -162,6 +129,35 @@ TEST(displayScoreboard, DivisionByZeroSuccessRate)
     writeInFile(filename, gm.displayScoreboard());
 #endif
 
+    /* Test */
+    const std::string scoreboard = gm.displayScoreboard();
+    const std::string expected_scoreboard = readFile(filename);
+    EXPECT_STREQ(scoreboard.c_str(), expected_scoreboard.c_str());
+}
+
+TEST(displayScoreboard, MultiplePlayersNoWinner)
+{
+    const char *filename = "scoreboard_MultiplePlayersNoWinner.txt";
+
+    /* Create TestGameManager */
+    TestGameManager gm = initTestGameManager();
+
+    /* Create TestPlayers */
+    gm.addPlayer(new TestPlayer("Dada"));
+    TestPlayer * tplayer_dada = (TestPlayer *)gm.getPlayer(0);
+    tplayer_dada->setNbRoundsPlayed(2);
+    tplayer_dada->setScore(0);
+
+    gm.addPlayer(new TestPlayer("Louiiiiiiiiis"));
+    TestPlayer * tplayer_louis = (TestPlayer *)gm.getPlayer(1);
+    tplayer_louis->setNbRoundsPlayed(3);
+    tplayer_louis->setScore(0);
+
+    /* Generate expected scoreboard */
+#ifdef GENERATE_EXPECTED
+    writeInFile(filename, gm.displayScoreboard());
+#endif
+    
     /* Test */
     const std::string scoreboard = gm.displayScoreboard();
     const std::string expected_scoreboard = readFile(filename);

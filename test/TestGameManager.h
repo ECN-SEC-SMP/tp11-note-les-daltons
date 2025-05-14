@@ -6,5 +6,5 @@ class TestGameManager : public GameManager
 {
 public:
     TestGameManager() : GameManager() {}
-    void setWinner(Player *player) { this->winner = player;}
+    void setWinner(Player *player) { this->roundWinner = player;}
 };
