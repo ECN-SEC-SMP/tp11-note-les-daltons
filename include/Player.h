@@ -30,6 +30,8 @@ public:
     void incrementMoves();
     void incrementRoundsPlayed();
     void incrementScore(int points = 1);
+    void resetMoves();
+    void reset();
 };
 
 #endif // PLAYER_H

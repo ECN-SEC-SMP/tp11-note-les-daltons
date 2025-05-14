@@ -23,7 +23,7 @@ int main(int argc, char const *argv[])
                          .addOption("Add Player", MainMenu::addPlayer_CBBuilder(gm))
                          .addOption("Remove Player", MainMenu::removePlayer_CBBuilder(gm))
                          .addOption("Regenerate Board", MainMenu::regenerateBoard_CBBuilder(gm))
-                         .addOption("Stats", MainMenu::CB_notImplementedYet)    // Issue #22
+                         .addOption("Stats", MainMenu::stats_CBBuilder(gm))
                          .addOption("Settings", MainMenu::settings_CBBuilder(gm))
                          .addOption("Help", MainMenu::CB_printHelp)
                          .addOption("Exit.", [&](int pos, Menu *m)
