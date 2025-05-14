@@ -1,3 +1,5 @@
+#pragma once
+
 #include "QuarterBoard.h"
 #include <iostream>
 
@@ -53,7 +55,7 @@ Frame framesQuarter4[8][8] = {
 
 const QuarterBoard Quarter4 = QuarterBoard(framesQuarter4);
 
-void printQuarter(const QuarterBoard &quarter)
+inline void printQuarter(const QuarterBoard &quarter)
 {
     for (int i = 0; i < 8; i++)
     {

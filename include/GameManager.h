@@ -22,11 +22,56 @@ enum WallsStyle
     SIMPLE_WALLS,
     DOUBLE_WALLS,
 };
+inline std::string WallsStyle_toString(WallsStyle ws)
+{
+    std::string output = "";
+    switch (ws)
+    {
+    case SIMPLE_WALLS:
+        output = "SIMPLE_WALLS";
+        break;
+    case DOUBLE_WALLS:
+        output = "DOUBLE_WALLS";
+        break;
+    default:
+        break;
+    }
+    return output;
+}
 
 enum ColorTheme
 {
     LIGHT_THEME,
     DARK_THEME,
+    CUSTOM,
+};
+inline std::string ColorTheme_toString(ColorTheme ct)
+{
+    std::string output = "";
+    switch (ct)
+    {
+    case LIGHT_THEME:
+        output = "LIGHT_THEME";
+        break;
+    case DARK_THEME:
+        output = "DARK_THEME";
+        break;
+    case CUSTOM:
+        output = "CUSTOM";
+        break;
+    default:
+        break;
+    }
+    return output;
+}
+
+enum ScoreboardColumns
+{
+    RANK_COLUMN,
+    NAME_COLUMN,
+    ROUNDS_COLUMN,
+    SCORE_COLUMN,
+    SUCCESS_COLUMN
 };
 
 struct BoardTheme_t
@@ -36,6 +81,10 @@ struct BoardTheme_t
     std::string grid_color = ANSI_LIGHT_GRAY;
     std::string wall_color = ANSI_BLACK;
     std::string reset_color = ANSI_RESET + background_color;
+    std::string menu_selection_color = ANSI_GREEN;
+    std::string menu_robot_selected_color = ANSI_RED;
+
+    ColorTheme color_theme;
 
     /* Grid */
     std::string node = NODE;
@@ -60,17 +109,21 @@ struct BoardTheme_t
     std::string node_top_right;
     std::string node_bottom_left;
     std::string node_bottom_right;
+
+    WallsStyle walls_style;
 };
 
 class GameManager
 {
-private:
+protected:
     /// @brief Tile to go on
     Tile *goal_tile;
     /// @brief Game board
     Board board;
     /// @brief Container of game players
     std::vector<Player *> players;
+    /// @brief Winner of a round;
+    Player *roundWinner = nullptr;
     /// @brief Container of board robots
     std::vector<Robot *> robots;
     /// @brief Flag to know if round is finished
@@ -82,7 +135,9 @@ private:
     std::string moves_str = "";
     /// @brief Coordinate of robots
     std::vector<std::pair<int, int>> robots_coordinates;
+    /// @brief Board Theme Structure to store all colors and strings
     BoardTheme_t boardTheme;
+    bool replace_robots_each_round = false;
 
 private:
     bool processMovement(Robot *robot, Direction direction, int *deplacement, Menu *m, int player_index);
@@ -114,13 +169,41 @@ public:
     /**
      * @brief Get the Board object
      *
-     * @return Board*
+     * @return Board&
      */
-    Board *getBoard();
+    Board &getBoard();
+    /**
+     * @brief Get the board theme structure
+     * 
+     * @return BoardTheme_t&
+     */
+    BoardTheme_t &getBoardTheme();
+    /**
+     * @brief Get if robots are replaced each round
+     * 
+     * @return bool
+     */
+    bool robotsAreReplacedEachRound() const;
 
     /* Setters */
+    /**
+     * @brief Set the walls style
+     * 
+     * @param wallsStyle (IN) New Walls Style
+     */
     void setWallsStyle(WallsStyle wallsStyle);
+    /**
+     * @brief Set the color theme
+     * 
+     * @param colorTheme (IN) New Color Theme
+     */
     void setColorTheme(ColorTheme colorTheme);
+    /**
+     * @brief Set if robots must be replaced each round
+     * 
+     * @param replace_robots_each_round 
+     */
+    void replaceRobotsEachRound(bool replace_robots_each_round);
 
     /* Methods */
     /**
@@ -156,12 +239,12 @@ public:
      * @note This function is called at the beginning of each game.
      * @note This function picks up randomly a Goal Tile and setup randomly robots coordinates.
      */
-    void setupNewRound();
+    void setupRound();
     /**
      * @brief Sets up the game for a round with last values.
      * @note This function is called at the beginning of each round.
      */
-    void setupRound();
+    void resetRound();
     /**
      * @brief Processes the inputs for the predictions of each player.
      * @note This function is called when the players have to made their predictions.
@@ -173,6 +256,11 @@ public:
      */
     void sortPlayersByPredictions();
     /**
+     * @brief Sorts players according to their score in descending order
+     * @note This function is called when displaying results of a round.
+     */
+    void sortPlayersByScore();
+    /**
      * @brief Plays a round of the game.
      * @note This function is called to play a round of the game.
      *
@@ -182,18 +270,31 @@ public:
      */
     bool playRound(int player_index);
     /**
-     * @brief Displays the results of the game.
-     * @note This function is called at the end of the game.
+     * @brief Displays the results of the round.
+     * @note This function is called at the end of each round.
      */
-    void displayResults();
+    std::string displayRoundResults();
+    /**
+     * @brief Displays the scoreboard.
+     * @note This function is called in the sub menu "Stats".
+     */
+    std::string displayScoreboard();
     /**
      * @brief Get Robot on frame with (x,y) coordinates
      *
-     * @param x (IN) Coordinate X
-     * @param y (IN) Coordinate Y
+     * @param x (IN) X coordinates
+     * @param y (IN) Y coordinates
      * @return Robot*
      */
     Robot *getRobotOnFrame(int x, int y);
+    /**
+     * @brief Get node string after computing it by walls around
+     * 
+     * @param board (IN) Board Reference
+     * @param x (IN) X coordinates of the bottom-right frame
+     * @param y (IN) Y coordinates of the bottom-right frame
+     * @return std::string 
+     */
     std::string computeNode(Board &board, int x, int y);
 };
 

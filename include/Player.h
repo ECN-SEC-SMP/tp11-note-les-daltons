@@ -5,9 +5,11 @@
 
 class Player
 {
-private:
+protected:
     std::string name;
     int prediction;
+    int nbMoves;
+    int nbRoundsPlayed;
     int score;
 
 public:
@@ -17,13 +19,19 @@ public:
     /* Getters */
     std ::string getName();
     int getPrediction();
+    int getNbMoves();
+    int getRoundsPlayed();
     int getScore();
 
     /* Setters */
     void setPrediction(int prediction);
 
     /* Methods */
+    void incrementMoves();
+    void incrementRoundsPlayed();
     void incrementScore(int points = 1);
+    void resetMoves();
+    void reset();
 };
 
 #endif // PLAYER_H

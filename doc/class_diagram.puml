@@ -1,6 +1,10 @@
 @startuml class_diagram
 
-enum Color {
+skinparam enum {
+    BackgroundColor #Tomato
+}
+
+enum Color #LightPink {
     BLUE
     RED
     YELLOW
@@ -8,14 +12,14 @@ enum Color {
     RAINBOW
 }
 
-enum Shape {
+enum Shape #LightPink {
     TRIANGLE
     SQUARE
     CIRCLE
     STAR
 }
 
-enum Direction {
+enum Direction #LightPink {
     UP
     DOWN
     LEFT
@@ -34,83 +38,227 @@ class Tile {
 class Frame {
     - tile: Tile*
     - walls: bool[4]
+
     + Frame()
     + Frame(tile: Tile*, walls: bool[4])
+    + Frame(tile: Tile*, walls: const bool[4])
+
     + getTile(): Tile*
-    + getWalls(): bool[4]
-    + canMove(direction: Direction): bool
+    + getWalls(): bool*
+
+    + setTile(t: Tile*): void
+    + setWalls(walls: const bool[4]): void
+    + setWall(wall: bool, d: Direction)
+
+    + canMove(d: Direction): bool
 }
 
 class QuarterBoard {
-    - id: int
     - frames: Frame[8][8]
-    + QuarterBoard(id: int, frames: Frame[8][8])
-    + getId(): int
-    + getFrame(int x, int y): Frame
+    
+    + QuarterBoard()
+    + QuarterBoard(f: Frame[8][8])
+    + getFrame(x: int, y: int): Frame
     + applySymetry(): QuarterBoard
 }
 
 class Board {
-    - quarters: QuarterBoard[2][2]
+    - quarterBoards: QuarterBoard[2][2]
+    - tile_index: int
+    - rainbow_corner_quarter: int
+    + {static} TILES: std::vector<Tile>
+
+    - generateQuarterBoard(top: bool, left: bool): QuarterBoard
+
     + Board()
-    + getFrame(int x, int y): Frame
+    + Board(quarterBoards: QuarterBoard[2][2])
+
+    + getFrame(x: int, y: int): Frame
+
     + generate(): void
+    + {static} createEmptyQuarterBoard(top: bool, left: bool): QuarterBoard
+    + {static} createEmptyBoard(): Board
 }
 
 class Robot {
     - color: Color
-    - position: std::pair
-    + Robot(color: Color, position: std::pair)
+    - position: std::pair<int, int>
+
+    + Robot(color: Color, p: std::pair<int, int>)
     + Robot(color: Color, x: int, y: int)
+
     + getColor(): Color
-    + getPosition(): std::pair
+    + getPosition(): std::pair<int, int>
     + getX(): int
     + getY(): int
-    + move(int x, int y): void
-    getEmoji(): std::string
+    + getEmoji(): std::string
+
+    + move(x: int, y: iny): void
+    + move(d: Direction)
 }
 
 class Player {
-    - name: std::string
-    - prediction: int
-    - score: int 
+    # name: std::string
+    # prediction: int
+    # nbMoves: int
+    # nbRoundsPlayed: int
+    # score: int
+
     + Player(name: std::string)
+
     + getName(): std::string
     + getPrediction(): int
-    + setPrediction(prediction: int): void
+    + getNbMoves(): int
+    + getRoundsPlayed(): int
     + getScore(): int
-    + incrementScore(points: int = 1): void
+    
+    + setPrediction(prediction: int): void
+    + incrementMoves(): void
+    + incrementRoundsPlayed(): void
+    + incrementScore(points: int): void
 }
 
 class GameManager {
-    - goal_tile: Tile
-    - board: Board
-    - players: std::vector<Player*>
-    - robots: std::vector<Robot*>
+    # goal_tile: Tile*
+    # board: Board
+    # players: std::vector<Player*>
+    # winner: Player*
+    # robots: std::vector<Robot*>
+    # round_finished: bool
+    # cur_player_won: bool
+    # moves_str: std::string
+    # robots_coordinates: std::vector<std::pair<int, int>>
+
+    - processMovement(robot: Robot*, direction: Direction, deplacement: int*, m: Menu*, player_index: int)
 
     + GameManager()
-    
+
     + getGoalTile(): Tile*
     + getPlayers(): std::vector<Player*>
-    + getPlayer(int index): Player*
-    + getBoard(): Board*
-    
+    + getPlayer(index: int): Player*
+    + getBoard(): Board&
+    + getBoardTheme(): BoardTheme_t&
+    + robotsAreReplacedEachRound(): bool
+
+    + setWallsStyle(wallsStyle: WallsStyle): void
+    + setColorTheme(colorTheme: ColorTheme): void
+    + replaceRobotsEachRound(replace_robots_each_round: bool): void
+
     + addPlayer(player: Player*): void
     + removePlayer(player: Player*): void
     + displayBoard(): std::string
+    + displayEmptyBoard(): std::string
+    + generateBoard(): void
     + setupRound(): void
+    + resetRound(): void
     + processPredictionsInputs(): void
     + sortPlayersByPredictions(): void
-    + playRound(): void
-    + displayResults(): void
+    + sortPlayersByScore(): void
+    + playRound(player_index: int): bool
+    + displayRoundResults(): std::string
+    + displayScoreboard(): std::string
+    + getRobotOnFrame(x: int, y: int): Robot*
+    + computeNode(board: Board&, x: int, y: int): std::string
 }
 
-Frame -- Tile
+class Menu {
+    + MenuCallback_t: typedef std::function<bool(int, Menu *)>
+    - options: std::vector<std::string>
+    - options_args: std::vector<std::string>
+    - title: std::string
+    - colorSelection: std::string
+    - mode: int
+    - timeout: int
+    - reset_timeout_on_key_press: bool
+    - cancel_timeout_on_key_press: bool
+    - prevent_deplacement: bool
+    - prevent_argument: bool
+    - prevent_quit_on_enter: bool
+    - quitKey: char
+    - callbacks: std::vector<MenuCallback_t>
+    - current_option: int
+    - remaining_time: int
+
+    - printMenu(pos: int): void
+
+    + Menu(title: std::string, mode: int): void
+    + ~Menu(): void
+
+    + addOption(option: std::string, func: MenuCallback_t): Menu&
+    + setColorSelection(color: std::string): Menu&
+    + run(): int
+    + getOptions(): std::vector<std::string>&
+    + getOptionsArgs(): std::vector<std::string>&
+    + setTimeout(timeout: int): Menu&
+    + setTitle(title: std::string): Menu&
+    + resetTimeoutOnKeyPress(reset: bool): Menu&
+    + cancelTimeoutOnKeyPress(reset: bool): Menu&
+    + preventDeplacement(prevent: bool): Menu&
+    + preventArguments(prevent: bool): Menu&
+    + preventQuitOnEnter(prevent: bool): Menu&
+    + setMode(mode: int): Menu&
+    + setQuitKey(key: char): Menu&
+    + setOptionPos(pos: int): Menu&
+    + clear(): void
+    + setTerminal(): void
+    + resetTerminal(): void
+    + set_nonblocking(enable: bool): void
+    + displayMenu(): void
+
+}
+
+enum WallsStyle #LightPink {
+    SIMPLE_WALLS
+    DOUBLE_WALLS
+}
+
+enum ColorTheme #LightPink {
+    LIGHT_THEME
+    DARK_THEME
+    CUSTOM
+}
+
+struct BoardTheme_t #Wheat {
+    std::string background_color
+    std::string grid_color
+    std::string wall_color
+    std::string reset_color
+    std::string menu_selection_color
+    std::string menu_robot_selected_color
+
+    ColorTheme color_theme;
+
+    std::string node
+    std::string horizontal_grid
+    std::string vertical_grid
+    std::string horizontal_wall
+    std::string vertical_wall
+
+    std::string node_middle
+    std::string node_horizontal
+    std::string node_vertical
+    std::string node_top
+    std::string node_left
+    std::string node_right
+    std::string node_bottom
+    std::string node_top_left
+    std::string node_top_right
+    std::string node_bottom_left
+    std::string node_bottom_right
+
+    WallsStyle walls_style;
+}
+
+Frame "1" *-- "1" Tile
 Frame "16" -up-* "1" QuarterBoard
 Board "1" *-- "4" QuarterBoard
 GameManager "1" *-- "n" Player
 GameManager "1" *-- "4" Robot
 GameManager "1" *-- "1" Board
+GameManager -- WallsStyle
+GameManager -- ColorTheme
+GameManager "1" *-- "1" BoardTheme_t
+Menu "1" *-right- "1" GameManager
 Robot -- Color
 Tile -- Color
 Tile -- Shape
