@@ -123,7 +123,7 @@ protected:
     /// @brief Container of game players
     std::vector<Player *> players;
     /// @brief Winner of a round;
-    Player *winner = nullptr;
+    Player *roundWinner = nullptr;
     /// @brief Container of board robots
     std::vector<Robot *> robots;
     /// @brief Flag to know if round is finished

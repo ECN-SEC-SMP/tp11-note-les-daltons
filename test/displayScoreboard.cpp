@@ -168,6 +168,35 @@ TEST(displayScoreboard, DivisionByZeroSuccessRate)
     EXPECT_STREQ(scoreboard.c_str(), expected_scoreboard.c_str());
 }
 
+TEST(displayScoreboard, MultiplePlayersNoWinner)
+{
+    const char *filename = "scoreboard_MultiplePlayersNoWinner.txt";
+
+    /* Create TestGameManager */
+    TestGameManager gm = initTestGameManager();
+
+    /* Create TestPlayers */
+    gm.addPlayer(new TestPlayer("Dada"));
+    TestPlayer * tplayer_dada = (TestPlayer *)gm.getPlayer(0);
+    tplayer_dada->setNbRoundsPlayed(2);
+    tplayer_dada->setScore(0);
+
+    gm.addPlayer(new TestPlayer("Louiiiiiiiiis"));
+    TestPlayer * tplayer_louis = (TestPlayer *)gm.getPlayer(1);
+    tplayer_louis->setNbRoundsPlayed(3);
+    tplayer_louis->setScore(0);
+
+    /* Generate expected scoreboard */
+#ifdef GENERATE_EXPECTED
+    writeInFile(filename, gm.displayScoreboard());
+#endif
+    
+    /* Test */
+    const std::string scoreboard = gm.displayScoreboard();
+    const std::string expected_scoreboard = readFile(filename);
+    EXPECT_STREQ(scoreboard.c_str(), expected_scoreboard.c_str());
+}
+
 /* Differents amounts of players -------------------------------------------- */
 
 TEST(displayScoreboard, OnePlayer)
