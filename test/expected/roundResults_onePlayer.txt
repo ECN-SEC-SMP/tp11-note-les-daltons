@@ -1,2 +1,2 @@
 
-Player Dada announced 5 moves and lost
+Player [1mDada[22m announced 5 moves and [31mlost[0m
