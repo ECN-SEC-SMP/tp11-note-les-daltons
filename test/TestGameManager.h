@@ -1,7 +1,6 @@
 #pragma once
 
 #include "GameManager.h"
-#include "TestPlayer.h"
 
 class TestGameManager : public GameManager
 {
