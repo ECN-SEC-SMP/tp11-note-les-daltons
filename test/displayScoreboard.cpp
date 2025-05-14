@@ -8,6 +8,7 @@
 #include "Utils.h"
 
 #define EXPECTED_FOLDER "./test/expected/"
+// #define GENERATE_EXPECTED
 
 TestGameManager initTestGameManager()
 {
@@ -51,7 +52,9 @@ TEST(displayScoreboard, NoPlayers)
     TestGameManager gm = initTestGameManager();
 
     /* Generate expected scoreboard */
-    // writeInFile(filename, gm.displayScoreboard());
+#ifdef GENERATE_EXPECTED
+    writeInFile(filename, gm.displayScoreboard());
+#endif
 
     /* Test */
     const std::string scoreboard = gm.displayScoreboard();
@@ -77,7 +80,9 @@ TEST(displayScoreboard, PositiveSuccessRate)
     tplayer->setScore(2);
 
     /* Generate expected scoreboard */
-    // writeInFile(filename, gm.displayScoreboard());
+#ifdef GENERATE_EXPECTED
+    writeInFile(filename, gm.displayScoreboard());
+#endif
     
     /* Test */
     const std::string scoreboard = gm.displayScoreboard();
@@ -101,7 +106,9 @@ TEST(displayScoreboard, ZeroSuccessRate)
     tplayer->setScore(0);
 
     /* Generate expected scoreboard */
-    // writeInFile(filename, gm.displayScoreboard());
+#ifdef GENERATE_EXPECTED
+    writeInFile(filename, gm.displayScoreboard());
+#endif
     
     /* Test */
     const std::string scoreboard = gm.displayScoreboard();
@@ -125,7 +132,9 @@ TEST(displayScoreboard, OverflowSuccessRate)
     tplayer->setScore(6);
 
     /* Generate expected scoreboard */
-    // writeInFile(filename, gm.displayScoreboard());
+#ifdef GENERATE_EXPECTED
+    writeInFile(filename, gm.displayScoreboard());
+#endif
     
     /* Test */
     const std::string scoreboard = gm.displayScoreboard();
@@ -149,7 +158,9 @@ TEST(displayScoreboard, DivisionByZeroSuccessRate)
     tplayer->setScore(6);
 
     /* Generate expected scoreboard */
-    // writeInFile(filename, gm.displayScoreboard());
+#ifdef GENERATE_EXPECTED
+    writeInFile(filename, gm.displayScoreboard());
+#endif
 
     /* Test */
     const std::string scoreboard = gm.displayScoreboard();
@@ -174,7 +185,9 @@ TEST(displayScoreboard, OnePlayer)
     tplayer->setScore(2);
 
     /* Generate expected scoreboard */
-    // writeInFile(filename, gm.displayScoreboard());
+#ifdef GENERATE_EXPECTED
+    writeInFile(filename, gm.displayScoreboard());
+#endif
     
     /* Test */
     const std::string scoreboard = gm.displayScoreboard();
@@ -198,10 +211,12 @@ TEST(displayScoreboard, TwoPlayers)
     gm.addPlayer(new TestPlayer("Louiiiiiiiiis"));
     TestPlayer * tplayer_louis = (TestPlayer *)gm.getPlayer(1);
     tplayer_louis->setNbRoundsPlayed(3);
-    tplayer_louis->setScore(1);
+    tplayer_louis->setScore(5);
 
     /* Generate expected scoreboard */
-    // writeInFile(filename, gm.displayScoreboard());
+#ifdef GENERATE_EXPECTED
+    writeInFile(filename, gm.displayScoreboard());
+#endif
     
     /* Test */
     const std::string scoreboard = gm.displayScoreboard();
@@ -232,7 +247,9 @@ TEST(displayScoreboard, MoreThanThreePlayers)
     gm.addPlayer(new TestPlayer("ouais ouais ouais"));
 
     /* Generate expected scoreboard */
-    // writeInFile(filename, gm.displayScoreboard());
+#ifdef GENERATE_EXPECTED
+    writeInFile(filename, gm.displayScoreboard());
+#endif
     
     /* Test */
     const std::string scoreboard = gm.displayScoreboard();
