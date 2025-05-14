@@ -1093,6 +1093,7 @@ std::string GameManager::displayScoreboard()
     output += BOTTOM_LEFT_CORNER;
     output += horizontal_border;
     output += BOTTOM_RIGHT_CORNER;
+    output += "\n";
 
     return output;
 }
