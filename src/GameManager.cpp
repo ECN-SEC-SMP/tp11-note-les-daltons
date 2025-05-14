@@ -1005,8 +1005,9 @@ std::string GameManager::displayScoreboard()
     {
         /* Get player info */
         std::string player_rank;
+        bool more_than_one_player = this->players.size() > 1;
         bool winner = player == this->players[0];
-        if (winner && !show_podium)
+        if (winner && more_than_one_player && !show_podium)
         {
             player_rank = "🏆";
         }
@@ -1040,7 +1041,12 @@ std::string GameManager::displayScoreboard()
         }
         else
         {
-            player_success_rate = std::to_string((int)((float)(player->getScore()) / (float)(player->getRoundsPlayed()) * 100)) + "%";
+            int player_sucess_rate_int = (int)(((float)(player->getScore()) / (float)(player->getRoundsPlayed()) * 100) / 2);
+            if (player_sucess_rate_int > 100)
+            {
+                player_sucess_rate_int = 100;
+            }
+            player_success_rate = std::to_string(player_sucess_rate_int) + "%";
         }
 
         /* Left border of frame */

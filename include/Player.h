@@ -5,7 +5,7 @@
 
 class Player
 {
-private:
+protected:
     std::string name;
     int prediction;
     int nbMoves;
