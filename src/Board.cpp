@@ -4,7 +4,6 @@
 
 #include "Utils.h"
 #include "Board.h"
-#include "QuarterBoardHelper.h"
 
 std::vector<Tile> Board::TILES = {
     Tile(RED, CIRCLE),

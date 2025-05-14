@@ -1,3 +1,5 @@
+#pragma once
+
 #include <fstream>
 
 #include "TestGameManager.h"
@@ -5,7 +7,7 @@
 
 #define EXPECTED_FOLDER "./test/expected/"
 
-TestGameManager initTestGameManager()
+inline TestGameManager initTestGameManager()
 {
     TestGameManager gm;
     newRandomSeed();
@@ -14,7 +16,7 @@ TestGameManager initTestGameManager()
     return gm;
 }
 
-void writeInFile(std::string filename, std::string content)
+inline void writeInFile(std::string filename, std::string content)
 {
     std::ofstream file;
     file.open(EXPECTED_FOLDER + filename);
@@ -22,7 +24,7 @@ void writeInFile(std::string filename, std::string content)
     file.close();
 }
 
-std::string readFile(std::string filename)
+inline std::string readFile(std::string filename)
 {
     std::ifstream file { EXPECTED_FOLDER + filename };
     std::string content = "";

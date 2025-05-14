@@ -1,5 +1,11 @@
 # Test Folder
 
+## Unit Tests
+Please run this command from main directory:
+```
+./test/run_tests.sh
+```
+
 ## Player Names
 - See if you can use the same player name: 
     -Request to try again
