@@ -1,0 +1,9 @@
+out/
+.DS_store
+build/
+.vscode/
+Testing/
+doc/html/**
+!doc/html/README.md
+doc/latex/**
+!doc/latex/README.md
